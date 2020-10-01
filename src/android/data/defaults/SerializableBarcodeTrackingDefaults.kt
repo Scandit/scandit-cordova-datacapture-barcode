@@ -11,8 +11,8 @@ import com.scandit.datacapture.cordova.core.data.defaults.SerializableCameraSett
 import org.json.JSONObject
 
 class SerializableBarcodeTrackingDefaults(
-        private val recommendedCameraSettings: SerializableCameraSettingsDefault,
-        private val trackingBasicOverlayDefaults: SerializableTrackingBasicOverlayDefaults
+    private val recommendedCameraSettings: SerializableCameraSettingsDefault,
+    private val trackingBasicOverlayDefaults: SerializableTrackingBasicOverlayDefaults
 ) : SerializableData {
 
     override fun toJson(): JSONObject = JSONObject(

@@ -11,7 +11,7 @@ import com.scandit.datacapture.cordova.core.data.defaults.SerializableBrushDefau
 import org.json.JSONObject
 
 data class SerializableBarcodeCaptureOverlayDefaults(
-        private val brushDefaults: SerializableBrushDefaults
+    private val brushDefaults: SerializableBrushDefaults
 ) : SerializableData {
 
     override fun toJson(): JSONObject = JSONObject(
@@ -21,6 +21,6 @@ data class SerializableBarcodeCaptureOverlayDefaults(
     )
 
     companion object {
-        private const val FIELD_BRUSH_DEFAULTS = "Brush"
+        private const val FIELD_BRUSH_DEFAULTS = "DefaultBrush"
     }
 }

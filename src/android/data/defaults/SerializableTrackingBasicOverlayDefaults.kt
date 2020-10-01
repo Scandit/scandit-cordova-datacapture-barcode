@@ -11,7 +11,7 @@ import com.scandit.datacapture.cordova.core.data.defaults.SerializableBrushDefau
 import org.json.JSONObject
 
 class SerializableTrackingBasicOverlayDefaults(
-        private val defaultBrush: SerializableBrushDefaults
+    private val defaultBrush: SerializableBrushDefaults
 ) : SerializableData {
 
     override fun toJson(): JSONObject = JSONObject(

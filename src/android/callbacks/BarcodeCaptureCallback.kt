@@ -13,16 +13,16 @@ import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.core.data.FrameData
-import org.apache.cordova.CallbackContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.apache.cordova.CallbackContext
+import org.json.JSONArray
+import org.json.JSONObject
 
 class BarcodeCaptureCallback(
-        private val actionsHandler: ActionsHandler,
-        callbackContext: CallbackContext
+    private val actionsHandler: ActionsHandler,
+    callbackContext: CallbackContext
 ) : Callback(callbackContext) {
 
     private val lock = ReentrantLock(true)
@@ -31,9 +31,9 @@ class BarcodeCaptureCallback(
     private val latestStateData = AtomicReference<SerializableFinishModeCallbackData?>(null)
 
     fun onSessionUpdated(
-            barcodeCapture: BarcodeCapture,
-            session: BarcodeCaptureSession,
-            frameData: FrameData
+        barcodeCapture: BarcodeCapture,
+        session: BarcodeCaptureSession,
+        frameData: FrameData
     ) {
         if (disposed.get()) return
 
@@ -60,9 +60,9 @@ class BarcodeCaptureCallback(
     }
 
     fun onBarcodeScanned(
-            barcodeCapture: BarcodeCapture,
-            session: BarcodeCaptureSession,
-            frameData: FrameData
+        barcodeCapture: BarcodeCapture,
+        session: BarcodeCaptureSession,
+        frameData: FrameData
     ) {
         if (disposed.get()) return
 
@@ -74,7 +74,7 @@ class BarcodeCaptureCallback(
                                 JSONObject(
                                         mapOf(
                                                 FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to serializeFrameData(// TODO [SDC-2001] -> add frame data serialization
+                                                FIELD_FRAME_DATA to serializeFrameData( // TODO [SDC-2001] -> add frame data serialization
                                                         frameData
                                                 ).toString()
                                         )

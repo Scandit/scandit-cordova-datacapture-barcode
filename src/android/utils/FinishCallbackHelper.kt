@@ -57,7 +57,7 @@ class FinishCallbackHelper {
     }
 
     private fun checkFinishCallbackIdFieldForValue(data: JSONObject, value: String): Boolean {
-        return data.has(SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID)
-                && data[SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID] == value
+        return data.has(SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID) &&
+                data[SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID] == value
     }
 }

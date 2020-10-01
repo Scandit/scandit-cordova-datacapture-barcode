@@ -10,7 +10,7 @@ import android.content.Context
 import android.widget.ImageView
 
 class AdvancedOverlayViewPool(
-        private val context: Context
+    private val context: Context
 ) {
 
     private val views: MutableMap<Int, ImageView> = mutableMapOf()

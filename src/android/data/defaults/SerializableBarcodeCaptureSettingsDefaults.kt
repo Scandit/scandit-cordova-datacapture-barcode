@@ -10,8 +10,8 @@ import com.scandit.datacapture.cordova.core.data.SerializableData
 import org.json.JSONObject
 
 data class SerializableBarcodeCaptureSettingsDefaults(
-        private val codeDuplicateFilter: Float
-): SerializableData {
+    private val codeDuplicateFilter: Long
+) : SerializableData {
 
     override fun toJson(): JSONObject = JSONObject(
             mapOf(

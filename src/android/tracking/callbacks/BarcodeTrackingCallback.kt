@@ -14,16 +14,16 @@ import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.core.data.FrameData
-import org.apache.cordova.CallbackContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.apache.cordova.CallbackContext
+import org.json.JSONArray
+import org.json.JSONObject
 
 class BarcodeTrackingCallback(
-        private val actionsHandler: ActionsHandler,
-        callbackContext: CallbackContext
+    private val actionsHandler: ActionsHandler,
+    callbackContext: CallbackContext
 ) : Callback(callbackContext) {
 
     private val lock = ReentrantLock(true)
@@ -33,9 +33,9 @@ class BarcodeTrackingCallback(
     private val latestStateData = AtomicReference<SerializableFinishModeCallbackData?>(null)
 
     fun onSessionUpdated(
-            barcodeTracking: BarcodeTracking,
-            session: BarcodeTrackingSession,
-            frameData: FrameData
+        barcodeTracking: BarcodeTracking,
+        session: BarcodeTrackingSession,
+        frameData: FrameData
     ) {
         if (disposed.get()) return
 
@@ -47,7 +47,7 @@ class BarcodeTrackingCallback(
                                 JSONObject(
                                         mapOf(
                                                 FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to JSONObject()// TODO [SDC-2001] -> add frame data serialization
+                                                FIELD_FRAME_DATA to JSONObject() // TODO [SDC-2001] -> add frame data serialization
                                         )
                                 )
                         )
@@ -84,7 +84,8 @@ class BarcodeTrackingCallback(
     }
 
     fun getTrackedBarcodeFromLatestSession(
-            barcodeId: Int, frameSequenceId: Long?
+        barcodeId: Int,
+        frameSequenceId: Long?
     ): TrackedBarcode? {
         val session = latestSession.get() ?: return null
         return if (frameSequenceId == null || session.frameSequenceId == frameSequenceId) {

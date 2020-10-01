@@ -11,10 +11,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class SerializableBarcodeDefaults(
-        private val symbologySettingsDefaults: SerializableSymbologySettingsDefaults,
-        private val symbologyDescriptionsDefaults: JSONArray,
-        private val barcodeCaptureDefaults: SerializableBarcodeCaptureDefaults,
-        private val barcodeTrackingDefaults: SerializableBarcodeTrackingDefaults
+    private val symbologySettingsDefaults: SerializableSymbologySettingsDefaults,
+    private val symbologyDescriptionsDefaults: JSONArray,
+    private val barcodeCaptureDefaults: SerializableBarcodeCaptureDefaults,
+    private val barcodeTrackingDefaults: SerializableBarcodeTrackingDefaults
 ) : SerializableData {
 
     override fun toJson(): JSONObject = JSONObject(

@@ -23,7 +23,7 @@ class ActionFinishCallback(
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val data = args.getJSONObject(0)
-            if (!data.has(FIELD_RESULT)) {// We need the "result" field to exist ( null is also allowed )
+            if (!data.has(FIELD_RESULT)) { // We need the "result" field to exist ( null is also allowed )
                 throw JSONException("Missing $FIELD_RESULT field in response json")
             }
             val result: JSONObject? = data.optJSONObject(FIELD_RESULT)
@@ -72,44 +72,50 @@ class ActionFinishCallback(
         } catch (e: JSONException) {
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) {// TODO [SDC-1851] - fine-catch deserializer exceptions
+        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
         }
     }
 
     private fun finishBarcodeCaptureModeCallback(
-        data: SerializableFinishModeCallbackData?, callbackContext: CallbackContext
+        data: SerializableFinishModeCallbackData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishBarcodeCaptureMode(data, callbackContext)
     }
 
     private fun finishBarcodeTrackingModeCallback(
-        data: SerializableFinishModeCallbackData?, callbackContext: CallbackContext
+        data: SerializableFinishModeCallbackData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishBarcodeTrackingMode(data, callbackContext)
     }
 
     private fun finishBasicOverlayCallback(
-        data: SerializableFinishBasicOverlayCallbackData?, callbackContext: CallbackContext
+        data: SerializableFinishBasicOverlayCallbackData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishBasicOverlay(data, callbackContext)
     }
 
     private fun finishAdvancedOverlayViewCallback(
-        data: SerializableFinishAdvancedOverlayViewData?, callbackContext: CallbackContext
+        data: SerializableFinishAdvancedOverlayViewData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishAdvancedOverlayView(data, callbackContext)
     }
 
     private fun finishAdvancedOverlayOffsetCallback(
-        data: SerializableFinishAdvancedOverlayOffsetData?, callbackContext: CallbackContext
+        data: SerializableFinishAdvancedOverlayOffsetData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishAdvancedOverlayOffset(data, callbackContext)
     }
 
     private fun finishAdvancedOverlayAnchorCallback(
-        data: SerializableFinishAdvancedOverlayAnchorData?, callbackContext: CallbackContext
+        data: SerializableFinishAdvancedOverlayAnchorData?,
+        callbackContext: CallbackContext
     ) {
         listener.onFinishAdvancedOverlayAnchor(data, callbackContext)
     }
@@ -124,11 +130,13 @@ class ActionFinishCallback(
 
     interface ResultListener {
         fun onFinishBarcodeTrackingMode(
-            finishData: SerializableFinishModeCallbackData?, callbackContext: CallbackContext
+            finishData: SerializableFinishModeCallbackData?,
+            callbackContext: CallbackContext
         )
 
         fun onFinishBarcodeCaptureMode(
-            finishData: SerializableFinishModeCallbackData?, callbackContext: CallbackContext
+            finishData: SerializableFinishModeCallbackData?,
+            callbackContext: CallbackContext
         )
 
         fun onFinishBasicOverlay(

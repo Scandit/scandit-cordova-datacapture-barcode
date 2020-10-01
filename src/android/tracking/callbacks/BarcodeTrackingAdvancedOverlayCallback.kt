@@ -25,21 +25,21 @@ import com.scandit.datacapture.cordova.core.workers.Worker
 import com.scandit.datacapture.core.common.geometry.Anchor
 import com.scandit.datacapture.core.common.geometry.MeasureUnit
 import com.scandit.datacapture.core.common.geometry.PointWithUnit
-import org.apache.cordova.CallbackContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.apache.cordova.CallbackContext
+import org.json.JSONArray
+import org.json.JSONObject
 
 class BarcodeTrackingAdvancedOverlayCallback(
-        private val actionsHandler: ActionsHandler,
-        callbackContext: CallbackContext,
-        private val viewPool: AdvancedOverlayViewPool,
-        private val uiWorker: Worker,
-        private val overlayListenerWorker: Worker = BackgroundWorker(
-                "advanced-overlay-listener-queue"
-        )
+    private val actionsHandler: ActionsHandler,
+    callbackContext: CallbackContext,
+    private val viewPool: AdvancedOverlayViewPool,
+    private val uiWorker: Worker,
+    private val overlayListenerWorker: Worker = BackgroundWorker(
+            "advanced-overlay-listener-queue"
+    )
 ) : Callback(callbackContext) {
 
     private val lock = ReentrantLock(true)
@@ -54,9 +54,9 @@ class BarcodeTrackingAdvancedOverlayCallback(
     private val latestAnchorData = AtomicReference<SerializableFinishAdvancedOverlayAnchorData?>()
 
     fun viewForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode,
-            switchToOverlayWorker: Boolean
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode,
+        switchToOverlayWorker: Boolean
     ): View? {
         if (disposed.get()) return null
 
@@ -71,8 +71,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun viewForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         lock.withLock {
             actionsHandler.addAction(
@@ -94,9 +94,9 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     fun offsetForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode,
-            switchToOverlayWorker: Boolean
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode,
+        switchToOverlayWorker: Boolean
     ): PointWithUnit {
         if (disposed.get()) return PointWithUnit(0f, 0f, MeasureUnit.PIXEL)
 
@@ -111,8 +111,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun offsetForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         lock.withLock {
             actionsHandler.addAction(
@@ -134,9 +134,9 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     fun anchorForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode,
-            switchToOverlayWorker: Boolean
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode,
+        switchToOverlayWorker: Boolean
     ): Anchor {
         if (disposed.get()) return Anchor.CENTER
 
@@ -151,8 +151,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun anchorForTrackedBarcode(
-            overlay: BarcodeTrackingAdvancedOverlay,
-            trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         lock.withLock {
             actionsHandler.addAction(
@@ -174,10 +174,10 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     fun setViewForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            viewData: SerializableAdvancedOverlayView?,
-            overlay: BarcodeTrackingAdvancedOverlay,
-            switchToOverlayWorker: Boolean
+        trackedBarcode: TrackedBarcode,
+        viewData: SerializableAdvancedOverlayView?,
+        overlay: BarcodeTrackingAdvancedOverlay,
+        switchToOverlayWorker: Boolean
     ) {
         if (disposed.get()) return
 
@@ -191,11 +191,10 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun setViewForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            viewData: SerializableAdvancedOverlayView?,
-            overlay: BarcodeTrackingAdvancedOverlay
+        trackedBarcode: TrackedBarcode,
+        viewData: SerializableAdvancedOverlayView?,
+        overlay: BarcodeTrackingAdvancedOverlay
     ) {
-
         val image = bitmapFromBase64String(viewData?.data)
 
         uiWorker.post {
@@ -235,10 +234,10 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     fun setOffsetForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            offset: PointWithUnit?,
-            overlay: BarcodeTrackingAdvancedOverlay,
-            switchToOverlayWorker: Boolean
+        trackedBarcode: TrackedBarcode,
+        offset: PointWithUnit?,
+        overlay: BarcodeTrackingAdvancedOverlay,
+        switchToOverlayWorker: Boolean
     ) {
         if (disposed.get()) return
 
@@ -252,9 +251,9 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun setOffsetForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            offset: PointWithUnit?,
-            overlay: BarcodeTrackingAdvancedOverlay
+        trackedBarcode: TrackedBarcode,
+        offset: PointWithUnit?,
+        overlay: BarcodeTrackingAdvancedOverlay
     ) {
         overlay.setOffsetForTrackedBarcode(
                 trackedBarcode, offset ?: PointWithUnit(0f, 0f, MeasureUnit.PIXEL)
@@ -262,10 +261,10 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     fun setAnchorForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            anchor: Anchor?,
-            overlay: BarcodeTrackingAdvancedOverlay,
-            switchToOverlayWorker: Boolean
+        trackedBarcode: TrackedBarcode,
+        anchor: Anchor?,
+        overlay: BarcodeTrackingAdvancedOverlay,
+        switchToOverlayWorker: Boolean
     ) {
         if (disposed.get()) return
 
@@ -279,9 +278,9 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun setAnchorForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            anchor: Anchor?,
-            overlay: BarcodeTrackingAdvancedOverlay
+        trackedBarcode: TrackedBarcode,
+        anchor: Anchor?,
+        overlay: BarcodeTrackingAdvancedOverlay
     ) {
         overlay.setAnchorForTrackedBarcode(trackedBarcode, anchor ?: Anchor.CENTER)
     }
@@ -328,7 +327,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun onUnlockForView(
-            overlay: BarcodeTrackingAdvancedOverlay, trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         latestViewData.get()?.let { latestView ->
             setViewForTrackedBarcode(
@@ -340,7 +340,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun onUnlockForOffset(
-            overlay: BarcodeTrackingAdvancedOverlay, trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         latestOffsetData.get()?.let { latestOffset ->
             setOffsetForTrackedBarcode(
@@ -352,7 +353,8 @@ class BarcodeTrackingAdvancedOverlayCallback(
     }
 
     private fun onUnlockForAnchor(
-        overlay: BarcodeTrackingAdvancedOverlay, trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingAdvancedOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         latestAnchorData.get()?.let { latestAnchor ->
             setAnchorForTrackedBarcode(

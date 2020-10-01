@@ -10,7 +10,7 @@ import com.scandit.datacapture.barcode.tracking.ui.overlay.BarcodeTrackingBasicO
 import com.scandit.datacapture.barcode.tracking.ui.overlay.BarcodeTrackingBasicOverlayListener
 
 class BarcodeTrackingBasicOverlayHandler(
-        private val barcodeTrackingBasicOverlayListener: BarcodeTrackingBasicOverlayListener
+    private val barcodeTrackingBasicOverlayListener: BarcodeTrackingBasicOverlayListener
 ) {
 
     var barcodeTrackingBasicOverlay: BarcodeTrackingBasicOverlay? = null

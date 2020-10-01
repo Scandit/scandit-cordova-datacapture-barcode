@@ -14,7 +14,7 @@ import org.json.JSONArray
 import org.json.JSONException
 
 class ActionSetAnchorForTrackedBarcode(
-        private val listener: ResultListener
+    private val listener: ResultListener
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
@@ -26,7 +26,7 @@ class ActionSetAnchorForTrackedBarcode(
         } catch (e: JSONException) {
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) {// TODO [SDC-1851] - fine-catch deserializer exceptions
+        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
         }
@@ -34,8 +34,8 @@ class ActionSetAnchorForTrackedBarcode(
 
     interface ResultListener : ActionJsonParseErrorResultListener {
         fun onAnchorForTrackedBarcode(
-                data: SerializableAdvancedOverlayAnchorActionData,
-                callbackContext: CallbackContext
+            data: SerializableAdvancedOverlayAnchorActionData,
+            callbackContext: CallbackContext
         )
     }
 }

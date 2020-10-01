@@ -10,9 +10,9 @@ import com.scandit.datacapture.core.ui.style.BrushDeserializer
 import org.json.JSONObject
 
 class SerializableBrushAndTrackedBarcode(
-        val brush: Brush?,
-        val trackedBarcodeId: Int,
-        val sessionFrameSequenceId: Long?
+    val brush: Brush?,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
 ) {
 
     constructor(jsonObject: JSONObject) : this(

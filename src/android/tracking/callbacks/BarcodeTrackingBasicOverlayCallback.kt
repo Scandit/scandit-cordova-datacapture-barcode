@@ -15,17 +15,17 @@ import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.cordova.core.workers.BackgroundWorker
 import com.scandit.datacapture.cordova.core.workers.Worker
 import com.scandit.datacapture.core.ui.style.Brush
-import org.apache.cordova.CallbackContext
-import org.json.JSONArray
-import org.json.JSONObject
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
+import org.apache.cordova.CallbackContext
+import org.json.JSONArray
+import org.json.JSONObject
 
 class BarcodeTrackingBasicOverlayCallback(
-        private val actionsHandler: ActionsHandler,
-        callbackContext: CallbackContext,
-        private val overlayListenerWorker: Worker = BackgroundWorker("overlay-listener-queue")
+    private val actionsHandler: ActionsHandler,
+    callbackContext: CallbackContext,
+    private val overlayListenerWorker: Worker = BackgroundWorker("overlay-listener-queue")
 ) : Callback(callbackContext) {
 
     private val lock = ReentrantLock(true)
@@ -34,9 +34,9 @@ class BarcodeTrackingBasicOverlayCallback(
     private val latestStateData = AtomicReference<SerializableFinishBasicOverlayCallbackData?>()
 
     fun brushForTrackedBarcode(
-            overlay: BarcodeTrackingBasicOverlay,
-            trackedBarcode: TrackedBarcode,
-            switchToOverlayWorker: Boolean
+        overlay: BarcodeTrackingBasicOverlay,
+        trackedBarcode: TrackedBarcode,
+        switchToOverlayWorker: Boolean
     ): Brush? {
         if (disposed.get()) return null
 
@@ -47,11 +47,14 @@ class BarcodeTrackingBasicOverlayCallback(
         } else {
             brushForTrackedBarcode(overlay, trackedBarcode)
         }
+
+        // License compliant brush for non-AR licenses, see https://wiki.scandit.com/x/JwBMCQ
         return Brush(0x00B2CCE5.toInt(), 0x00B2CCE5.toInt(), 0f)
     }
 
     private fun brushForTrackedBarcode(
-            overlay: BarcodeTrackingBasicOverlay, trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingBasicOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         lock.withLock {
             actionsHandler.addAction(
@@ -73,9 +76,9 @@ class BarcodeTrackingBasicOverlayCallback(
     }
 
     fun onTrackedBarcodeTapped(
-            overlay: BarcodeTrackingBasicOverlay,
-            trackedBarcode: TrackedBarcode,
-            switchToOverlayWorker: Boolean
+        overlay: BarcodeTrackingBasicOverlay,
+        trackedBarcode: TrackedBarcode,
+        switchToOverlayWorker: Boolean
     ) {
         if (disposed.get()) return
 
@@ -89,7 +92,8 @@ class BarcodeTrackingBasicOverlayCallback(
     }
 
     private fun onTrackedBarcodeTapped(
-            overlay: BarcodeTrackingBasicOverlay, trackedBarcode: TrackedBarcode
+        overlay: BarcodeTrackingBasicOverlay,
+        trackedBarcode: TrackedBarcode
     ) {
         actionsHandler.addAction(
                 BarcodeCaptureActionFactory.SEND_DID_TAP_TRACKED_BARCODE,
@@ -119,10 +123,10 @@ class BarcodeTrackingBasicOverlayCallback(
     }
 
     fun setBrushForTrackedBarcode(
-            trackedBarcode: TrackedBarcode,
-            brush: Brush?,
-            overlay: BarcodeTrackingBasicOverlay,
-            switchToOverlayWorker: Boolean
+        trackedBarcode: TrackedBarcode,
+        brush: Brush?,
+        overlay: BarcodeTrackingBasicOverlay,
+        switchToOverlayWorker: Boolean
     ) {
         if (disposed.get()) return
 

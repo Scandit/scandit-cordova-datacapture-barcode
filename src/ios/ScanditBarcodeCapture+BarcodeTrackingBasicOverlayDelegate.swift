@@ -22,6 +22,7 @@ extension ScanditBarcodeCapture: BarcodeTrackingBasicOverlayDelegate {
             self.finishBlockingCallback(with: overlay, and: trackedBarcode, for: listenerEvent)
         }
 
+        // License compliant brush for non-AR licenses, see https://wiki.scandit.com/x/JwBMCQ
         let color = UIColor(red: 0.7, green: 0.8, blue: 0.9, alpha: 0)
         return Brush(fill: color, stroke: color, strokeWidth: 0)
     }

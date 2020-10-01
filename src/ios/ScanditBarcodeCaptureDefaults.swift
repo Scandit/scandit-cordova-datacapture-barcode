@@ -4,7 +4,7 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
     typealias CameraSettingsDefaults = ScanditCaptureCoreDefaults.CameraSettingsDefaults
 
     struct BarcodeCaptureOverlayDefaults: Encodable {
-        let Brush: ScanditCaptureCoreDefaults.BrushDefaults
+        let DefaultBrush: ScanditCaptureCoreDefaults.BrushDefaults
     }
 
     struct BarcodeTrackingBasicOverlayDefaults: Encodable {
@@ -12,7 +12,7 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
     }
 
     struct BarcodeCaptureSettingsDefaults: Encodable {
-        let codeDuplicateFilter: Double
+        let codeDuplicateFilter: Int
     }
 
     struct BarcodeCaptureDefaultsContainer: Encodable {
@@ -63,7 +63,7 @@ extension ScanditBarcodeCaptureDefaults.BarcodeTrackingDefaultsContainer {
 extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
     static func from(_ overlay: BarcodeCaptureOverlay) -> ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
         let brush = ScanditCaptureCoreDefaults.BrushDefaults.from(BarcodeCaptureOverlay.defaultBrush)
-        return ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults(Brush: brush)
+        return ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults(DefaultBrush: brush)
     }
 }
 
@@ -78,7 +78,7 @@ extension ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults {
     static func from(_ settings: BarcodeCaptureSettings) ->
         ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults {
             return ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults(codeDuplicateFilter:
-                settings.codeDuplicateFilter)
+                Int(settings.codeDuplicateFilter * 1000))
     }
 }
 

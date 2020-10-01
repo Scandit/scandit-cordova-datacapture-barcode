@@ -10,7 +10,7 @@ import com.scandit.datacapture.barcode.tracking.capture.BarcodeTracking
 import com.scandit.datacapture.barcode.tracking.capture.BarcodeTrackingListener
 
 class BarcodeTrackingHandler(
-        private val barcodeTrackingListener: BarcodeTrackingListener
+    private val barcodeTrackingListener: BarcodeTrackingListener
 ) {
     var barcodeTracking: BarcodeTracking? = null
         private set

@@ -29,7 +29,7 @@ import org.json.JSONArray
 import org.json.JSONException
 
 class ActionInjectDefaults(
-        private val listener: ResultListener
+    private val listener: ResultListener
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
@@ -52,7 +52,7 @@ class ActionInjectDefaults(
                                     )
                             ),
                             barcodeCaptureSettingsDefaults = SerializableBarcodeCaptureSettingsDefaults(
-                                    codeDuplicateFilter = captureSettings.codeDuplicateFilter.asSeconds()
+                                    codeDuplicateFilter = captureSettings.codeDuplicateFilter.asMillis()
                             ),
                             recommendedCameraSettings = SerializableCameraSettingsDefault(
                                     settings = captureCameraSettings
@@ -84,7 +84,8 @@ class ActionInjectDefaults(
 
     interface ResultListener : ActionJsonParseErrorResultListener {
         fun onBarcodeDefaults(
-                defaults: SerializableBarcodeDefaults, callbackContext: CallbackContext
+            defaults: SerializableBarcodeDefaults,
+            callbackContext: CallbackContext
         )
     }
 }

@@ -55,9 +55,9 @@ class SerializableFinishAdvancedOverlayAnchorData(val anchor: Anchor?) {
 }
 
 data class SerializableAdvancedOverlayViewActionData(
-        val view: SerializableAdvancedOverlayView?,
-        val trackedBarcodeId: Int,
-        val sessionFrameSequenceId: Long?
+    val view: SerializableAdvancedOverlayView?,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
 ) {
 
     constructor(json: JSONObject) : this(
@@ -69,8 +69,8 @@ data class SerializableAdvancedOverlayViewActionData(
 }
 
 data class SerializableAdvancedOverlayView(
-        val data: String,
-        val options: SerializableAdvancedOverlayViewOptions
+    val data: String,
+    val options: SerializableAdvancedOverlayViewOptions
 ) {
 
     constructor(jsonObject: JSONObject) : this(
@@ -93,9 +93,9 @@ data class SerializableAdvancedOverlayView(
 }
 
 data class SerializableAdvancedOverlayViewOptions(
-        val scale: Float,
-        val width: Int,
-        val height: Int
+    val scale: Float,
+    val width: Int,
+    val height: Int
 ) {
 
     companion object {
@@ -129,9 +129,9 @@ data class SerializableAdvancedOverlayViewOptions(
 }
 
 data class SerializableAdvancedOverlayOffsetActionData(
-        val offset: PointWithUnit,
-        val trackedBarcodeId: Int,
-        val sessionFrameSequenceId: Long?
+    val offset: PointWithUnit,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
 ) {
 
     constructor(json: JSONObject) : this(
@@ -143,9 +143,9 @@ data class SerializableAdvancedOverlayOffsetActionData(
 }
 
 data class SerializableAdvancedOverlayAnchorActionData(
-        val anchor: Anchor,
-        val trackedBarcodeId: Int,
-        val sessionFrameSequenceId: Long?
+    val anchor: Anchor,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
 ) {
 
     constructor(json: JSONObject) : this(

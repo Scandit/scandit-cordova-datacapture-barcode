@@ -11,7 +11,7 @@ import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 
 class ActionSubscribeBarcodeCapture(
-        private val listener: ResultListener
+    private val listener: ResultListener
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
