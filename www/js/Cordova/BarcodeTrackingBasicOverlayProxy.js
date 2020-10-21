@@ -18,7 +18,7 @@ class BarcodeTrackingBasicOverlayProxy {
     }
     setBrushForTrackedBarcode(brush, trackedBarcode) {
         return new Promise((resolve, reject) => {
-            BarcodeTrackingBasicOverlayProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.SetBrushForTrackedBarcode, [{
+            BarcodeTrackingBasicOverlayProxy.cordovaExec(resolve, reject, Cordova_1.CordovaFunction.SetBrushForTrackedBarcode, [{
                     brush: brush ? JSON.stringify(brush.toJSON()) : null,
                     sessionFrameSequenceID: trackedBarcode.sessionFrameSequenceID,
                     trackedBarcodeID: trackedBarcode.identifier,
