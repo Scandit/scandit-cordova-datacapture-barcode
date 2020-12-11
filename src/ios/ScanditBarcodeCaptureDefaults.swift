@@ -28,17 +28,20 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
 
     typealias SymbologySettingsDefaults = [String: String]
     typealias SymbologyDescriptionsDefaults = [String]
+    typealias CompositeTypeDescriptionsDefaults = [String]
 
     let BarcodeCapture: BarcodeCaptureDefaultsContainer
     let BarcodeTracking: BarcodeTrackingDefaultsContainer
     let SymbologySettings: SymbologySettingsDefaults
     let SymbologyDescriptions: SymbologyDescriptionsDefaults
+    let CompositeTypeDescriptions: CompositeTypeDescriptionsDefaults
 
     init(barcodeCaptureSettings: BarcodeCaptureSettings, overlay: BarcodeCaptureOverlay, basicTrackingOverlay: BarcodeTrackingBasicOverlay) {
         self.BarcodeCapture = BarcodeCaptureDefaultsContainer.from(barcodeCaptureSettings, overlay)
         self.BarcodeTracking = BarcodeTrackingDefaultsContainer.from(basicTrackingOverlay)
         self.SymbologySettings = SymbologySettingsDefaults.from(barcodeCaptureSettings)
         self.SymbologyDescriptions = SymbologyDescription.all.map { $0.jsonString }
+        self.CompositeTypeDescriptions = CompositeTypeDescription.all.map { $0.jsonString }
     }
 }
 

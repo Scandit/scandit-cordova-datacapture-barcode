@@ -23,51 +23,51 @@ class ActionFinishCallback(
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val data = args.getJSONObject(0)
-            if (!data.has(FIELD_RESULT)) { // We need the "result" field to exist ( null is also allowed )
+            // We need the "result" field to exist ( null is also allowed )
+            if (!data.has(FIELD_RESULT)) {
                 throw JSONException("Missing $FIELD_RESULT field in response json")
             }
             val result: JSONObject? = data.optJSONObject(FIELD_RESULT)
             when {
-                helper.isFinishBarcodeCaptureModeCallback(data) -> {
+                helper.isFinishBarcodeCaptureModeCallback(data) ->
                     finishBarcodeCaptureModeCallback(
                         SerializableFinishModeCallbackData.fromJson(result), callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingModeCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingModeCallback(data) ->
                     finishBarcodeTrackingModeCallback(
                         SerializableFinishModeCallbackData.fromJson(result), callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingBasicOverlayCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingBasicOverlayCallback(data) ->
                     finishBasicOverlayCallback(
                         SerializableFinishBasicOverlayCallbackData.fromJson(result),
                         callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingAdvancedOverlayViewCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingAdvancedOverlayViewCallback(data) ->
                     finishAdvancedOverlayViewCallback(
                         SerializableFinishAdvancedOverlayViewData.fromJson(result),
                         callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingAdvancedOverlayOffsetCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingAdvancedOverlayOffsetCallback(data) ->
                     finishAdvancedOverlayOffsetCallback(
                         SerializableFinishAdvancedOverlayOffsetData.fromJson(result),
                         callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingAdvancedOverlayAnchorCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingAdvancedOverlayAnchorCallback(data) ->
                     finishAdvancedOverlayAnchorCallback(
                         SerializableFinishAdvancedOverlayAnchorData.fromJson(result),
                         callbackContext
                     )
-                }
-                helper.isFinishBarcodeTrackingAdvancedOverlayTapCallback(data) -> {
+
+                helper.isFinishBarcodeTrackingAdvancedOverlayTapCallback(data) ->
                     finishAdvancedOverlayTapCallback(callbackContext)
-                }
-                else -> {
+
+                else ->
                     throw JSONException("Cannot recognise finish callback action with data $data")
-                }
             }
         } catch (e: JSONException) {
             e.printStackTrace()

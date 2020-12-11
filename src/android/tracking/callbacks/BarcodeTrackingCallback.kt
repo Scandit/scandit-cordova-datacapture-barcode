@@ -47,7 +47,8 @@ class BarcodeTrackingCallback(
                                 JSONObject(
                                         mapOf(
                                                 FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to JSONObject() // TODO [SDC-2001] -> add frame data serialization
+                                                // TODO [SDC-2001] -> add frame data serialization
+                                                FIELD_FRAME_DATA to JSONObject()
                                         )
                                 )
                         )

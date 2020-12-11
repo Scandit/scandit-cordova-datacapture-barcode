@@ -16,9 +16,6 @@ class AdvancedOverlayViewPool(
     private val views: MutableMap<Int, ImageView> = mutableMapOf()
 
     @Synchronized
-    fun getOrCreateView(id: Int): ImageView {
-        return views.getOrPut(id, ::createView)
-    }
-
+    fun getOrCreateView(id: Int): ImageView = views.getOrPut(id, ::createView)
     private fun createView() = ImageView(context)
 }

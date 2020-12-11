@@ -39,7 +39,14 @@ var Symbology;
     Symbology["Code32"] = "code32";
     Symbology["Lapa4SC"] = "lapa4sc";
     Symbology["IATATwoOfFive"] = "iata2of5";
+    Symbology["MatrixTwoOfFive"] = "matrix2of5";
 })(Symbology = exports.Symbology || (exports.Symbology = {}));
+var CompositeType;
+(function (CompositeType) {
+    CompositeType["A"] = "A";
+    CompositeType["B"] = "B";
+    CompositeType["C"] = "C";
+})(CompositeType = exports.CompositeType || (exports.CompositeType = {}));
 class SymbologyDescription {
     constructor(symbology) {
         if (!symbology) {
@@ -179,6 +186,8 @@ class Barcode {
     get symbology() { return this._symbology; }
     get data() { return this._data; }
     get rawData() { return this._rawData; }
+    get compositeData() { return this._compositeData; }
+    get compositeRawData() { return this._compositeRawData; }
     get addOnData() { return this._addOnData; }
     get encodingRanges() { return this._encodingRanges; }
     get location() { return this._location; }
@@ -192,6 +201,8 @@ class Barcode {
         barcode._symbology = json.symbology;
         barcode._data = json.data;
         barcode._rawData = json.rawData;
+        barcode._compositeData = json.compositeData;
+        barcode._compositeRawData = json.compositeRawData;
         barcode._addOnData = json.addOnData === undefined ? null : json.addOnData;
         barcode._isGS1DataCarrier = json.isGS1DataCarrier;
         barcode._compositeFlag = json.compositeFlag;

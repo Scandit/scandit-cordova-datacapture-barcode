@@ -63,8 +63,9 @@ data class SerializableAdvancedOverlayViewActionData(
     constructor(json: JSONObject) : this(
             view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW)),
             trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID))
-                json.getLong(FIELD_FRAME_SEQUENCE_ID) else null
+            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+                json.getLong(FIELD_FRAME_SEQUENCE_ID)
+            } else null
     )
 }
 
@@ -137,8 +138,9 @@ data class SerializableAdvancedOverlayOffsetActionData(
     constructor(json: JSONObject) : this(
             offset = PointWithUnitDeserializer.fromJson(json.getString(FIELD_OFFSET)),
             trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID))
-                json.getLong(FIELD_FRAME_SEQUENCE_ID) else null
+            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+                json.getLong(FIELD_FRAME_SEQUENCE_ID)
+            } else null
     )
 }
 
@@ -151,8 +153,9 @@ data class SerializableAdvancedOverlayAnchorActionData(
     constructor(json: JSONObject) : this(
             anchor = AnchorDeserializer.fromJson(json.getString(FIELD_ANCHOR)),
             trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID))
-                json.getLong(FIELD_FRAME_SEQUENCE_ID) else null
+            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+                json.getLong(FIELD_FRAME_SEQUENCE_ID)
+            } else null
     )
 }
 

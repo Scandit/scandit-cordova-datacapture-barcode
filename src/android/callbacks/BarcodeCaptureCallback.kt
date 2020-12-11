@@ -74,9 +74,9 @@ class BarcodeCaptureCallback(
                                 JSONObject(
                                         mapOf(
                                                 FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to serializeFrameData( // TODO [SDC-2001] -> add frame data serialization
-                                                        frameData
-                                                ).toString()
+                                                // TODO [SDC-2001] -> add frame data serialization
+                                                FIELD_FRAME_DATA to
+                                                        serializeFrameData(frameData).toString()
                                         )
                                 )
                         )

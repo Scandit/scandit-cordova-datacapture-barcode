@@ -14,8 +14,15 @@ class BarcodeCaptureSettings extends Serializeable_1.DefaultSerializeable {
         super();
         this.codeDuplicateFilter = Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureSettings.codeDuplicateFilter;
         this.locationSelection = null;
+        this.enabledCompositeTypes = [];
         this.properties = {};
         this.symbologies = {};
+    }
+    get compositeTypeDescriptions() {
+        return Cordova_1.Cordova.defaults.CompositeTypeDescriptions.reduce((descriptions, description) => {
+            descriptions[description.types[0]] = description;
+            return descriptions;
+        }, {});
     }
     get enabledSymbologies() {
         return Object.keys(this.symbologies)
@@ -40,6 +47,11 @@ class BarcodeCaptureSettings extends Serializeable_1.DefaultSerializeable {
     }
     enableSymbology(symbology, enabled) {
         this.settingsForSymbology(symbology).isEnabled = enabled;
+    }
+    enableSymbologiesForCompositeTypes(compositeTypes) {
+        compositeTypes.forEach(compositeType => {
+            this.enableSymbologies(this.compositeTypeDescriptions[compositeType].symbologies);
+        });
     }
 }
 __decorate([

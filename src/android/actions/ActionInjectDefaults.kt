@@ -8,9 +8,9 @@ package com.scandit.datacapture.cordova.barcode.actions
 
 import com.scandit.datacapture.barcode.capture.BarcodeCapture
 import com.scandit.datacapture.barcode.capture.BarcodeCaptureSettings
+import com.scandit.datacapture.barcode.data.CompositeTypeDescription
 import com.scandit.datacapture.barcode.data.SymbologyDescription
 import com.scandit.datacapture.barcode.tracking.capture.BarcodeTracking
-import com.scandit.datacapture.barcode.tracking.capture.BarcodeTrackingSettings
 import com.scandit.datacapture.barcode.tracking.ui.overlay.BarcodeTrackingBasicOverlay
 import com.scandit.datacapture.barcode.ui.overlay.BarcodeCaptureOverlay
 import com.scandit.datacapture.cordova.barcode.data.defaults.SerializableBarcodeCaptureDefaults
@@ -39,41 +39,39 @@ class ActionInjectDefaults(
             val symbologyDescriptions = SymbologyDescription.all()
             val captureCameraSettings = BarcodeCapture.createRecommendedCameraSettings()
 
-            val trackingSettings = BarcodeTrackingSettings()
             val trackingCameraSettings = BarcodeTracking.createRecommendedCameraSettings()
-            val barcodeTracking = BarcodeTracking.forDataCaptureContext(null, trackingSettings)
-            val overlay = BarcodeTrackingBasicOverlay.newInstance(barcodeTracking, null)
 
             val defaults = SerializableBarcodeDefaults(
-                    barcodeCaptureDefaults = SerializableBarcodeCaptureDefaults(
-                            barcodeCaptureOverlayDefaults = SerializableBarcodeCaptureOverlayDefaults(
-                                    brushDefaults = SerializableBrushDefaults(
-                                            brush = brush
-                                    )
-                            ),
-                            barcodeCaptureSettingsDefaults = SerializableBarcodeCaptureSettingsDefaults(
-                                    codeDuplicateFilter = captureSettings.codeDuplicateFilter.asMillis()
-                            ),
-                            recommendedCameraSettings = SerializableCameraSettingsDefault(
-                                    settings = captureCameraSettings
-                            )
+                barcodeCaptureDefaults = SerializableBarcodeCaptureDefaults(
+                    barcodeCaptureOverlayDefaults = SerializableBarcodeCaptureOverlayDefaults(
+                        brushDefaults = SerializableBrushDefaults(brush = brush)
                     ),
-                    symbologySettingsDefaults = SerializableSymbologySettingsDefaults(
-                            barcodeCaptureSettings = captureSettings
+                    barcodeCaptureSettingsDefaults = SerializableBarcodeCaptureSettingsDefaults(
+                        codeDuplicateFilter = captureSettings.codeDuplicateFilter.asMillis()
                     ),
-                    symbologyDescriptionsDefaults = JSONArray(
-                            symbologyDescriptions.map { it.toJson() }
-                    ),
-                    barcodeTrackingDefaults = SerializableBarcodeTrackingDefaults(
-                            recommendedCameraSettings = SerializableCameraSettingsDefault(
-                                    settings = trackingCameraSettings
-                            ),
-                            trackingBasicOverlayDefaults = SerializableTrackingBasicOverlayDefaults(
-                                    defaultBrush = SerializableBrushDefaults(
-                                            brush = BarcodeTrackingBasicOverlay.DEFAULT_BRUSH
-                                    )
-                            )
+                    recommendedCameraSettings = SerializableCameraSettingsDefault(
+                        settings = captureCameraSettings
                     )
+                ),
+                symbologySettingsDefaults = SerializableSymbologySettingsDefaults(
+                    barcodeCaptureSettings = captureSettings
+                ),
+                symbologyDescriptionsDefaults = JSONArray(
+                    symbologyDescriptions.map { it.toJson() }
+                ),
+                barcodeTrackingDefaults = SerializableBarcodeTrackingDefaults(
+                    recommendedCameraSettings = SerializableCameraSettingsDefault(
+                        settings = trackingCameraSettings
+                    ),
+                    trackingBasicOverlayDefaults = SerializableTrackingBasicOverlayDefaults(
+                        defaultBrush = SerializableBrushDefaults(
+                            brush = BarcodeTrackingBasicOverlay.DEFAULT_BRUSH
+                        )
+                    )
+                ),
+                compositeTypeDescriptions = JSONArray(
+                    CompositeTypeDescription.all().map { it.toJson() }
+                )
             )
             listener.onBarcodeDefaults(defaults, callbackContext)
         } catch (e: JSONException) {

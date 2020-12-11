@@ -14,6 +14,7 @@ exports.defaultsFromJSON = (json) => {
             return settings;
         }, {}),
         SymbologyDescriptions: json.SymbologyDescriptions.map(description => Barcode_1.SymbologyDescription.fromJSON(JSON.parse(description))),
+        CompositeTypeDescriptions: json.CompositeTypeDescriptions.map(description => JSON.parse(description)),
         BarcodeCapture: {
             BarcodeCaptureOverlay: {
                 DefaultBrush: {
