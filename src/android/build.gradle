@@ -5,5 +5,4 @@
  */
 
 dependencies {
-    api(name: 'ScanditBarcodeCapture', ext: 'aar')
-}
+   }
