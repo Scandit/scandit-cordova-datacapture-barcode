@@ -133,21 +133,13 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
                                                     return
         }
 
-        guard let overlay = self.barcodeTrackingBasicOverlay else {
-            commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-            return
-        }
-        overlay.setBrush(json.brush, for: trackedBarcode)
+        self.barcodeTrackingBasicOverlay?.setBrush(json.brush, for: trackedBarcode)
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
     @objc(clearTrackedBarcodeBrushes:)
     func clearTrackedBarcodeBrushes(command: CDVInvokedUrlCommand) {
-        guard let overlay = self.barcodeTrackingBasicOverlay else {
-            commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-            return
-        }
-        overlay.clearTrackedBarcodeBrushes()
+        self.barcodeTrackingBasicOverlay?.clearTrackedBarcodeBrushes()
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
@@ -173,11 +165,7 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
                 }
             }
 
-            guard let overlay = self.barcodeTrackingAdvancedOverlay else {
-                self.commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-                return
-            }
-            overlay.setView(trackedBarcodeView, for: trackedBarcode)
+            self.barcodeTrackingAdvancedOverlay?.setView(trackedBarcodeView, for: trackedBarcode)
 
             self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
@@ -201,11 +189,7 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
             return
         }
 
-        guard let overlay = self.barcodeTrackingAdvancedOverlay else {
-            commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-            return
-        }
-        overlay.setAnchor(anchor, for: trackedBarcode)
+        self.barcodeTrackingAdvancedOverlay?.setAnchor(anchor, for: trackedBarcode)
 
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
@@ -228,21 +212,13 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
             return
         }
 
-        guard let overlay = self.barcodeTrackingAdvancedOverlay else {
-            commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-            return
-        }
-        overlay.setOffset(offset, for: trackedBarcode)
+        self.barcodeTrackingAdvancedOverlay?.setOffset(offset, for: trackedBarcode)
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
     @objc(clearTrackedBarcodeViews:)
     func clearTrackedBarcodeViews(command: CDVInvokedUrlCommand) {
-        guard let overlay = self.barcodeTrackingAdvancedOverlay else {
-            commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
-            return
-        }
-        overlay.clearTrackedBarcodeViews()
+        self.barcodeTrackingAdvancedOverlay?.clearTrackedBarcodeViews()
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 

@@ -35,13 +35,9 @@ class BarcodeTrackingSession {
         session._frameSequenceID = json.frameSequenceId;
         session._addedTrackedBarcodes = json.addedTrackedBarcodes
             .map(Barcode_1.TrackedBarcode.fromJSON);
-        session._addedTrackedBarcodes
-            .forEach(a => a.sessionFrameSequenceID = `${json.frameSequenceId}`);
         session._removedTrackedBarcodes = json.removedTrackedBarcodes;
         session._updatedTrackedBarcodes = json.updatedTrackedBarcodes
             .map(Barcode_1.TrackedBarcode.fromJSON);
-        session._updatedTrackedBarcodes
-            .forEach(a => a.sessionFrameSequenceID = `${json.frameSequenceId}`);
         session._trackedBarcodes = Object.keys(json.trackedBarcodes)
             .reduce((trackedBarcodes, identifier) => {
             const trackedBarcode = Barcode_1.TrackedBarcode
@@ -137,15 +133,7 @@ class BarcodeTrackingAdvancedOverlay extends Serializeable_1.DefaultSerializeabl
     constructor() {
         super();
         this.type = 'barcodeTrackingAdvanced';
-        this._shouldShowScanAreaGuides = false;
         this.listener = null;
-    }
-    get shouldShowScanAreaGuides() {
-        return this._shouldShowScanAreaGuides;
-    }
-    set shouldShowScanAreaGuides(shouldShow) {
-        this._shouldShowScanAreaGuides = shouldShow;
-        this.barcodeTracking.didChange();
     }
     get proxy() {
         if (!this._proxy) {
@@ -181,9 +169,6 @@ class BarcodeTrackingAdvancedOverlay extends Serializeable_1.DefaultSerializeabl
         this._proxy = BarcodeTrackingAdvancedOverlayProxy_1.BarcodeTrackingAdvancedOverlayProxy.forOverlay(this);
     }
 }
-__decorate([
-    Serializeable_1.nameForSerialization('shouldShowScanAreaGuides')
-], BarcodeTrackingAdvancedOverlay.prototype, "_shouldShowScanAreaGuides", void 0);
 __decorate([
     Serializeable_1.ignoreFromSerialization
 ], BarcodeTrackingAdvancedOverlay.prototype, "barcodeTracking", void 0);

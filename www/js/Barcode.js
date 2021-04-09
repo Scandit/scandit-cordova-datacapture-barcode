@@ -40,7 +40,6 @@ var Symbology;
     Symbology["Lapa4SC"] = "lapa4sc";
     Symbology["IATATwoOfFive"] = "iata2of5";
     Symbology["MatrixTwoOfFive"] = "matrix2of5";
-    Symbology["USPSIntelligentMail"] = "uspsIntelligentMail";
 })(Symbology = exports.Symbology || (exports.Symbology = {}));
 var CompositeType;
 (function (CompositeType) {
