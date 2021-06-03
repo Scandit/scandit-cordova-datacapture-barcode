@@ -22,6 +22,7 @@ class BarcodeCaptureCallbacks {
 }
 
 @objc(ScanditBarcodeCapture)
+// swiftlint:disable:next type_body_length
 class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
     lazy var modeDeserializers: [DataCaptureModeDeserializer] = {
         let barcodeCaptureDeserializer = BarcodeCaptureDeserializer()
@@ -129,7 +130,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
 
         guard let trackedBarcode = trackedBarcode(withID: json.trackedBarcodeID,
                                                   inSession: json.sessionFrameSequenceID) else {
-                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound), callbackId: command.callbackId)
+                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound),
+                                                                         callbackId: command.callbackId)
                                                     return
         }
 
@@ -160,7 +162,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
 
         guard let trackedBarcode = trackedBarcode(withID: json.trackedBarcodeID,
                                                   inSession: json.sessionFrameSequenceID) else {
-                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound), callbackId: command.callbackId)
+                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound),
+                                                                         callbackId: command.callbackId)
                                                     return
         }
 
@@ -192,7 +195,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
 
         guard let trackedBarcode = trackedBarcode(withID: json.trackedBarcodeID,
                                                   inSession: json.sessionFrameSequenceID) else {
-                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound), callbackId: command.callbackId)
+                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound),
+                                                                         callbackId: command.callbackId)
                                                     return
         }
 
@@ -219,7 +223,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
 
         guard let trackedBarcode = trackedBarcode(withID: json.trackedBarcodeID,
                                                   inSession: json.sessionFrameSequenceID) else {
-                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound), callbackId: command.callbackId)
+                                                    commandDelegate.send(.failure(with: .trackedBarcodeNotFound),
+                                                                         callbackId: command.callbackId)
                                                     return
         }
 
@@ -275,7 +280,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         }
 
         /// No listener set.
-        guard let callbackResult = callbackLocks.getResult(for: listenerEvent.name) as? BarcodeCaptureCallbackResult else {
+        let callbackLockResult = callbackLocks.getResult(for: listenerEvent.name)
+        guard let callbackResult = callbackLockResult as? BarcodeCaptureCallbackResult else {
             return
         }
 
@@ -306,7 +312,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         }
 
         /// No listener set.
-        guard let callbackResult = callbackLocks.getResult(for: listenerEvent.name) as? BarcodeCaptureCallbackResult else {
+        let callbackLockResult = callbackLocks.getResult(for: listenerEvent.name)
+        guard let callbackResult = callbackLockResult as? BarcodeCaptureCallbackResult else {
             return
         }
 
@@ -315,7 +322,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
             guard callbackResult.result != nil else {
                 /// The JS listener didn't return a result, e.g. it didn't implement the relevant listener function
                 /// **Note**: a `nil` view is different than no result:
-                /// `nil` means the intention of setting no view, while the absense of a result means that there's no intention to set anything, e.g. views
+                /// `nil` means the intention of setting no view, while the absense of a result means
+                /// that there's no intention to set anything, e.g. views
                 /// are set through `setView` instead of through the listener.
                 return
             }
@@ -327,13 +335,15 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
             }
         case .anchorForTrackedBarcode:
             guard let anchor = callbackResult.anchor else {
-                /// The JS listener didn't return a valid anchor, e.g. it didn't implement the relevant listener function.
+                /// The JS listener didn't return a valid anchor,
+                /// e.g. it didn't implement the relevant listener function.
                 return
             }
             overlay.setAnchor(anchor, for: trackedBarcode)
         case .offsetForTrackedBarcode:
             guard let offset = callbackResult.offset else {
-                /// The JS listener didn't return a valid offset, e.g. it didn't implement the relevant listener function.
+                /// The JS listener didn't return a valid offset,
+                /// e.g. it didn't implement the relevant listener function.
                 return
             }
             overlay.setOffset(offset, for: trackedBarcode)
@@ -342,7 +352,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         }
     }
 
-    private func trackedBarcode(withID trackedBarcodeId: String, inSession sessionFrameSequenceId: String?) -> TrackedBarcode? {
+    private func trackedBarcode(withID trackedBarcodeId: String,
+                                inSession sessionFrameSequenceId: String?) -> TrackedBarcode? {
         guard let lastTrackedBarcodes = lastTrackedBarcodes, !lastTrackedBarcodes.isEmpty else {
             return nil
         }

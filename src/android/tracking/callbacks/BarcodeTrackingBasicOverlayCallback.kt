@@ -76,7 +76,6 @@ class BarcodeTrackingBasicOverlayCallback(
     }
 
     fun onTrackedBarcodeTapped(
-        overlay: BarcodeTrackingBasicOverlay,
         trackedBarcode: TrackedBarcode,
         switchToOverlayWorker: Boolean
     ) {
@@ -84,15 +83,14 @@ class BarcodeTrackingBasicOverlayCallback(
 
         if (switchToOverlayWorker) {
             overlayListenerWorker.post {
-                onTrackedBarcodeTapped(overlay, trackedBarcode)
+                onTrackedBarcodeTapped(trackedBarcode)
             }
         } else {
-            onTrackedBarcodeTapped(overlay, trackedBarcode)
+            onTrackedBarcodeTapped(trackedBarcode)
         }
     }
 
     private fun onTrackedBarcodeTapped(
-        overlay: BarcodeTrackingBasicOverlay,
         trackedBarcode: TrackedBarcode
     ) {
         actionsHandler.addAction(

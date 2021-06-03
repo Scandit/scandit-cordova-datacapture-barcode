@@ -18,8 +18,12 @@ class SerializableFinishBasicOverlayCallbackData(val brush: Brush?) {
         fun fromJson(json: JSONObject?): SerializableFinishBasicOverlayCallbackData? {
             if (json == null) return null
 
-            val brush: Brush? = json.optString(FIELD_BRUSH, null)?.let { brushString ->
-                BrushDeserializer.fromJson(brushString)
+            val brush: Brush? = json.optString(FIELD_BRUSH).let { brushString ->
+                if (brushString.isEmpty()) {
+                    null
+                } else {
+                    BrushDeserializer.fromJson(brushString)
+                }
             }
             return SerializableFinishBasicOverlayCallbackData(brush)
         }

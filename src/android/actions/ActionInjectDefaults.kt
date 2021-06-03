@@ -35,7 +35,7 @@ class ActionInjectDefaults(
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val captureSettings = BarcodeCaptureSettings()
-            val brush = BarcodeCaptureOverlay.defaultBrush()
+            val brush = BarcodeCaptureOverlay.DEFAULT_BRUSH
             val symbologyDescriptions = SymbologyDescription.all()
             val captureCameraSettings = BarcodeCapture.createRecommendedCameraSettings()
 

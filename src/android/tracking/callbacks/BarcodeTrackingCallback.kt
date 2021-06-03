@@ -13,7 +13,6 @@ import com.scandit.datacapture.cordova.barcode.factories.BarcodeCaptureActionFac
 import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
-import com.scandit.datacapture.core.data.FrameData
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -34,8 +33,7 @@ class BarcodeTrackingCallback(
 
     fun onSessionUpdated(
         barcodeTracking: BarcodeTracking,
-        session: BarcodeTrackingSession,
-        frameData: FrameData
+        session: BarcodeTrackingSession
     ) {
         if (disposed.get()) return
 

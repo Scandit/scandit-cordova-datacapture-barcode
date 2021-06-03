@@ -1,7 +1,8 @@
 import ScanditBarcodeCapture
 
 extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
-    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay, viewFor trackedBarcode: TrackedBarcode) -> UIView? {
+    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay,
+                                        viewFor trackedBarcode: TrackedBarcode) -> UIView? {
         guard let callback = callbacks.barcodeTrackingAdvancedOverlayListener else {
             return nil
         }
@@ -10,9 +11,9 @@ extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
                                   argument: ["trackedBarcode": trackedBarcode.jsonString],
                                   shouldNotifyWhenFinished: true)
 
-        /// We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
-        /// we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
-        /// To solve this, we're going to wait for the result to come back on a separate queue.
+        // We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
+        // we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
+        // To solve this, we're going to wait for the result to come back on a separate queue.
         advancedOverlayListenerQueue.async { [weak self] in
             guard let self = self else {
                 return
@@ -25,7 +26,8 @@ extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
         return nil
     }
 
-    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay, anchorFor trackedBarcode: TrackedBarcode) -> Anchor {
+    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay,
+                                        anchorFor trackedBarcode: TrackedBarcode) -> Anchor {
         guard let callback = callbacks.barcodeTrackingAdvancedOverlayListener else {
             return .center
         }
@@ -34,9 +36,9 @@ extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
                                   argument: ["trackedBarcode": trackedBarcode.jsonString],
                                   shouldNotifyWhenFinished: true)
 
-        /// We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
-        /// we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
-        /// To solve this, we're going to wait for the result to come back on a separate queue.
+        // We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
+        // we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
+        // To solve this, we're going to wait for the result to come back on a separate queue.
         advancedOverlayListenerQueue.async { [weak self] in
             guard let self = self else {
                 return
@@ -49,7 +51,8 @@ extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
         return .center
     }
 
-    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay, offsetFor trackedBarcode: TrackedBarcode) -> PointWithUnit {
+    func barcodeTrackingAdvancedOverlay(_ overlay: BarcodeTrackingAdvancedOverlay,
+                                        offsetFor trackedBarcode: TrackedBarcode) -> PointWithUnit {
         guard let callback = callbacks.barcodeTrackingAdvancedOverlayListener else {
             return .zero
         }
@@ -58,9 +61,9 @@ extension ScanditBarcodeCapture: BarcodeTrackingAdvancedOverlayDelegate {
                                   argument: ["trackedBarcode": trackedBarcode.jsonString],
                                   shouldNotifyWhenFinished: true)
 
-        /// We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
-        /// we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
-        /// To solve this, we're going to wait for the result to come back on a separate queue.
+        // We're currently on the main thread, if we'd wait for the JS layer to come back with a result,
+        // we'd block the main thread, so the 'finishCallback' couldn't get through to resolve the block.
+        // To solve this, we're going to wait for the result to come back on a separate queue.
         advancedOverlayListenerQueue.async { [weak self] in
             guard let self = self else {
                 return

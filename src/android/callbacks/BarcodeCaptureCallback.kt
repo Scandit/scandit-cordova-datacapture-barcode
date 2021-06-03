@@ -39,20 +39,20 @@ class BarcodeCaptureCallback(
 
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_SESSION_UPDATED_EVENT,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to serializeFrameData(
-                                                        frameData
-                                                ).toString()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_SESSION_UPDATED_EVENT,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_SESSION to session.toJson(),
+                                FIELD_FRAME_DATA to serializeFrameData(
+                                    frameData
+                                ).toString()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWait()
             onUnlock(barcodeCapture)
@@ -68,20 +68,20 @@ class BarcodeCaptureCallback(
 
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_BARCODE_SCANNED_EVENT,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_SESSION to session.toJson(),
-                                                // TODO [SDC-2001] -> add frame data serialization
-                                                FIELD_FRAME_DATA to
-                                                        serializeFrameData(frameData).toString()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_BARCODE_SCANNED_EVENT,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_SESSION to session.toJson(),
+                                // TODO [SDC-2001] -> add frame data serialization
+                                FIELD_FRAME_DATA to
+                                    serializeFrameData(frameData).toString()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWait()
             onUnlock(barcodeCapture)
@@ -117,10 +117,12 @@ class BarcodeCaptureCallback(
         }
     }
 
-    private fun serializeFrameData(frameData: FrameData): JSONObject = JSONObject(
-            mapOf(
-                    FIELD_FRAME_DATA to JSONObject()
-            )
+    private fun serializeFrameData(
+        @Suppress("UNUSED_PARAMETER") frameData: FrameData
+    ): JSONObject = JSONObject(
+        mapOf(
+            FIELD_FRAME_DATA to JSONObject()
+        )
     )
 
     override fun dispose() {

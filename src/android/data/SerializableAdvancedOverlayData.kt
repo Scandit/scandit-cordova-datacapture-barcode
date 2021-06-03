@@ -20,7 +20,7 @@ class SerializableFinishAdvancedOverlayViewData(val view: SerializableAdvancedOv
             if (json == null) return null
 
             return SerializableFinishAdvancedOverlayViewData(
-                    view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW))
+                view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW))
             )
         }
     }
@@ -32,8 +32,12 @@ class SerializableFinishAdvancedOverlayOffsetData(val offset: PointWithUnit?) {
         fun fromJson(json: JSONObject?): SerializableFinishAdvancedOverlayOffsetData? {
             if (json == null) return null
 
-            val offset: PointWithUnit? = json.optString(FIELD_OFFSET, null)?.let { offsetString ->
-                PointWithUnitDeserializer.fromJson(offsetString)
+            val offset: PointWithUnit? = json.optString(FIELD_OFFSET).let { offsetString ->
+                if (offsetString.isEmpty()) {
+                    null
+                } else {
+                    PointWithUnitDeserializer.fromJson(offsetString)
+                }
             }
             return SerializableFinishAdvancedOverlayOffsetData(offset)
         }
@@ -46,8 +50,12 @@ class SerializableFinishAdvancedOverlayAnchorData(val anchor: Anchor?) {
         fun fromJson(json: JSONObject?): SerializableFinishAdvancedOverlayAnchorData? {
             if (json == null) return null
 
-            val anchor: Anchor? = json.optString(FIELD_ANCHOR, null)?.let { anchorString ->
-                AnchorDeserializer.fromJson(anchorString)
+            val anchor: Anchor? = json.optString(FIELD_ANCHOR).let { anchorString ->
+                if (anchorString.isEmpty()) {
+                    null
+                } else {
+                    AnchorDeserializer.fromJson(anchorString)
+                }
             }
             return SerializableFinishAdvancedOverlayAnchorData(anchor)
         }
@@ -61,11 +69,11 @@ data class SerializableAdvancedOverlayViewActionData(
 ) {
 
     constructor(json: JSONObject) : this(
-            view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW)),
-            trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
-                json.getLong(FIELD_FRAME_SEQUENCE_ID)
-            } else null
+        view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW)),
+        trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
+        sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+            json.getLong(FIELD_FRAME_SEQUENCE_ID)
+        } else null
     )
 }
 
@@ -75,10 +83,10 @@ data class SerializableAdvancedOverlayView(
 ) {
 
     constructor(jsonObject: JSONObject) : this(
-            data = jsonObject.getString(FIELD_DATA),
-            options = SerializableAdvancedOverlayViewOptions.fromJson(
-                    jsonObject.getJSONObject(FIELD_OPTIONS)
-            )
+        data = jsonObject.getString(FIELD_DATA),
+        options = SerializableAdvancedOverlayViewOptions.fromJson(
+            jsonObject.getJSONObject(FIELD_OPTIONS)
+        )
     )
 
     companion object {
@@ -136,11 +144,11 @@ data class SerializableAdvancedOverlayOffsetActionData(
 ) {
 
     constructor(json: JSONObject) : this(
-            offset = PointWithUnitDeserializer.fromJson(json.getString(FIELD_OFFSET)),
-            trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
-                json.getLong(FIELD_FRAME_SEQUENCE_ID)
-            } else null
+        offset = PointWithUnitDeserializer.fromJson(json.getString(FIELD_OFFSET)),
+        trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
+        sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+            json.getLong(FIELD_FRAME_SEQUENCE_ID)
+        } else null
     )
 }
 
@@ -151,11 +159,11 @@ data class SerializableAdvancedOverlayAnchorActionData(
 ) {
 
     constructor(json: JSONObject) : this(
-            anchor = AnchorDeserializer.fromJson(json.getString(FIELD_ANCHOR)),
-            trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
-            sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
-                json.getLong(FIELD_FRAME_SEQUENCE_ID)
-            } else null
+        anchor = AnchorDeserializer.fromJson(json.getString(FIELD_ANCHOR)),
+        trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
+        sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+            json.getLong(FIELD_FRAME_SEQUENCE_ID)
+        } else null
     )
 }
 

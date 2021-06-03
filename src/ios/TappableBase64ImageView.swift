@@ -1,6 +1,7 @@
 class TappableBase64ImageView: UIImageView {
     struct JSON: Decodable {
         struct OptionsJSON: Decodable {
+            // swiftlint:disable:next nesting
             struct SizeJSON: Decodable {
                 let width: CGFloat
                 let height: CGFloat

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="scandit-cordova-datacapture-barcode"
-    version="6.7.3"
+    version="6.8.0"
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -43,7 +43,7 @@
     </js-module>
 
     <engines>
-        <engine name="cordova-ios" version=">=4.5.5" />
+        <engine name="cordova-ios" version=">=5.0.0" />
         <engine name="cordova-android" version=">=7.0.0" />
     </engines>
 
@@ -56,7 +56,7 @@
             </feature>
         </config-file>
 
-        <source-file src="src/ios/ScanditBarcodeCapture-Bridging-Header.h" />
+        <header-file src="src/ios/ScanditBarcodeCapture-Bridging-Header.h" type="BridgingHeader" />
 
         <source-file src="src/ios/ScanditBarcodeCapture.swift" />
         <source-file src="src/ios/ScanditBarcodeCaptureDefaults.swift" />
@@ -74,9 +74,9 @@
         <source-file src="src/ios/TappableBase64ImageView.swift" />
         <source-file src="src/ios/CommandJSONArgument+ScanditBarcodeCapture.swift" />
 
-        <dependency id="scandit-cordova-datacapture-core" version="6.7.3" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.8.0" />
 
-        <framework src="ScanditBarcodeCapture" spec="= 6.7.3" type="podspec" />
+        <framework src="ScanditBarcodeCapture" spec="= 6.8.0" type="podspec" />
     </platform>
 
     <!-- Android -->
@@ -169,11 +169,11 @@
         <source-file src="src/android/errors/ErrorTrackedBarcodeNotFound.kt"
             target-dir="kotlin/com/scandit/datacapture/cordova/barcode/errors" />
 
-        <dependency id="scandit-cordova-datacapture-core" version="6.7.3" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.8.0" />
 
         <framework custom="true" src="src/android/build.gradle" type="gradleReference" />
 
-        <framework src="com.scandit.datacapture:barcode:6.7.3" />
+        <framework src="com.scandit.datacapture:barcode:6.8.0" />
 
         <hook src="src/hooks/support-kotlin.js" type="after_plugin_install" />
     </platform>

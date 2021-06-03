@@ -152,7 +152,7 @@ class ScanditBarcodeCapture : CordovaPlugin(),
         session: BarcodeTrackingSession,
         data: FrameData
     ) {
-        barcodeCallbacks.barcodeTrackingCallback?.onSessionUpdated(mode, session, data)
+        barcodeCallbacks.barcodeTrackingCallback?.onSessionUpdated(mode, session)
     }
     //endregion
 
@@ -171,7 +171,7 @@ class ScanditBarcodeCapture : CordovaPlugin(),
         trackedBarcode: TrackedBarcode
     ) {
         barcodeCallbacks.barcodeTrackingBasicOverlayCallback?.onTrackedBarcodeTapped(
-            overlay, trackedBarcode, switchToOverlayWorker = true
+            trackedBarcode, switchToOverlayWorker = true
         )
     }
     //endregion

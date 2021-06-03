@@ -79,6 +79,11 @@ class SymbologyDescription {
         return symbologyDescription;
     }
     static forIdentifier(identifier) {
+        const identifierIndex = SymbologyDescription.all
+            .findIndex(description => description.identifier === identifier);
+        if (identifierIndex === -1) {
+            return null;
+        }
         return new SymbologyDescription(identifier);
     }
 }

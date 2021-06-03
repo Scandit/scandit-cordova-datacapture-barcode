@@ -131,7 +131,7 @@ export class SymbologyDescription {
     private _supportedExtensions;
     readonly supportedExtensions: string[];
     private static fromJSON;
-    static forIdentifier(identifier: string): SymbologyDescription;
+    static forIdentifier(identifier: string): SymbologyDescription | null;
     constructor(symbology: Symbology);
     constructor();
 }
