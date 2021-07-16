@@ -3,6 +3,8 @@ import { PrivateCompositeTypeDescription, SymbologyDescription, SymbologySetting
 import { CameraSettings } from 'Camera+Related';
 import { Color } from 'Common';
 import { CameraSettingsDefaultsJSON } from 'CoreDefaults';
+import { LocationSelection } from 'LocationSelection';
+declare type SparkCaptureFeedback = any;
 export interface Defaults {
     SymbologySettings: {
         [key: string]: SymbologySettings;
@@ -30,6 +32,13 @@ export interface Defaults {
                 strokeColor: Color;
                 strokeWidth: number;
             };
+        };
+    };
+    SparkCapture: {
+        feedback: SparkCaptureFeedback;
+        SparkCaptureSettings: {
+            codeDuplicateFilter: number;
+            locationSelection: LocationSelection;
         };
     };
 }
@@ -62,5 +71,13 @@ export interface DefaultsJSON {
             };
         };
     };
+    SparkCapture: {
+        feedback: string;
+        SparkCaptureSettings: {
+            codeDuplicateFilter: number;
+            locationSelection: string;
+        };
+    };
 }
 export declare const defaultsFromJSON: (json: DefaultsJSON) => Defaults;
+export {};

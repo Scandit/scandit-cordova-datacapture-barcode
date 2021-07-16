@@ -15,6 +15,11 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
         let codeDuplicateFilter: Int
     }
 
+    struct SparkCaptureSettingsDefaults: Encodable {
+        let codeDuplicateFilter: Int
+        let locationSelection: String?
+    }
+
     struct BarcodeCaptureDefaultsContainer: Encodable {
         let BarcodeCaptureOverlay: BarcodeCaptureOverlayDefaults
         let BarcodeCaptureSettings: BarcodeCaptureSettingsDefaults
@@ -26,20 +31,29 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
         let RecommendedCameraSettings: CameraSettingsDefaults
     }
 
+    struct SparkCaptureDefaultsContainer: Encodable {
+        let feedback: String
+        let SparkCaptureSettings: SparkCaptureSettingsDefaults
+    }
+
     typealias SymbologySettingsDefaults = [String: String]
     typealias SymbologyDescriptionsDefaults = [String]
     typealias CompositeTypeDescriptionsDefaults = [String]
 
     let BarcodeCapture: BarcodeCaptureDefaultsContainer
     let BarcodeTracking: BarcodeTrackingDefaultsContainer
+    let SparkCapture: SparkCaptureDefaultsContainer
     let SymbologySettings: SymbologySettingsDefaults
     let SymbologyDescriptions: SymbologyDescriptionsDefaults
     let CompositeTypeDescriptions: CompositeTypeDescriptionsDefaults
 
-    init(barcodeCaptureSettings: BarcodeCaptureSettings, overlay: BarcodeCaptureOverlay,
+    init(barcodeCaptureSettings: BarcodeCaptureSettings,
+         sparkCaptureSettings: SparkCaptureSettings,
+         overlay: BarcodeCaptureOverlay,
          basicTrackingOverlay: BarcodeTrackingBasicOverlay) {
         self.BarcodeCapture = BarcodeCaptureDefaultsContainer.from(barcodeCaptureSettings, overlay)
         self.BarcodeTracking = BarcodeTrackingDefaultsContainer.from(basicTrackingOverlay)
+        self.SparkCapture = SparkCaptureDefaultsContainer.from(sparkCaptureSettings)
         self.SymbologySettings = SymbologySettingsDefaults.from(barcodeCaptureSettings)
         self.SymbologyDescriptions = SymbologyDescription.all.map { $0.jsonString }
         self.CompositeTypeDescriptions = CompositeTypeDescription.all.map { $0.jsonString }
@@ -72,6 +86,16 @@ extension ScanditBarcodeCaptureDefaults.BarcodeTrackingDefaultsContainer {
     }
 }
 
+extension ScanditBarcodeCaptureDefaults.SparkCaptureDefaultsContainer {
+    static func from(_ settings: SparkCaptureSettings)
+    -> ScanditBarcodeCaptureDefaults.SparkCaptureDefaultsContainer {
+        let sparkCaptureSettings = ScanditBarcodeCaptureDefaults.SparkCaptureSettingsDefaults.from(settings)
+        return ScanditBarcodeCaptureDefaults
+            .SparkCaptureDefaultsContainer(feedback: SparkCaptureFeedback.default.jsonString,
+                                           SparkCaptureSettings: sparkCaptureSettings)
+    }
+}
+
 extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
     static func from(_ overlay: BarcodeCaptureOverlay)
     -> ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
@@ -93,6 +117,15 @@ extension ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults {
     ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults {
         return ScanditBarcodeCaptureDefaults
             .BarcodeCaptureSettingsDefaults(codeDuplicateFilter: Int(settings.codeDuplicateFilter * 1000))
+    }
+}
+
+extension ScanditBarcodeCaptureDefaults.SparkCaptureSettingsDefaults {
+    static func from(_ settings: SparkCaptureSettings) ->
+    ScanditBarcodeCaptureDefaults.SparkCaptureSettingsDefaults {
+        return ScanditBarcodeCaptureDefaults
+            .SparkCaptureSettingsDefaults(codeDuplicateFilter: Int(settings.codeDuplicateFilter * 1000),
+                                          locationSelection: settings.locationSelection?.jsonString)
     }
 }
 

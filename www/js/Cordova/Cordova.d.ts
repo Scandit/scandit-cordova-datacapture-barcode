@@ -15,5 +15,6 @@ export declare enum CordovaFunction {
     SetViewForTrackedBarcode = "setViewForTrackedBarcode",
     SetAnchorForTrackedBarcode = "setAnchorForTrackedBarcode",
     SetOffsetForTrackedBarcode = "setOffsetForTrackedBarcode",
-    ClearTrackedBarcodeViews = "clearTrackedBarcodeViews"
+    ClearTrackedBarcodeViews = "clearTrackedBarcodeViews",
+    SubscribeSparkCaptureListener = "subscribeSparkCaptureListener"
 }

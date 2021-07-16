@@ -454,4 +454,67 @@ export class TrackedBarcodeView {
     private constructor();
 }
 
+
+export class SparkCaptureSettings {
+    codeDuplicateFilter: number;
+    locationSelection: LocationSelection | null;
+    private properties;
+    private symbologies;
+    readonly enabledSymbologies: Symbology[];
+    constructor();
+    settingsForSymbology(symbology: Symbology): SymbologySettings;
+    setProperty(name: string, value: any): void;
+    getProperty(name: string): any;
+    enableSymbologies(symbologies: Symbology[]): void;
+    enableSymbology(symbology: Symbology, enabled: boolean): void;
+}
+
+
+export class SparkCaptureSession {
+    private _newlyRecognizedBarcodes;
+    private _frameSequenceID;
+    readonly newlyRecognizedBarcodes: Barcode[];
+    readonly frameSequenceID: number;
+    private static fromJSON;
+}
+export interface SparkCaptureSessionJSON {
+    newlyRecognizedBarcodes: BarcodeJSON[];
+    frameSequenceId: number;
+}
+interface PrivateSparkCaptureSession {
+    fromJSON(json: SparkCaptureSessionJSON): SparkCaptureSession;
+}
+export interface SparkCaptureListener {
+    didScan?(sparkCapture: SparkCapture, session: SparkCaptureSession): void;
+    didUpdateSession?(sparkCapture: SparkCapture, session: SparkCaptureSession): void;
+}
+export class SparkCaptureFeedback {
+    success: Feedback;
+    static readonly default: SparkCaptureFeedback;
+}
+
+
+interface PrivateSparkCapture extends PrivateDataCaptureMode {
+    _context: DataCaptureContext | null;
+    didChange: () => Promise<void>;
+}
+export class SparkCapture implements DataCaptureMode {
+    isEnabled: boolean;
+    readonly context: DataCaptureContext | null;
+    feedback: SparkCaptureFeedback;
+    private type;
+    private _isEnabled;
+    private _feedback;
+    private settings;
+    private _context;
+    private listeners;
+    private listenerProxy;
+    private isInListenerCallback;
+    static forContext(context: DataCaptureContext | null, settings: SparkCaptureSettings): SparkCapture;
+    applySettings(settings: SparkCaptureSettings): Promise<void>;
+    addListener(listener: SparkCaptureListener): void;
+    removeListener(listener: SparkCaptureListener): void;
+    private didChange;
+}
+
 }

@@ -10,12 +10,14 @@ extension FrameData {
 class BarcodeCaptureCallbacks {
     var barcodeCaptureListener: Callback?
     var barcodeTrackingListener: Callback?
+    var sparkCaptureListener: Callback?
     var barcodeTrackingBasicOverlayListener: Callback?
     var barcodeTrackingAdvancedOverlayListener: Callback?
 
     func reset() {
         barcodeCaptureListener = nil
         barcodeTrackingListener = nil
+        sparkCaptureListener = nil
         barcodeTrackingBasicOverlayListener = nil
         barcodeTrackingAdvancedOverlayListener = nil
     }
@@ -29,7 +31,9 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         barcodeCaptureDeserializer.delegate = self
         let barcodeTrackingDeserializer = BarcodeTrackingDeserializer()
         barcodeTrackingDeserializer.delegate = self
-        return [barcodeCaptureDeserializer, barcodeTrackingDeserializer]
+        let sparkCaptureDeserializer = SparkCaptureDeserializer()
+        sparkCaptureDeserializer.delegate = self
+        return [barcodeCaptureDeserializer, barcodeTrackingDeserializer, sparkCaptureDeserializer]
     }()
 
     lazy var componentDeserializers: [DataCaptureComponentDeserializer] = []
@@ -70,6 +74,7 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         let basicTrackingOverlay = BarcodeTrackingBasicOverlay(barcodeTracking: barcodeTracking)
 
         let defaults = ScanditBarcodeCaptureDefaults(barcodeCaptureSettings: settings,
+                                                     sparkCaptureSettings: SparkCaptureSettings(),
                                                      overlay: overlay,
                                                      basicTrackingOverlay: basicTrackingOverlay)
 
@@ -107,6 +112,13 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
     func subscribeBarcodeTrackingAdvancedOverlayListener(command: CDVInvokedUrlCommand) {
         callbacks.barcodeTrackingAdvancedOverlayListener?.dispose(by: commandDelegate)
         callbacks.barcodeTrackingAdvancedOverlayListener = Callback(id: command.callbackId)
+        commandDelegate.send(.keepCallback, callbackId: command.callbackId)
+    }
+
+    @objc(subscribeSparkCaptureListener:)
+    func subscribeSparkCaptureListener(command: CDVInvokedUrlCommand) {
+        callbacks.sparkCaptureListener?.dispose(by: commandDelegate)
+        callbacks.sparkCaptureListener = Callback(id: command.callbackId)
         commandDelegate.send(.keepCallback, callbackId: command.callbackId)
     }
 

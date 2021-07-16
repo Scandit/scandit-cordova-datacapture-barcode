@@ -32,4 +32,5 @@ var CordovaFunction;
     CordovaFunction["SetAnchorForTrackedBarcode"] = "setAnchorForTrackedBarcode";
     CordovaFunction["SetOffsetForTrackedBarcode"] = "setOffsetForTrackedBarcode";
     CordovaFunction["ClearTrackedBarcodeViews"] = "clearTrackedBarcodeViews";
+    CordovaFunction["SubscribeSparkCaptureListener"] = "subscribeSparkCaptureListener";
 })(CordovaFunction = exports.CordovaFunction || (exports.CordovaFunction = {}));
