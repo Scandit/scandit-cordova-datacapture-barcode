@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SparkCapture = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.SparkCapture"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const SparkCaptureListenerProxy_1 = require("scandit-cordova-datacapture-barcode.SparkCaptureListenerProxy");

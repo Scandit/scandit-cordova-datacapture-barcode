@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SparkCaptureFeedback = exports.SparkCaptureSession = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.SparkCapture+Related"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SparkCaptureListenerProxy = void 0;
 const SparkCapture_Related_1 = require("scandit-cordova-datacapture-barcode.SparkCapture+Related");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var SparkCaptureListenerEvent;

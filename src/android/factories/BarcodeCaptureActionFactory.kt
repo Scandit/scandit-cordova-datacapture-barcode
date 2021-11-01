@@ -7,18 +7,7 @@
 package com.scandit.datacapture.cordova.barcode.factories
 
 import com.scandit.datacapture.cordova.barcode.BarcodeActionsListeners
-import com.scandit.datacapture.cordova.barcode.actions.ActionClearTrackedBarcodeBrushes
-import com.scandit.datacapture.cordova.barcode.actions.ActionClearTrackedBarcodeViews
-import com.scandit.datacapture.cordova.barcode.actions.ActionFinishCallback
-import com.scandit.datacapture.cordova.barcode.actions.ActionInjectDefaults
-import com.scandit.datacapture.cordova.barcode.actions.ActionSetAnchorForTrackedBarcode
-import com.scandit.datacapture.cordova.barcode.actions.ActionSetBrushForTrackedBarcode
-import com.scandit.datacapture.cordova.barcode.actions.ActionSetOffsetForTrackedBarcode
-import com.scandit.datacapture.cordova.barcode.actions.ActionSetViewForTrackedBarcode
-import com.scandit.datacapture.cordova.barcode.actions.ActionSubscribeAdvancedOverlay
-import com.scandit.datacapture.cordova.barcode.actions.ActionSubscribeBarcodeCapture
-import com.scandit.datacapture.cordova.barcode.actions.ActionSubscribeBarcodeTracking
-import com.scandit.datacapture.cordova.barcode.actions.ActionSubscribeBasicOverlay
+import com.scandit.datacapture.cordova.barcode.actions.*
 import com.scandit.datacapture.cordova.barcode.utils.FinishCallbackHelper
 import com.scandit.datacapture.cordova.core.actions.Action
 import com.scandit.datacapture.cordova.core.actions.ActionSend
@@ -35,6 +24,15 @@ class BarcodeCaptureActionFactory(
             INJECT_DEFAULTS -> createActionInjectDefaults()
             SUBSCRIBE_BARCODE_CAPTURE -> createActionSubscribeBarcodeCapture()
             SUBSCRIBE_BARCODE_TRACKING -> createActionSubscribeBarcodeTracking()
+            SUBSCRIBE_BARCODE_SELECTION -> createActionSubscribeBarcodeSelection()
+            ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION ->
+                createActionGetCountForBarcodeInBarcodeSelectionSession()
+            ACTION_RESET_BARCODE_SELECTION_SESSION -> createActionResetBarcodeSelectionSession()
+            ACTION_RESET_BARCODE_SELECTION -> createActionResetBarcodeSelection()
+            ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION ->
+                createActionUnfreezeCameraInBarcodeSelection()
+            ACTION_SELECTION_UPDATED -> createActionSelectionUpdated()
+            ACTION_SELECTION_SESSION_UPDATED -> createActionSelectionSessionUpdated()
             SEND_SESSION_UPDATED_EVENT -> createActionSessionUpdated()
             SEND_BARCODE_SCANNED_EVENT -> createActionBarcodeScanned()
             SEND_BRUSH_FOR_TRACKED_BARCODE -> createActionSendBrushForTrackedBarcode()
@@ -69,10 +67,28 @@ class BarcodeCaptureActionFactory(
         listener
     )
 
+    private fun createActionSubscribeBarcodeSelection(): Action = ActionSubscribeBarcodeSelection(
+        listener
+    )
+
     private fun createActionSessionUpdated(): Action = ActionSend(
         ACTION_CAPTURE_SESSION_UPDATED,
         listener,
         finishCallbackId = ACTION_CAPTURE_SESSION_UPDATED,
+        shouldNotifyWhenFinished = true
+    )
+
+    private fun createActionSelectionSessionUpdated(): Action = ActionSend(
+        ACTION_SELECTION_SESSION_UPDATED,
+        listener,
+        finishCallbackId = ACTION_SELECTION_SESSION_UPDATED,
+        shouldNotifyWhenFinished = true
+    )
+
+    private fun createActionSelectionUpdated(): Action = ActionSend(
+        ACTION_SELECTION_UPDATED,
+        listener,
+        finishCallbackId = ACTION_SELECTION_UPDATED,
         shouldNotifyWhenFinished = true
     )
 
@@ -165,10 +181,30 @@ class BarcodeCaptureActionFactory(
         listener
     )
 
+    private fun createActionResetBarcodeSelection(): Action = ActionResetBarcodeSelection(
+        listener
+    )
+
+    private fun createActionGetCountForBarcodeInBarcodeSelectionSession(): Action =
+        ActionGetCountForBarcodeInBarcodeSelectionSession(
+            listener
+        )
+
+    private fun createActionResetBarcodeSelectionSession(): Action =
+        ActionResetBarcodeSelectionSession(
+            listener
+        )
+
+    private fun createActionUnfreezeCameraInBarcodeSelection(): Action =
+        ActionUnfreezeCameraInBarcodeSelection(
+            listener
+        )
+
     companion object {
         private const val INJECT_DEFAULTS = "getDefaults"
         private const val SUBSCRIBE_BARCODE_CAPTURE = "subscribeBarcodeCaptureListener"
         private const val SUBSCRIBE_BARCODE_TRACKING = "subscribeBarcodeTrackingListener"
+        private const val SUBSCRIBE_BARCODE_SELECTION = "subscribeBarcodeSelectionListener"
         private const val FINISH_BLOCKING_ACTION = "finishCallback"
         private const val SUBSCRIBE_BASIC_OVERLAY_LISTENER =
             "subscribeBarcodeTrackingBasicOverlayListener"
@@ -201,6 +237,14 @@ class BarcodeCaptureActionFactory(
         const val ACTION_OFFSET_FOR_TRACKED_BARCODE = "offsetForTrackedBarcode"
         const val ACTION_ANCHOR_FOR_TRACKED_BARCODE = "anchorForTrackedBarcode"
         const val ACTION_TAP_VIEW_FOR_TRACKED_BARCODE = "didTapViewForTrackedBarcode"
+
+        const val ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION =
+            "getCountForBarcodeInBarcodeSelectionSession"
+        const val ACTION_RESET_BARCODE_SELECTION_SESSION = "resetBarcodeSelectionSession"
+        const val ACTION_RESET_BARCODE_SELECTION = "resetBarcodeSelection"
+        const val ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION = "unfreezeCameraInBarcodeSelection"
+        const val ACTION_SELECTION_UPDATED = "didUpdateSelectionInBarcodeSelection"
+        const val ACTION_SELECTION_SESSION_UPDATED = "didUpdateSessionInBarcodeSelection"
 
         const val SEND_TRACKING_SESSION_UPDATED_EVENT = "sendTrackingSessionUpdateEvent"
     }

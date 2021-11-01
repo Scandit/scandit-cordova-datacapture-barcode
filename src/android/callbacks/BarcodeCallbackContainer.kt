@@ -7,6 +7,7 @@
 package com.scandit.datacapture.cordova.barcode.callbacks
 
 import com.scandit.datacapture.cordova.barcode.data.*
+import com.scandit.datacapture.cordova.barcode.tracking.callbacks.BarcodeSelectionCallback
 import com.scandit.datacapture.cordova.barcode.tracking.callbacks.BarcodeTrackingAdvancedOverlayCallback
 import com.scandit.datacapture.cordova.barcode.tracking.callbacks.BarcodeTrackingBasicOverlayCallback
 import com.scandit.datacapture.cordova.barcode.tracking.callbacks.BarcodeTrackingCallback
@@ -18,6 +19,9 @@ class BarcodeCallbackContainer {
         private set
 
     var barcodeTrackingCallback: BarcodeTrackingCallback? = null
+        private set
+
+    var barcodeSelectionCallback: BarcodeSelectionCallback? = null
         private set
 
     var barcodeTrackingBasicOverlayCallback: BarcodeTrackingBasicOverlayCallback? = null
@@ -34,6 +38,11 @@ class BarcodeCallbackContainer {
     fun setBarcodeTrackingCallback(barcodeTrackingCallback: BarcodeTrackingCallback) {
         disposeBarcodeTrackingCallback()
         this.barcodeTrackingCallback = barcodeTrackingCallback
+    }
+
+    fun setBarcodeSelectionCallback(barcodeSelectionCallback: BarcodeSelectionCallback) {
+        disposeBarcodeSelectionCallback()
+        this.barcodeSelectionCallback = barcodeSelectionCallback
     }
 
     fun setBarcodeTrackingBasicOverlayCallback(
@@ -63,6 +72,10 @@ class BarcodeCallbackContainer {
 
     fun onFinishBarcodeTrackingAction(finishData: SerializableFinishModeCallbackData?) {
         barcodeTrackingCallback?.onFinishCallback(finishData)
+    }
+
+    fun onFinishBarcodeSelectionAction(finishData: SerializableFinishModeCallbackData?) {
+        barcodeSelectionCallback?.onFinishCallback(finishData)
     }
 
     fun onFinishBasicOverlayAction(finishData: SerializableFinishBasicOverlayCallbackData?) {
@@ -99,6 +112,11 @@ class BarcodeCallbackContainer {
     private fun disposeBarcodeCaptureCallback() {
         barcodeCaptureCallback?.dispose()
         barcodeCaptureCallback = null
+    }
+
+    private fun disposeBarcodeSelectionCallback() {
+        barcodeSelectionCallback?.dispose()
+        barcodeSelectionCallback = null
     }
 
     private fun disposeBarcodeTrackingCallback() {

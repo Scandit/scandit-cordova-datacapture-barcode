@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BarcodeTrackingAdvancedOverlay = exports.BarcodeTrackingBasicOverlay = exports.BarcodeTrackingBasicOverlayStyle = exports.BarcodeTrackingSession = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.BarcodeTracking+Related"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");
@@ -54,16 +55,25 @@ class BarcodeTrackingSession {
     }
 }
 exports.BarcodeTrackingSession = BarcodeTrackingSession;
+var BarcodeTrackingBasicOverlayStyle;
+(function (BarcodeTrackingBasicOverlayStyle) {
+    BarcodeTrackingBasicOverlayStyle["Frame"] = "frame";
+    BarcodeTrackingBasicOverlayStyle["Dot"] = "dot";
+    BarcodeTrackingBasicOverlayStyle["Legacy"] = "legacy";
+})(BarcodeTrackingBasicOverlayStyle = exports.BarcodeTrackingBasicOverlayStyle || (exports.BarcodeTrackingBasicOverlayStyle = {}));
 class BarcodeTrackingBasicOverlay extends Serializeable_1.DefaultSerializeable {
     constructor() {
         super();
         this.type = 'barcodeTrackingBasic';
-        this._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.strokeWidth);
+        this._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
         this._shouldShowScanAreaGuides = false;
         this.listener = null;
     }
     static get defaultBrush() {
-        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.DefaultBrush.strokeWidth);
+        // tslint:disable-next-line:no-console
+        console.warn('defaultBrush is deprecated and will be removed in a future release. ' +
+            'Use .brush to get the default for your selected style');
+        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
     }
     get defaultBrush() {
         return this._defaultBrush;
@@ -92,12 +102,20 @@ class BarcodeTrackingBasicOverlay extends Serializeable_1.DefaultSerializeable {
         this._shouldShowScanAreaGuides = shouldShow;
         this.barcodeTracking.didChange();
     }
+    get style() {
+        return this._style;
+    }
     static withBarcodeTracking(barcodeTracking) {
         return BarcodeTrackingBasicOverlay.withBarcodeTrackingForView(barcodeTracking, null);
     }
     static withBarcodeTrackingForView(barcodeTracking, view) {
+        return this.withBarcodeTrackingForViewWithStyle(barcodeTracking, view, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle);
+    }
+    static withBarcodeTrackingForViewWithStyle(barcodeTracking, view, style) {
         const overlay = new BarcodeTrackingBasicOverlay();
         overlay.barcodeTracking = barcodeTracking;
+        overlay._style = style;
+        overlay._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.strokeWidth);
         if (view) {
             view.addOverlay(overlay);
         }
@@ -132,6 +150,9 @@ __decorate([
 __decorate([
     Serializeable_1.ignoreFromSerialization
 ], BarcodeTrackingBasicOverlay.prototype, "_proxy", void 0);
+__decorate([
+    Serializeable_1.nameForSerialization('style')
+], BarcodeTrackingBasicOverlay.prototype, "_style", void 0);
 exports.BarcodeTrackingBasicOverlay = BarcodeTrackingBasicOverlay;
 class BarcodeTrackingAdvancedOverlay extends Serializeable_1.DefaultSerializeable {
     constructor() {

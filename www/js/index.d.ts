@@ -5,10 +5,12 @@ interface PrivateBarcodeCapture extends PrivateDataCaptureMode {
     didChange: () => Promise<void>;
 }
 export class BarcodeCapture implements DataCaptureMode {
-    isEnabled: boolean;
-    readonly context: DataCaptureContext | null;
-    feedback: BarcodeCaptureFeedback;
-    static readonly recommendedCameraSettings: CameraSettings;
+    get isEnabled(): boolean;
+    set isEnabled(isEnabled: boolean);
+    get context(): DataCaptureContext | null;
+    get feedback(): BarcodeCaptureFeedback;
+    set feedback(feedback: BarcodeCaptureFeedback);
+    static get recommendedCameraSettings(): CameraSettings;
     private type;
     private _isEnabled;
     private _feedback;
@@ -29,9 +31,9 @@ export class BarcodeCaptureSession {
     private _newlyRecognizedBarcodes;
     private _newlyLocalizedBarcodes;
     private _frameSequenceID;
-    readonly newlyRecognizedBarcodes: Barcode[];
-    readonly newlyLocalizedBarcodes: LocalizedOnlyBarcode[];
-    readonly frameSequenceID: number;
+    get newlyRecognizedBarcodes(): Barcode[];
+    get newlyLocalizedBarcodes(): LocalizedOnlyBarcode[];
+    get frameSequenceID(): number;
     private static fromJSON;
 }
 export interface BarcodeCaptureSessionJSON {
@@ -48,20 +50,30 @@ export interface BarcodeCaptureListener {
 }
 export class BarcodeCaptureFeedback {
     success: Feedback;
-    static readonly default: BarcodeCaptureFeedback;
+    static get default(): BarcodeCaptureFeedback;
+}
+export enum BarcodeCaptureOverlayStyle {
+    Frame = "frame",
+    Legacy = "legacy"
 }
 export class BarcodeCaptureOverlay implements DataCaptureOverlay {
     private type;
     private barcodeCapture;
     private _shouldShowScanAreaGuides;
     private _viewfinder;
-    static readonly defaultBrush: Brush;
+    static get defaultBrush(): Brush;
     private _brush;
-    brush: Brush;
-    viewfinder: Viewfinder | null;
-    shouldShowScanAreaGuides: boolean;
+    private _style;
+    get brush(): Brush;
+    set brush(newBrush: Brush);
+    get viewfinder(): Viewfinder | null;
+    set viewfinder(newViewfinder: Viewfinder | null);
+    get shouldShowScanAreaGuides(): boolean;
+    set shouldShowScanAreaGuides(shouldShow: boolean);
+    get style(): BarcodeCaptureOverlayStyle;
     static withBarcodeCapture(barcodeCapture: BarcodeCapture): BarcodeCaptureOverlay;
     static withBarcodeCaptureForView(barcodeCapture: BarcodeCapture, view: DataCaptureView | null): BarcodeCaptureOverlay;
+    static withBarcodeCaptureForViewWithStyle(barcodeCapture: BarcodeCapture, view: DataCaptureView | null, style: BarcodeCaptureOverlayStyle): BarcodeCaptureOverlay;
     private constructor();
 }
 
@@ -114,22 +126,22 @@ interface PrivateSymbologyDescription {
 }
 export class SymbologyDescription {
     private static defaults;
-    static readonly all: SymbologyDescription[];
+    static get all(): SymbologyDescription[];
     private _identifier;
-    readonly identifier: string;
-    readonly symbology: Symbology;
+    get identifier(): string;
+    get symbology(): Symbology;
     private _readableName;
-    readonly readableName: string;
+    get readableName(): string;
     private _isAvailable;
-    readonly isAvailable: boolean;
+    get isAvailable(): boolean;
     private _isColorInvertible;
-    readonly isColorInvertible: boolean;
+    get isColorInvertible(): boolean;
     private _activeSymbolCountRange;
-    readonly activeSymbolCountRange: Range;
+    get activeSymbolCountRange(): Range;
     private _defaultSymbolCountRange;
-    readonly defaultSymbolCountRange: Range;
+    get defaultSymbolCountRange(): Range;
     private _supportedExtensions;
-    readonly supportedExtensions: string[];
+    get supportedExtensions(): string[];
     private static fromJSON;
     static forIdentifier(identifier: string): SymbologyDescription | null;
     constructor(symbology: Symbology);
@@ -146,8 +158,8 @@ export class SymbologySettings {
     isColorInvertedEnabled: boolean;
     checksums: Checksum[];
     activeSymbolCounts: number[];
-    readonly symbology: Symbology;
-    readonly enabledExtensions: string[];
+    get symbology(): Symbology;
+    get enabledExtensions(): string[];
     private static fromJSON;
     setExtensionEnabled(extension: string, enabled: boolean): void;
 }
@@ -168,11 +180,11 @@ interface EncodingRangeJSON {
 }
 export class EncodingRange {
     private _ianaName;
-    readonly ianaName: string;
+    get ianaName(): string;
     private _startIndex;
-    readonly startIndex: number;
+    get startIndex(): number;
     private _endIndex;
-    readonly endIndex: number;
+    get endIndex(): number;
     private static fromJSON;
 }
 export enum CompositeFlag {
@@ -192,39 +204,40 @@ export class Range {
     private _minimum;
     private _maximum;
     private _step;
-    readonly minimum: number;
-    readonly maximum: number;
-    readonly step: number;
-    readonly isFixed: boolean;
+    get minimum(): number;
+    get maximum(): number;
+    get step(): number;
+    get isFixed(): boolean;
     private static fromJSON;
 }
 export class Barcode {
     private _symbology;
-    readonly symbology: Symbology;
+    get symbology(): Symbology;
     private _data;
-    readonly data: string | null;
+    get data(): string | null;
     private _rawData;
-    readonly rawData: string;
+    get rawData(): string;
     private _compositeData;
-    readonly compositeData: string | null;
+    get compositeData(): string | null;
     private _compositeRawData;
-    readonly compositeRawData: string;
+    get compositeRawData(): string;
     private _addOnData;
-    readonly addOnData: string | null;
+    get addOnData(): string | null;
     private _encodingRanges;
-    readonly encodingRanges: EncodingRange[];
+    get encodingRanges(): EncodingRange[];
     private _location;
-    readonly location: Quadrilateral;
+    get location(): Quadrilateral;
     private _isGS1DataCarrier;
-    readonly isGS1DataCarrier: boolean;
+    get isGS1DataCarrier(): boolean;
     private _compositeFlag;
-    readonly compositeFlag: CompositeFlag;
+    get compositeFlag(): CompositeFlag;
     private _isColorInverted;
-    readonly isColorInverted: boolean;
+    get isColorInverted(): boolean;
     private _symbolCount;
-    readonly symbolCount: number;
+    get symbolCount(): number;
     private _frameID;
-    readonly frameID: number;
+    get frameID(): number;
+    private get selectionIdentifier();
     private static fromJSON;
 }
 export interface BarcodeJSON {
@@ -243,13 +256,14 @@ export interface BarcodeJSON {
     location: QuadrilateralJSON;
 }
 interface PrivateBarcode {
+    readonly selectionIdentifier: string;
     fromJSON(json: BarcodeJSON): Barcode;
 }
 export class LocalizedOnlyBarcode {
     private _location;
     private _frameID;
-    readonly location: Quadrilateral;
-    readonly frameID: number;
+    get location(): Quadrilateral;
+    get frameID(): number;
     private static fromJSON;
 }
 export interface LocalizedOnlyBarcodeJSON {
@@ -273,18 +287,18 @@ interface PrivateTrackedBarcode {
 }
 export class TrackedBarcode {
     private _deltaTime;
-    readonly deltaTime: number;
+    get deltaTime(): number;
     private _barcode;
-    readonly barcode: Barcode;
+    get barcode(): Barcode;
     private _predictedLocation;
-    readonly predictedLocation: Quadrilateral;
+    get predictedLocation(): Quadrilateral;
     private _location;
-    readonly location: Quadrilateral;
+    get location(): Quadrilateral;
     private _identifier;
-    readonly identifier: number;
+    get identifier(): number;
     private sessionFrameSequenceID;
     private _shouldAnimateFromPreviousToNextState;
-    readonly shouldAnimateFromPreviousToNextState: boolean;
+    get shouldAnimateFromPreviousToNextState(): boolean;
     private static fromJSON;
 }
 
@@ -295,8 +309,8 @@ export class BarcodeCaptureSettings {
     enabledCompositeTypes: CompositeType[];
     private properties;
     private symbologies;
-    private readonly compositeTypeDescriptions;
-    readonly enabledSymbologies: Symbology[];
+    private get compositeTypeDescriptions();
+    get enabledSymbologies(): Symbology[];
     constructor();
     settingsForSymbology(symbology: Symbology): SymbologySettings;
     setProperty(name: string, value: any): void;
@@ -312,9 +326,10 @@ interface PrivateBarcodeTracking extends PrivateDataCaptureMode {
     didChange: () => Promise<void>;
 }
 export class BarcodeTracking implements DataCaptureMode {
-    isEnabled: boolean;
-    readonly context: DataCaptureContext | null;
-    static readonly recommendedCameraSettings: CameraSettings;
+    get isEnabled(): boolean;
+    set isEnabled(isEnabled: boolean);
+    get context(): DataCaptureContext | null;
+    static get recommendedCameraSettings(): CameraSettings;
     private type;
     private _isEnabled;
     private settings;
@@ -348,13 +363,13 @@ export class BarcodeTrackingSession {
     private _updatedTrackedBarcodes;
     private _trackedBarcodes;
     private _frameSequenceID;
-    readonly addedTrackedBarcodes: TrackedBarcode[];
-    readonly removedTrackedBarcodes: string[];
-    readonly updatedTrackedBarcodes: TrackedBarcode[];
-    readonly trackedBarcodes: {
+    get addedTrackedBarcodes(): TrackedBarcode[];
+    get removedTrackedBarcodes(): string[];
+    get updatedTrackedBarcodes(): TrackedBarcode[];
+    get trackedBarcodes(): {
         [key: string]: TrackedBarcode;
     };
-    readonly frameSequenceID: number;
+    get frameSequenceID(): number;
     private static fromJSON;
 }
 export interface BarcodeTrackingListener {
@@ -367,20 +382,31 @@ export interface BarcodeTrackingBasicOverlayListener {
 interface PrivateBarcodeTrackingBasicOverlay {
     toJSON(): object;
 }
+export enum BarcodeTrackingBasicOverlayStyle {
+    Frame = "frame",
+    Dot = "dot",
+    Legacy = "legacy"
+}
 export class BarcodeTrackingBasicOverlay implements DataCaptureOverlay {
     private type;
     private barcodeTracking;
-    static readonly defaultBrush: Brush;
+    static get defaultBrush(): Brush;
     private _defaultBrush;
-    defaultBrush: Brush | null;
-    brush: Brush | null;
+    get defaultBrush(): Brush | null;
+    set defaultBrush(newBrush: Brush | null);
+    get brush(): Brush | null;
+    set brush(newBrush: Brush | null);
     private _shouldShowScanAreaGuides;
     listener: BarcodeTrackingBasicOverlayListener | null;
     private _proxy;
-    private readonly proxy;
-    shouldShowScanAreaGuides: boolean;
+    private get proxy();
+    get shouldShowScanAreaGuides(): boolean;
+    set shouldShowScanAreaGuides(shouldShow: boolean);
+    private _style;
+    get style(): BarcodeTrackingBasicOverlayStyle;
     static withBarcodeTracking(barcodeTracking: BarcodeTracking): BarcodeTrackingBasicOverlay;
     static withBarcodeTrackingForView(barcodeTracking: BarcodeTracking, view: DataCaptureView | null): BarcodeTrackingBasicOverlay;
+    static withBarcodeTrackingForViewWithStyle(barcodeTracking: BarcodeTracking, view: DataCaptureView | null, style: BarcodeTrackingBasicOverlayStyle): BarcodeTrackingBasicOverlay;
     private constructor();
     setBrushForTrackedBarcode(brush: Brush, trackedBarcode: TrackedBarcode): Promise<void>;
     clearTrackedBarcodeBrushes(): Promise<void>;
@@ -398,11 +424,12 @@ interface PrivateBarcodeTrackingAdvancedOverlay {
 export class BarcodeTrackingAdvancedOverlay implements DataCaptureOverlay {
     private type;
     private _shouldShowScanAreaGuides;
-    shouldShowScanAreaGuides: boolean;
+    get shouldShowScanAreaGuides(): boolean;
+    set shouldShowScanAreaGuides(shouldShow: boolean);
     private barcodeTracking;
     listener: BarcodeTrackingAdvancedOverlayListener | null;
     private _proxy;
-    private readonly proxy;
+    private get proxy();
     static withBarcodeTrackingForView(barcodeTracking: BarcodeTracking, view: DataCaptureView | null): BarcodeTrackingAdvancedOverlay;
     private constructor();
     setViewForTrackedBarcode(view: Promise<TrackedBarcodeView | null>, trackedBarcode: TrackedBarcode): Promise<void>;
@@ -421,7 +448,7 @@ export class BarcodeTrackingSettings {
     private scenario;
     private properties;
     private symbologies;
-    readonly enabledSymbologies: Symbology[];
+    get enabledSymbologies(): Symbology[];
     static forScenario(scenario: BarcodeTrackingScenario): BarcodeTrackingSettings;
     constructor();
     settingsForSymbology(symbology: Symbology): SymbologySettings;
@@ -455,12 +482,179 @@ export class TrackedBarcodeView {
 }
 
 
+interface PrivateBarcodeSelection extends PrivateDataCaptureMode {
+    _context: DataCaptureContext | null;
+    didChange: () => Promise<void>;
+}
+export class BarcodeSelection implements DataCaptureMode {
+    get isEnabled(): boolean;
+    set isEnabled(isEnabled: boolean);
+    get context(): DataCaptureContext | null;
+    get feedback(): BarcodeSelectionFeedback;
+    set feedback(feedback: BarcodeSelectionFeedback);
+    get pointOfInterest(): PointWithUnit | null;
+    set pointOfInterest(pointOfInterest: PointWithUnit | null);
+    static get recommendedCameraSettings(): CameraSettings;
+    private type;
+    private _isEnabled;
+    private _feedback;
+    private _pointOfInterest;
+    private settings;
+    private _context;
+    private listeners;
+    private listenerProxy;
+    private modeProxy;
+    private isInListenerCallback;
+    static forContext(context: DataCaptureContext | null, settings: BarcodeSelectionSettings): BarcodeSelection;
+    applySettings(settings: BarcodeSelectionSettings): Promise<void>;
+    addListener(listener: BarcodeSelectionListener): void;
+    removeListener(listener: BarcodeSelectionListener): void;
+    reset(): Promise<void>;
+    unfreezeCamera(): Promise<void>;
+    private didChange;
+}
+
+
+export class BarcodeSelectionSettings {
+    codeDuplicateFilter: number;
+    singleBarcodeAutoDetection: boolean;
+    selectionType: BarcodeSelectionType;
+    private properties;
+    private symbologies;
+    get enabledSymbologies(): Symbology[];
+    constructor();
+    settingsForSymbology(symbology: Symbology): SymbologySettings;
+    setProperty(name: string, value: any): void;
+    getProperty(name: string): any;
+    enableSymbologies(symbologies: Symbology[]): void;
+    enableSymbology(symbology: Symbology, enabled: boolean): void;
+}
+
+
+interface BarcodeSelectionListenerProxy {
+    getCount(barcode: Barcode): Promise<number>;
+    reset(): Promise<void>;
+}
+export class BarcodeSelectionFeedback {
+    selection: Feedback;
+    static get default(): BarcodeSelectionFeedback;
+}
+export interface BarcodeSelectionStrategy {
+}
+class PrivateBarcodeSelectionStrategy {
+    static fromJSON(json: {
+        type: string;
+    }): BarcodeSelectionStrategy;
+}
+export class BarcodeSelectionAutoSelectionStrategy implements BarcodeSelectionStrategy {
+    private type;
+    static get autoSelectionStrategy(): BarcodeSelectionAutoSelectionStrategy;
+}
+export class BarcodeSelectionManualSelectionStrategy implements BarcodeSelectionStrategy {
+    private type;
+    static get manualSelectionStrategy(): BarcodeSelectionManualSelectionStrategy;
+}
+export enum BarcodeSelectionFreezeBehavior {
+    Manual = "manual",
+    ManualAndAutomatic = "manualAndAutomatic"
+}
+export enum BarcodeSelectionTapBehavior {
+    ToggleSelection = "toggleSelection",
+    RepeatSelection = "repeatSelection"
+}
+export interface BarcodeSelectionType {
+}
+class PrivateBarcodeSelectionType {
+    static fromJSON(json: {
+        type: string;
+    }): BarcodeSelectionType;
+}
+export class BarcodeSelectionAimerSelection implements BarcodeSelectionType {
+    private type;
+    selectionStrategy: BarcodeSelectionStrategy;
+    static get aimerSelection(): BarcodeSelectionAimerSelection;
+    private constructor();
+}
+export class BarcodeSelectionTapSelection implements BarcodeSelectionType {
+    private type;
+    freezeBehavior: BarcodeSelectionFreezeBehavior;
+    tapBehavior: BarcodeSelectionTapBehavior;
+    static get tapSelection(): BarcodeSelectionTapSelection;
+    static withFreezeBehaviorAndTapBehavior(freezeBehavior: BarcodeSelectionFreezeBehavior, tapBehavior: BarcodeSelectionTapBehavior): BarcodeSelectionTapSelection;
+}
+export class BarcodeSelectionSession {
+    private _selectedBarcodes;
+    private _newlySelectedBarcodes;
+    private _newlyUnselectedBarcodes;
+    private _frameSequenceID;
+    private listenerProxy;
+    get selectedBarcodes(): Barcode[];
+    get newlySelectedBarcodes(): Barcode[];
+    get newlyUnselectedBarcodes(): Barcode[];
+    get frameSequenceID(): number;
+    private static fromJSON;
+    getCount(barcode: Barcode): Promise<number>;
+    reset(): Promise<void>;
+}
+export interface BarcodeSelectionSessionJSON {
+    selectedBarcodes: BarcodeJSON[];
+    newlySelectedBarcodes: BarcodeJSON[];
+    newlyUnselectedBarcodes: BarcodeJSON[];
+    frameSequenceId: number;
+}
+interface PrivateBarcodeSelectionSession {
+    listenerProxy: BarcodeSelectionListenerProxy;
+    fromJSON(json: BarcodeSelectionSessionJSON): BarcodeSelectionSession;
+}
+export interface BarcodeSelectionListener {
+    didUpdateSelection?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession): void;
+    didUpdateSession?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession): void;
+}
+interface PrivateBarcodeSelectionBasicOverlay {
+    toJSON(): object;
+}
+export enum BarcodeSelectionBasicOverlayStyle {
+    Frame = "frame",
+    Dot = "dot"
+}
+export class BarcodeSelectionBasicOverlay implements DataCaptureOverlay {
+    private type;
+    private barcodeSelection;
+    private _trackedBrush;
+    private _aimedBrush;
+    private _selectedBrush;
+    private _selectingBrush;
+    get trackedBrush(): Brush;
+    set trackedBrush(newBrush: Brush);
+    get aimedBrush(): Brush;
+    set aimedBrush(newBrush: Brush);
+    get selectedBrush(): Brush;
+    set selectedBrush(newBrush: Brush);
+    get selectingBrush(): Brush;
+    set selectingBrush(newBrush: Brush);
+    private _style;
+    get style(): BarcodeSelectionBasicOverlayStyle;
+    private _shouldShowScanAreaGuides;
+    private _shouldShowHints;
+    private _viewfinder;
+    get viewfinder(): Viewfinder;
+    get shouldShowScanAreaGuides(): boolean;
+    set shouldShowScanAreaGuides(shouldShow: boolean);
+    get shouldShowHints(): boolean;
+    set shouldShowHints(shouldShow: boolean);
+    static withBarcodeSelection(barcodeSelection: BarcodeSelection): BarcodeSelectionBasicOverlay;
+    static withBarcodeSelectionForView(barcodeSelection: BarcodeSelection, view: DataCaptureView | null): BarcodeSelectionBasicOverlay;
+    static withBarcodeSelectionForViewWithStyle(barcodeSelection: BarcodeSelection, view: DataCaptureView | null, style: BarcodeSelectionBasicOverlayStyle): BarcodeSelectionBasicOverlay;
+    private constructor();
+}
+
+
 export class SparkCaptureSettings {
     codeDuplicateFilter: number;
     locationSelection: LocationSelection | null;
     private properties;
     private symbologies;
-    readonly enabledSymbologies: Symbology[];
+    get enabledSymbologies(): Symbology[];
     constructor();
     settingsForSymbology(symbology: Symbology): SymbologySettings;
     setProperty(name: string, value: any): void;
@@ -473,8 +667,8 @@ export class SparkCaptureSettings {
 export class SparkCaptureSession {
     private _newlyRecognizedBarcodes;
     private _frameSequenceID;
-    readonly newlyRecognizedBarcodes: Barcode[];
-    readonly frameSequenceID: number;
+    get newlyRecognizedBarcodes(): Barcode[];
+    get frameSequenceID(): number;
     private static fromJSON;
 }
 export interface SparkCaptureSessionJSON {
@@ -490,7 +684,7 @@ export interface SparkCaptureListener {
 }
 export class SparkCaptureFeedback {
     success: Feedback;
-    static readonly default: SparkCaptureFeedback;
+    static get default(): SparkCaptureFeedback;
 }
 
 
@@ -499,9 +693,11 @@ interface PrivateSparkCapture extends PrivateDataCaptureMode {
     didChange: () => Promise<void>;
 }
 export class SparkCapture implements DataCaptureMode {
-    isEnabled: boolean;
-    readonly context: DataCaptureContext | null;
-    feedback: SparkCaptureFeedback;
+    get isEnabled(): boolean;
+    set isEnabled(isEnabled: boolean);
+    get context(): DataCaptureContext | null;
+    get feedback(): SparkCaptureFeedback;
+    set feedback(feedback: SparkCaptureFeedback);
     private type;
     private _isEnabled;
     private _feedback;

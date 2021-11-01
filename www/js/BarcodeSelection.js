@@ -6,19 +6,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BarcodeTracking = void 0;
+exports.BarcodeSelection = void 0;
+/// <amd-module name="scandit-cordova-datacapture-barcode.BarcodeSelection"/>
+// ^ needed because Cordova can't resolve "../xx" style dependencies
+const BarcodeSelection_Related_1 = require("scandit-cordova-datacapture-barcode.BarcodeSelection+Related");
 const Camera_Related_1 = require("scandit-cordova-datacapture-core.Camera+Related");
-const BarcodeTrackingListenerProxy_1 = require("scandit-cordova-datacapture-barcode.BarcodeTrackingListenerProxy");
+const BarcodeSelectionListenerProxy_1 = require("scandit-cordova-datacapture-barcode.BarcodeSelectionListenerProxy");
+const BarcodeSelectionProxy_1 = require("scandit-cordova-datacapture-barcode.BarcodeSelectionProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 const Serializeable_1 = require("scandit-cordova-datacapture-core.Serializeable");
-class BarcodeTracking extends Serializeable_1.DefaultSerializeable {
+class BarcodeSelection extends Serializeable_1.DefaultSerializeable {
     constructor() {
         super(...arguments);
-        this.type = 'barcodeTracking';
+        this.type = 'barcodeSelection';
         this._isEnabled = true;
+        this._feedback = BarcodeSelection_Related_1.BarcodeSelectionFeedback.default;
+        this._pointOfInterest = null;
         this._context = null;
         this.listeners = [];
         this.listenerProxy = null;
+        this.modeProxy = new BarcodeSelectionProxy_1.BarcodeSelectionProxy();
         this.isInListenerCallback = false;
     }
     get isEnabled() {
@@ -35,17 +42,31 @@ class BarcodeTracking extends Serializeable_1.DefaultSerializeable {
     get context() {
         return this._context;
     }
+    get feedback() {
+        return this._feedback;
+    }
+    set feedback(feedback) {
+        this._feedback = feedback;
+        this.didChange();
+    }
+    get pointOfInterest() {
+        return this._pointOfInterest;
+    }
+    set pointOfInterest(pointOfInterest) {
+        this._pointOfInterest = pointOfInterest;
+        this.didChange();
+    }
     static get recommendedCameraSettings() {
-        return new Camera_Related_1.CameraSettings(Cordova_1.Cordova.defaults.BarcodeTracking.RecommendedCameraSettings);
+        return new Camera_Related_1.CameraSettings(Cordova_1.Cordova.defaults.BarcodeSelection.RecommendedCameraSettings);
     }
     static forContext(context, settings) {
-        const barcodeTracking = new BarcodeTracking();
-        barcodeTracking.settings = settings;
+        const barcodeSelection = new BarcodeSelection();
+        barcodeSelection.settings = settings;
         if (context) {
-            context.addMode(barcodeTracking);
+            context.addMode(barcodeSelection);
         }
-        barcodeTracking.listenerProxy = BarcodeTrackingListenerProxy_1.BarcodeTrackingListenerProxy.forBarcodeTracking(barcodeTracking);
-        return barcodeTracking;
+        barcodeSelection.listenerProxy = BarcodeSelectionListenerProxy_1.BarcodeSelectionListenerProxy.forBarcodeSelection(barcodeSelection);
+        return barcodeSelection;
     }
     applySettings(settings) {
         this.settings = settings;
@@ -63,6 +84,12 @@ class BarcodeTracking extends Serializeable_1.DefaultSerializeable {
         }
         this.listeners.splice(this.listeners.indexOf(listener), 1);
     }
+    reset() {
+        return this.modeProxy.reset();
+    }
+    unfreezeCamera() {
+        return this.modeProxy.unfreezeCamera();
+    }
     didChange() {
         if (this.context) {
             return this.context.update();
@@ -74,14 +101,26 @@ class BarcodeTracking extends Serializeable_1.DefaultSerializeable {
 }
 __decorate([
     Serializeable_1.nameForSerialization('enabled')
-], BarcodeTracking.prototype, "_isEnabled", void 0);
+], BarcodeSelection.prototype, "_isEnabled", void 0);
+__decorate([
+    Serializeable_1.nameForSerialization('feedback')
+], BarcodeSelection.prototype, "_feedback", void 0);
+__decorate([
+    Serializeable_1.nameForSerialization('pointOfInterest')
+], BarcodeSelection.prototype, "_pointOfInterest", void 0);
 __decorate([
     Serializeable_1.ignoreFromSerialization
-], BarcodeTracking.prototype, "_context", void 0);
+], BarcodeSelection.prototype, "_context", void 0);
 __decorate([
     Serializeable_1.ignoreFromSerialization
-], BarcodeTracking.prototype, "listeners", void 0);
+], BarcodeSelection.prototype, "listeners", void 0);
 __decorate([
     Serializeable_1.ignoreFromSerialization
-], BarcodeTracking.prototype, "listenerProxy", void 0);
-exports.BarcodeTracking = BarcodeTracking;
+], BarcodeSelection.prototype, "listenerProxy", void 0);
+__decorate([
+    Serializeable_1.ignoreFromSerialization
+], BarcodeSelection.prototype, "modeProxy", void 0);
+__decorate([
+    Serializeable_1.ignoreFromSerialization
+], BarcodeSelection.prototype, "isInListenerCallback", void 0);
+exports.BarcodeSelection = BarcodeSelection;

@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.TrackedBarcode = exports.LocalizedOnlyBarcode = exports.Barcode = exports.Range = exports.CompositeFlag = exports.EncodingRange = exports.Checksum = exports.SymbologySettings = exports.SymbologyDescription = exports.CompositeType = exports.Symbology = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.Barcode"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const Common_1 = require("scandit-cordova-datacapture-core.Common");
@@ -202,6 +203,7 @@ class Barcode {
     get isColorInverted() { return this._isColorInverted; }
     get symbolCount() { return this._symbolCount; }
     get frameID() { return this._frameID; }
+    get selectionIdentifier() { return this.data + this.symbology; }
     static fromJSON(json) {
         const barcode = new Barcode();
         barcode._symbology = json.symbology;

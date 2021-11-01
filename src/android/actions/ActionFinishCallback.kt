@@ -39,6 +39,11 @@ class ActionFinishCallback(
                         SerializableFinishModeCallbackData.fromJson(result), callbackContext
                     )
 
+                helper.isFinishBarcodeSelectionModeCallback(data) ->
+                    finishBarcodeSelectionModeCallback(
+                        SerializableFinishModeCallbackData.fromJson(result), callbackContext
+                    )
+
                 helper.isFinishBarcodeTrackingBasicOverlayCallback(data) ->
                     finishBasicOverlayCallback(
                         SerializableFinishBasicOverlayCallbackData.fromJson(result),
@@ -72,7 +77,7 @@ class ActionFinishCallback(
         } catch (e: JSONException) {
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
+        } catch (e: RuntimeException) {
             e.printStackTrace()
             listener.onJsonParseError(e, callbackContext)
         }
@@ -90,6 +95,13 @@ class ActionFinishCallback(
         callbackContext: CallbackContext
     ) {
         listener.onFinishBarcodeTrackingMode(data, callbackContext)
+    }
+
+    private fun finishBarcodeSelectionModeCallback(
+        data: SerializableFinishModeCallbackData?,
+        callbackContext: CallbackContext
+    ) {
+        listener.onFinishBarcodeSelectionMode(data, callbackContext)
     }
 
     private fun finishBasicOverlayCallback(
@@ -135,6 +147,11 @@ class ActionFinishCallback(
         )
 
         fun onFinishBarcodeCaptureMode(
+            finishData: SerializableFinishModeCallbackData?,
+            callbackContext: CallbackContext
+        )
+
+        fun onFinishBarcodeSelectionMode(
             finishData: SerializableFinishModeCallbackData?,
             callbackContext: CallbackContext
         )

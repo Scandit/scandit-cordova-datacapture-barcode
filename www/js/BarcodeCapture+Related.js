@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BarcodeCaptureOverlay = exports.BarcodeCaptureOverlayStyle = exports.BarcodeCaptureFeedback = exports.BarcodeCaptureSession = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.BarcodeCapture+Related"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");
@@ -44,6 +45,11 @@ class BarcodeCaptureFeedback extends Serializeable_1.DefaultSerializeable {
     }
 }
 exports.BarcodeCaptureFeedback = BarcodeCaptureFeedback;
+var BarcodeCaptureOverlayStyle;
+(function (BarcodeCaptureOverlayStyle) {
+    BarcodeCaptureOverlayStyle["Frame"] = "frame";
+    BarcodeCaptureOverlayStyle["Legacy"] = "legacy";
+})(BarcodeCaptureOverlayStyle = exports.BarcodeCaptureOverlayStyle || (exports.BarcodeCaptureOverlayStyle = {}));
 class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
     constructor() {
         super();
@@ -53,7 +59,10 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         this._brush = BarcodeCaptureOverlay.defaultBrush;
     }
     static get defaultBrush() {
-        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.DefaultBrush.strokeWidth);
+        // tslint:disable-next-line:no-console
+        console.warn('defaultBrush is deprecated and will be removed in a future release. ' +
+            'Use .brush to get the default for your selected style');
+        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.strokeWidth);
     }
     get brush() {
         return this._brush;
@@ -76,12 +85,20 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         this._shouldShowScanAreaGuides = shouldShow;
         this.barcodeCapture.didChange();
     }
+    get style() {
+        return this._style;
+    }
     static withBarcodeCapture(barcodeCapture) {
         return BarcodeCaptureOverlay.withBarcodeCaptureForView(barcodeCapture, null);
     }
     static withBarcodeCaptureForView(barcodeCapture, view) {
+        return this.withBarcodeCaptureForViewWithStyle(barcodeCapture, view, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle);
+    }
+    static withBarcodeCaptureForViewWithStyle(barcodeCapture, view, style) {
         const overlay = new BarcodeCaptureOverlay();
         overlay.barcodeCapture = barcodeCapture;
+        overlay._style = style;
+        overlay._brush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.strokeWidth);
         if (view) {
             view.addOverlay(overlay);
         }
@@ -101,4 +118,7 @@ __decorate([
 __decorate([
     Serializeable_1.nameForSerialization('brush')
 ], BarcodeCaptureOverlay.prototype, "_brush", void 0);
+__decorate([
+    Serializeable_1.nameForSerialization('style')
+], BarcodeCaptureOverlay.prototype, "_style", void 0);
 exports.BarcodeCaptureOverlay = BarcodeCaptureOverlay;

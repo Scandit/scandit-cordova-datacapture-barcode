@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BarcodeTrackingSettings = exports.BarcodeTrackingScenario = void 0;
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 const Serializeable_1 = require("scandit-cordova-datacapture-core.Serializeable");
 var BarcodeTrackingScenario;

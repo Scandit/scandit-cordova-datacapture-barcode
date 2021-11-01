@@ -16,5 +16,10 @@ export declare enum CordovaFunction {
     SetAnchorForTrackedBarcode = "setAnchorForTrackedBarcode",
     SetOffsetForTrackedBarcode = "setOffsetForTrackedBarcode",
     ClearTrackedBarcodeViews = "clearTrackedBarcodeViews",
+    SubscribeBarcodeSelectionListener = "subscribeBarcodeSelectionListener",
+    GetCountForBarcodeInBarcodeSelectionSession = "getCountForBarcodeInBarcodeSelectionSession",
+    ResetBarcodeSelectionSession = "resetBarcodeSelectionSession",
+    ResetBarcodeSelection = "resetBarcodeSelection",
+    UnfreezeCameraInBarcodeSelection = "unfreezeCameraInBarcodeSelection",
     SubscribeSparkCaptureListener = "subscribeSparkCaptureListener"
 }

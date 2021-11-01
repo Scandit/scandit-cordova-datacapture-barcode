@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.BarcodeCaptureListenerProxy = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.BarcodeCaptureListenerProxy"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const BarcodeCapture_Related_1 = require("scandit-cordova-datacapture-barcode.BarcodeCapture+Related");
