@@ -6,7 +6,11 @@
 
 package com.scandit.datacapture.cordova.barcode.data.defaults
 
-import com.scandit.datacapture.barcode.selection.capture.*
+import com.scandit.datacapture.barcode.selection.capture.BarcodeSelection
+import com.scandit.datacapture.barcode.selection.capture.BarcodeSelectionAimerSelection
+import com.scandit.datacapture.barcode.selection.capture.BarcodeSelectionSettings
+import com.scandit.datacapture.barcode.selection.capture.BarcodeSelectionTapSelection
+import com.scandit.datacapture.barcode.selection.capture.toJson
 import com.scandit.datacapture.barcode.selection.feedback.BarcodeSelectionFeedback
 import com.scandit.datacapture.barcode.selection.ui.overlay.BarcodeSelectionBasicOverlay
 import com.scandit.datacapture.barcode.selection.ui.overlay.BarcodeSelectionBasicOverlayStyle
@@ -65,10 +69,10 @@ class SerializableBarcodeSelectionDefaults(
                     BarcodeSelectionAimerSelection()
                 ),
                 overlayDefaults = SerializableBarcodeSelectionBasicOverlayDefaults(
-                    defaultStyle = BarcodeSelectionBasicOverlay.newInstance(
-                            selection,
-                            null
-                        ).style.toJson(),
+                    barcodeSelectionBasicOverlay = BarcodeSelectionBasicOverlay.newInstance(
+                        selection,
+                        null
+                    ),
                     styles = BarcodeSelectionBasicOverlayStyle.values()
                 )
             )
@@ -96,54 +100,52 @@ class SerializableBarcodeSelectionSettingsDefaults(
 }
 
 class SerializableBarcodeSelectionBasicOverlayDefaults(
-    private val defaultStyle: String,
+    private val barcodeSelectionBasicOverlay: BarcodeSelectionBasicOverlay,
     private val styles: Array<BarcodeSelectionBasicOverlayStyle>
 ) : SerializableData {
 
-    @Suppress("DEPRECATION")
     override fun toJson() = JSONObject(
         mapOf(
-            FIELD_DEFAULT_STYLE to defaultStyle,
+            FIELD_DEFAULT_STYLE to barcodeSelectionBasicOverlay.style.toJson(),
             FIELD_STYLES to stylesMap(styles),
             FIELD_TRACKED_BRUSH to SerializableBrushDefaults(
-            BarcodeSelectionBasicOverlay.DEFAULT_TRACKED_BRUSH
+                barcodeSelectionBasicOverlay.trackedBrush
             ).toJson(),
             FIELD_AIMED_BRUSH to SerializableBrushDefaults(
-                BarcodeSelectionBasicOverlay.DEFAULT_AIMED_BRUSH
+                barcodeSelectionBasicOverlay.aimedBrush
             ).toJson(),
             FIELD_SELECTING_BRUSH to SerializableBrushDefaults(
-                BarcodeSelectionBasicOverlay.DEFAULT_SELECTING_BRUSH
+                barcodeSelectionBasicOverlay.selectingBrush
             ).toJson(),
             FIELD_SELECTED_BRUSH to SerializableBrushDefaults(
-                BarcodeSelectionBasicOverlay.DEFAULT_SELECTED_BRUSH
+                barcodeSelectionBasicOverlay.selectedBrush
             ).toJson()
         )
     )
 
-    @Suppress("DEPRECATION")
     private fun stylesMap(styles: Array<BarcodeSelectionBasicOverlayStyle>): JSONObject {
-            val map = mutableMapOf<String, Map<String, JSONObject>>()
+        val map = mutableMapOf<String, Map<String, JSONObject>>()
 
-            styles.forEach {
-                map[it.toJson()] = mapOf(
-                    FIELD_TRACKED_BRUSH to
-                            SerializableBrushDefaults(
-                                BarcodeSelectionBasicOverlay.DEFAULT_TRACKED_BRUSH
-                            ).toJSONObject(),
-                    FIELD_AIMED_BRUSH to
-                            SerializableBrushDefaults(
-                                BarcodeSelectionBasicOverlay.DEFAULT_AIMED_BRUSH
-                            ).toJSONObject(),
-                    FIELD_SELECTING_BRUSH to
-                            SerializableBrushDefaults(
-                                BarcodeSelectionBasicOverlay.DEFAULT_SELECTING_BRUSH
-                            ).toJSONObject(),
-                    FIELD_SELECTED_BRUSH to
-                            SerializableBrushDefaults(
-                                BarcodeSelectionBasicOverlay.DEFAULT_SELECTED_BRUSH
-                            ).toJSONObject()
-                )
-            }
+        styles.forEach {
+            map[it.toJson()] = mapOf(
+                FIELD_TRACKED_BRUSH to
+                    SerializableBrushDefaults(
+                        BarcodeSelectionBasicOverlay.defaultTrackedBrush(it)
+                    ).toJSONObject(),
+                FIELD_AIMED_BRUSH to
+                    SerializableBrushDefaults(
+                        BarcodeSelectionBasicOverlay.defaultAimedBrush(it)
+                    ).toJSONObject(),
+                FIELD_SELECTING_BRUSH to
+                    SerializableBrushDefaults(
+                        BarcodeSelectionBasicOverlay.defaultSelectingBrush(it)
+                    ).toJSONObject(),
+                FIELD_SELECTED_BRUSH to
+                    SerializableBrushDefaults(
+                        BarcodeSelectionBasicOverlay.defaultSelectedBrush(it)
+                    ).toJSONObject()
+            )
+        }
 
             return JSONObject(map as Map<String, Map<String, JSONObject>>)
         }

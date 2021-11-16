@@ -19,7 +19,6 @@ import com.scandit.datacapture.barcode.ui.overlay.BarcodeCaptureOverlay
 import com.scandit.datacapture.barcode.ui.overlay.BarcodeCaptureOverlayStyle
 import com.scandit.datacapture.barcode.ui.overlay.toJson
 import com.scandit.datacapture.cordova.barcode.data.defaults.*
-import com.scandit.datacapture.cordova.barcode.data.defaults.SerializableBarcodeSelectionDefaults
 import com.scandit.datacapture.cordova.core.actions.Action
 import com.scandit.datacapture.cordova.core.actions.ActionJsonParseErrorResultListener
 import com.scandit.datacapture.cordova.core.data.defaults.SerializableBrushDefaults
@@ -32,21 +31,23 @@ class ActionInjectDefaults(
     private val listener: ResultListener
 ) : Action {
 
-    @Suppress("DEPRECATION")
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val captureSettings = BarcodeCaptureSettings()
-            val brush = BarcodeCaptureOverlay.DEFAULT_BRUSH
+
             val symbologyDescriptions = SymbologyDescription.all()
             val captureCameraSettings = BarcodeCapture.createRecommendedCameraSettings()
-            val barcodeCaptureOverlayStyle = BarcodeCaptureOverlay.newInstance(
+            val barcodeCaptureOverlay = BarcodeCaptureOverlay.newInstance(
                 BarcodeCapture.forDataCaptureContext(null, captureSettings),
                 null
-            ).style.toJson()
-            val barcodeTrackingOverlayStyle = BarcodeTrackingBasicOverlay.newInstance(
+            )
+            val barcodeCaptureOverlayStyle = barcodeCaptureOverlay.style.toJson()
+            val brush = barcodeCaptureOverlay.brush
+            val barcodeTrackingOverlay = BarcodeTrackingBasicOverlay.newInstance(
                 BarcodeTracking.forDataCaptureContext(null, BarcodeTrackingSettings()),
                 null
-            ).style.toJson()
+            )
+            val barcodeTrackingOverlayStyle = barcodeTrackingOverlay.style.toJson()
 
             val trackingCameraSettings = BarcodeTracking.createRecommendedCameraSettings()
 
@@ -76,7 +77,7 @@ class ActionInjectDefaults(
                     ),
                     trackingBasicOverlayDefaults = SerializableTrackingBasicOverlayDefaults(
                         defaultBrush = SerializableBrushDefaults(
-                            brush = BarcodeTrackingBasicOverlay.DEFAULT_BRUSH
+                            brush = barcodeTrackingOverlay.brush
                         ),
                         defaultStyle = barcodeTrackingOverlayStyle,
                         styles = BarcodeTrackingBasicOverlayStyle.values()

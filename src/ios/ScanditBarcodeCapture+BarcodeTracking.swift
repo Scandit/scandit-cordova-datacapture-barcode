@@ -1,5 +1,7 @@
 import ScanditBarcodeCapture
 
+var offset: [Int: PointWithUnit] = [:]
+
 extension ScanditBarcodeCapture {
     @objc(subscribeBarcodeTrackingListener:)
     func subscribeBarcodeTrackingListener(command: CDVInvokedUrlCommand) {
@@ -133,16 +135,19 @@ extension ScanditBarcodeCapture {
             return
         }
 
-        guard let offsetString = json.offset, let offset = PointWithUnit(JSONString: offsetString) else {
+        guard let offsetString = json.offset, let offsetValue = PointWithUnit(JSONString: offsetString) else {
+            offset[trackedBarcode.identifier] = PointWithUnit.zero
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
 
         guard let overlay = self.barcodeTrackingAdvancedOverlay else {
+            offset[trackedBarcode.identifier] = PointWithUnit.zero
             commandDelegate.send(.failure(with: .noOverlay), callbackId: command.callbackId)
             return
         }
-        overlay.setOffset(offset, for: trackedBarcode)
+        overlay.setOffset(offsetValue, for: trackedBarcode)
+        offset[trackedBarcode.identifier] = offsetValue
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
@@ -225,12 +230,13 @@ extension ScanditBarcodeCapture {
             }
             overlay.setAnchor(anchor, for: trackedBarcode)
         case .offsetForTrackedBarcode:
-            guard let offset = callbackResult.offset else {
+            guard let offsetValue = callbackResult.offset ?? offset[trackedBarcode.identifier] else {
                 /// The JS listener didn't return a valid offset,
                 /// e.g. it didn't implement the relevant listener function.
                 return
             }
-            overlay.setOffset(offset, for: trackedBarcode)
+            offset.removeValue(forKey: trackedBarcode.identifier)
+            overlay.setOffset(offsetValue, for: trackedBarcode)
         default:
             return
         }
