@@ -15,12 +15,12 @@ import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.cordova.core.workers.BackgroundWorker
 import com.scandit.datacapture.cordova.core.workers.Worker
 import com.scandit.datacapture.core.ui.style.Brush
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class BarcodeTrackingBasicOverlayCallback(
     private val actionsHandler: ActionsHandler,
@@ -58,17 +58,17 @@ class BarcodeTrackingBasicOverlayCallback(
     ) {
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_BRUSH_FOR_TRACKED_BARCODE,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_BRUSH_FOR_TRACKED_BARCODE,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWait()
             onUnlock(overlay, trackedBarcode)
@@ -94,29 +94,29 @@ class BarcodeTrackingBasicOverlayCallback(
         trackedBarcode: TrackedBarcode
     ) {
         actionsHandler.addAction(
-                BarcodeCaptureActionFactory.SEND_DID_TAP_TRACKED_BARCODE,
-                JSONArray().apply {
-                    put(
-                            JSONObject(
-                                    mapOf(
-                                            FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
-                                    )
-                            )
+            BarcodeCaptureActionFactory.SEND_DID_TAP_TRACKED_BARCODE,
+            JSONArray().apply {
+                put(
+                    JSONObject(
+                        mapOf(
+                            FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
+                        )
                     )
-                },
-                callbackContext
+                )
+            },
+            callbackContext
         )
     }
 
     private fun onUnlock(overlay: BarcodeTrackingBasicOverlay, trackedBarcode: TrackedBarcode) {
         latestStateData.get()?.let { latestData ->
             setBrushForTrackedBarcode(
-                    trackedBarcode, latestData.brush, overlay, switchToOverlayWorker = false
+                trackedBarcode, latestData.brush, overlay, switchToOverlayWorker = false
             )
             latestStateData.set(null)
         } ?: setBrushForTrackedBarcode(
-                // If we don't have the latestData, use the overlay default brush.
-                trackedBarcode, overlay.brush, overlay, switchToOverlayWorker = false
+            // If we don't have the latestData, use the overlay default brush.
+            trackedBarcode, overlay.brush, overlay, switchToOverlayWorker = false
         )
     }
 

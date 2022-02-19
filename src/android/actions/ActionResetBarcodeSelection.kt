@@ -20,10 +20,10 @@ class ActionResetBarcodeSelection(
         try {
             listener.onResetBarcodeSelection(callbackContext)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         } catch (e: RuntimeException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

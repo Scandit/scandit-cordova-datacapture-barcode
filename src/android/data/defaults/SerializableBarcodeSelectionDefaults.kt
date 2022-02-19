@@ -147,8 +147,8 @@ class SerializableBarcodeSelectionBasicOverlayDefaults(
             )
         }
 
-            return JSONObject(map as Map<String, Map<String, JSONObject>>)
-        }
+        return JSONObject(map as Map<String, Map<String, JSONObject>>)
+    }
 
     companion object {
         private const val FIELD_TRACKED_BRUSH = "DefaultTrackedBrush"

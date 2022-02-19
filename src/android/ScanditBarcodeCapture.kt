@@ -57,7 +57,8 @@ import org.apache.cordova.CordovaPlugin
 import org.json.JSONArray
 import org.json.JSONObject
 
-class ScanditBarcodeCapture : CordovaPlugin(),
+class ScanditBarcodeCapture :
+    CordovaPlugin(),
     BarcodeCaptureListener,
     BarcodeTrackingListener,
     BarcodeSelectionListener,
@@ -134,9 +135,10 @@ class ScanditBarcodeCapture : CordovaPlugin(),
         return try {
             actionsHandler.addAction(action, args, callbackContext)
         } catch (e: InvalidActionNameError) {
+            println(e)
             false
         } catch (e: Exception) {
-            e.printStackTrace()
+            println(e)
             true
         }
     }
@@ -573,9 +575,9 @@ class ScanditBarcodeCapture : CordovaPlugin(),
     //endregion
 
     private fun getAdvancedOverlayActionDoneData(): Triple<
-            BarcodeTrackingAdvancedOverlay,
-            BarcodeTrackingCallback,
-            BarcodeTrackingAdvancedOverlayCallback>? {
+        BarcodeTrackingAdvancedOverlay,
+        BarcodeTrackingCallback,
+        BarcodeTrackingAdvancedOverlayCallback>? {
         val overlay = barcodeTrackingAdvancedOverlayHandler.barcodeTrackingAdvancedOverlay
             ?: return null
         val barcodeTrackingCallback = barcodeCallbacks.barcodeTrackingCallback ?: return null
@@ -585,7 +587,8 @@ class ScanditBarcodeCapture : CordovaPlugin(),
     }
 }
 
-interface BarcodeActionsListeners : ActionInjectDefaults.ResultListener,
+interface BarcodeActionsListeners :
+    ActionInjectDefaults.ResultListener,
     ActionSubscribeBarcodeCapture.ResultListener,
     ActionSubscribeBarcodeTracking.ResultListener,
     ActionSubscribeBarcodeSelection.ResultListener,

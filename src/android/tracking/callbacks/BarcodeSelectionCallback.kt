@@ -13,12 +13,12 @@ import com.scandit.datacapture.cordova.barcode.factories.BarcodeCaptureActionFac
 import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class BarcodeSelectionCallback(
     private val actionsHandler: ActionsHandler,
@@ -41,18 +41,18 @@ class BarcodeSelectionCallback(
 
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.ACTION_SELECTION_UPDATED,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to JSONObject()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.ACTION_SELECTION_UPDATED,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_SESSION to session.toJson(),
+                                FIELD_FRAME_DATA to JSONObject()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             latestSession.set(session)
             lockAndWait()
@@ -68,18 +68,18 @@ class BarcodeSelectionCallback(
 
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.ACTION_SELECTION_SESSION_UPDATED,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_SESSION to session.toJson(),
-                                                FIELD_FRAME_DATA to JSONObject()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.ACTION_SELECTION_SESSION_UPDATED,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_SESSION to session.toJson(),
+                                FIELD_FRAME_DATA to JSONObject()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             latestSession.set(session)
             lockAndWait()

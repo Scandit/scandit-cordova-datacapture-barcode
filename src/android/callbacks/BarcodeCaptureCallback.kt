@@ -13,12 +13,12 @@ import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.core.data.FrameData
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class BarcodeCaptureCallback(
     private val actionsHandler: ActionsHandler,

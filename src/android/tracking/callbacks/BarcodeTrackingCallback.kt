@@ -13,12 +13,12 @@ import com.scandit.datacapture.cordova.barcode.factories.BarcodeCaptureActionFac
 import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.data.SerializableFinishModeCallbackData
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class BarcodeTrackingCallback(
     private val actionsHandler: ActionsHandler,
@@ -39,19 +39,19 @@ class BarcodeTrackingCallback(
 
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_TRACKING_SESSION_UPDATED_EVENT,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_SESSION to session.toJson(),
-                                                // TODO [SDC-2001] -> add frame data serialization
-                                                FIELD_FRAME_DATA to JSONObject()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_TRACKING_SESSION_UPDATED_EVENT,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_SESSION to session.toJson(),
+                                // TODO [SDC-2001] -> add frame data serialization
+                                FIELD_FRAME_DATA to JSONObject()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             latestSession.set(session)
             lockAndWait()

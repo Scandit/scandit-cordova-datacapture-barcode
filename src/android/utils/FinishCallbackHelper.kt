@@ -14,21 +14,21 @@ class FinishCallbackHelper {
 
     fun isFinishBarcodeCaptureModeCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_BARCODE_SCANNED
+            data, BarcodeCaptureActionFactory.ACTION_BARCODE_SCANNED
         ) || checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_CAPTURE_SESSION_UPDATED
+            data, BarcodeCaptureActionFactory.ACTION_CAPTURE_SESSION_UPDATED
         )
     }
 
     fun isFinishBarcodeTrackingModeCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_TRACKING_SESSION_UPDATED
+            data, BarcodeCaptureActionFactory.ACTION_TRACKING_SESSION_UPDATED
         )
     }
 
     fun isFinishBarcodeSelectionModeCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_SELECTION_SESSION_UPDATED
+            data, BarcodeCaptureActionFactory.ACTION_SELECTION_SESSION_UPDATED
         ) || checkFinishCallbackIdFieldForValue(
             data, BarcodeCaptureActionFactory.ACTION_SELECTION_UPDATED
         )
@@ -36,19 +36,19 @@ class FinishCallbackHelper {
 
     fun isFinishBarcodeTrackingBasicOverlayCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_BRUSH_FOR_TRACKED_BARCODE
+            data, BarcodeCaptureActionFactory.ACTION_BRUSH_FOR_TRACKED_BARCODE
         )
     }
 
     fun isFinishBarcodeTrackingAdvancedOverlayViewCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_VIEW_FOR_TRACKED_BARCODE
+            data, BarcodeCaptureActionFactory.ACTION_VIEW_FOR_TRACKED_BARCODE
         )
     }
 
     fun isFinishBarcodeTrackingAdvancedOverlayOffsetCallback(data: JSONObject): Boolean {
         return checkFinishCallbackIdFieldForValue(
-                data, BarcodeCaptureActionFactory.ACTION_OFFSET_FOR_TRACKED_BARCODE
+            data, BarcodeCaptureActionFactory.ACTION_OFFSET_FOR_TRACKED_BARCODE
         )
     }
 
@@ -66,6 +66,6 @@ class FinishCallbackHelper {
 
     private fun checkFinishCallbackIdFieldForValue(data: JSONObject, value: String): Boolean {
         return data.has(SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID) &&
-                data[SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID] == value
+            data[SerializableCallbackAction.FIELD_FINISH_CALLBACK_ID] == value
     }
 }

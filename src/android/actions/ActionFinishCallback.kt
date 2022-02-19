@@ -75,10 +75,10 @@ class ActionFinishCallback(
                     throw JSONException("Cannot recognise finish callback action with data $data")
             }
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         } catch (e: RuntimeException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

@@ -20,14 +20,14 @@ class ActionGetCountForBarcodeInBarcodeSelectionSession(
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val parsedData = SerializableBarcodeSelectionSessionData(
-                    args.getString(0)
+                args.getString(0)
             )
             listener.onGetCountForBarcodeInBarcodeSelectionSession(parsedData, callbackContext)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         } catch (e: RuntimeException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

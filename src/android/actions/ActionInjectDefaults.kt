@@ -90,7 +90,7 @@ class ActionInjectDefaults(
             )
             listener.onBarcodeDefaults(defaults, callbackContext)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

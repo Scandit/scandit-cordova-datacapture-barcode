@@ -20,14 +20,14 @@ class ActionSetOffsetForTrackedBarcode(
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val parsedData = SerializableAdvancedOverlayOffsetActionData(
-                    args.getJSONObject(0)
+                args.getJSONObject(0)
             )
             listener.onOffsetForTrackedBarcode(parsedData, callbackContext)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

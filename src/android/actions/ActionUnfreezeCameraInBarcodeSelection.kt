@@ -20,10 +20,10 @@ class ActionUnfreezeCameraInBarcodeSelection(
         try {
             listener.onUnfreezeCameraInBarcodeSelection(callbackContext)
         } catch (e: JSONException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         } catch (e: RuntimeException) {
-            e.printStackTrace()
+            println(e)
             listener.onJsonParseError(e, callbackContext)
         }
     }

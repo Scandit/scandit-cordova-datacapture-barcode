@@ -20,17 +20,18 @@ import com.scandit.datacapture.cordova.barcode.utils.AdvancedOverlayViewPool
 import com.scandit.datacapture.cordova.core.callbacks.Callback
 import com.scandit.datacapture.cordova.core.handlers.ActionsHandler
 import com.scandit.datacapture.cordova.core.utils.bitmapFromBase64String
+import com.scandit.datacapture.cordova.core.utils.removeFromParent
 import com.scandit.datacapture.cordova.core.workers.BackgroundWorker
 import com.scandit.datacapture.cordova.core.workers.Worker
 import com.scandit.datacapture.core.common.geometry.Anchor
 import com.scandit.datacapture.core.common.geometry.MeasureUnit
 import com.scandit.datacapture.core.common.geometry.PointWithUnit
-import java.util.concurrent.atomic.AtomicReference
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 class BarcodeTrackingAdvancedOverlayCallback(
     private val actionsHandler: ActionsHandler,
@@ -38,7 +39,7 @@ class BarcodeTrackingAdvancedOverlayCallback(
     private val viewPool: AdvancedOverlayViewPool,
     private val uiWorker: Worker,
     private val overlayListenerWorker: Worker = BackgroundWorker(
-            "advanced-overlay-listener-queue"
+        "advanced-overlay-listener-queue"
     )
 ) : Callback(callbackContext) {
 
@@ -76,17 +77,17 @@ class BarcodeTrackingAdvancedOverlayCallback(
     ) {
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_VIEW_FOR_TRACKED_BARCODE,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_VIEW_FOR_TRACKED_BARCODE,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWaitForView()
             onUnlockForView(overlay, trackedBarcode)
@@ -116,17 +117,17 @@ class BarcodeTrackingAdvancedOverlayCallback(
     ) {
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_OFFSET_FOR_TRACKED_BARCODE,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_OFFSET_FOR_TRACKED_BARCODE,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWaitForOffset()
             onUnlockForOffset(overlay, trackedBarcode)
@@ -156,17 +157,17 @@ class BarcodeTrackingAdvancedOverlayCallback(
     ) {
         lock.withLock {
             actionsHandler.addAction(
-                    BarcodeCaptureActionFactory.SEND_ANCHOR_FOR_TRACKED_BARCODE,
-                    JSONArray().apply {
-                        put(
-                                JSONObject(
-                                        mapOf(
-                                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
-                                        )
-                                )
+                BarcodeCaptureActionFactory.SEND_ANCHOR_FOR_TRACKED_BARCODE,
+                JSONArray().apply {
+                    put(
+                        JSONObject(
+                            mapOf(
+                                FIELD_TRACKED_BARCODE to trackedBarcode.toJson()
+                            )
                         )
-                    },
-                    callbackContext
+                    )
+                },
+                callbackContext
             )
             lockAndWaitForAnchor()
             onUnlockForAnchor(overlay, trackedBarcode)
@@ -200,13 +201,17 @@ class BarcodeTrackingAdvancedOverlayCallback(
         uiWorker.post {
             val imageView = viewPool.getOrCreateView(trackedBarcode.identifier)
 
+            if (imageView.parent != null) {
+                imageView.removeFromParent()
+            }
+
             imageView.setOnClickListener {
                 onViewForBarcodeTapped(trackedBarcode)
             }
             imageView.setImageBitmap(image)
             imageView.layoutParams = ViewGroup.MarginLayoutParams(
-                    viewData?.options?.height ?: WRAP_CONTENT,
-                    viewData?.options?.width ?: WRAP_CONTENT
+                viewData?.options?.height ?: WRAP_CONTENT,
+                viewData?.options?.width ?: WRAP_CONTENT
             )
             overlay.setViewForTrackedBarcode(trackedBarcode, imageView)
         }
@@ -256,7 +261,7 @@ class BarcodeTrackingAdvancedOverlayCallback(
         overlay: BarcodeTrackingAdvancedOverlay
     ) {
         overlay.setOffsetForTrackedBarcode(
-                trackedBarcode, offset ?: PointWithUnit(0f, 0f, MeasureUnit.PIXEL)
+            trackedBarcode, offset ?: PointWithUnit(0f, 0f, MeasureUnit.PIXEL)
         )
     }
 
@@ -332,7 +337,7 @@ class BarcodeTrackingAdvancedOverlayCallback(
     ) {
         latestViewData.get()?.let { latestView ->
             setViewForTrackedBarcode(
-                    trackedBarcode, latestView.view, overlay, switchToOverlayWorker = false
+                trackedBarcode, latestView.view, overlay, switchToOverlayWorker = false
             )
             latestViewData.set(null)
         }
@@ -345,7 +350,7 @@ class BarcodeTrackingAdvancedOverlayCallback(
     ) {
         latestOffsetData.get()?.let { latestOffset ->
             setOffsetForTrackedBarcode(
-                    trackedBarcode, latestOffset.offset, overlay, switchToOverlayWorker = false
+                trackedBarcode, latestOffset.offset, overlay, switchToOverlayWorker = false
             )
             latestOffsetData.set(null)
         }
