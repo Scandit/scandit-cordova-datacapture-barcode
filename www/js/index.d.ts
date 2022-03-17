@@ -31,10 +31,12 @@ export class BarcodeCaptureSession {
     private _newlyRecognizedBarcodes;
     private _newlyLocalizedBarcodes;
     private _frameSequenceID;
+    private listenerProxy;
     get newlyRecognizedBarcodes(): Barcode[];
     get newlyLocalizedBarcodes(): LocalizedOnlyBarcode[];
     get frameSequenceID(): number;
     private static fromJSON;
+    reset(): Promise<void>;
 }
 export interface BarcodeCaptureSessionJSON {
     newlyRecognizedBarcodes: BarcodeJSON[];
@@ -363,6 +365,7 @@ export class BarcodeTrackingSession {
     private _updatedTrackedBarcodes;
     private _trackedBarcodes;
     private _frameSequenceID;
+    private listenerProxy;
     get addedTrackedBarcodes(): TrackedBarcode[];
     get removedTrackedBarcodes(): string[];
     get updatedTrackedBarcodes(): TrackedBarcode[];
@@ -371,6 +374,7 @@ export class BarcodeTrackingSession {
     };
     get frameSequenceID(): number;
     private static fromJSON;
+    reset(): Promise<void>;
 }
 export interface BarcodeTrackingListener {
     didUpdateSession?(barcodeTracking: BarcodeTracking, session: BarcodeTrackingSession): void;

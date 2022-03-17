@@ -22,13 +22,16 @@ import kotlin.concurrent.withLock
 
 class BarcodeCaptureCallback(
     private val actionsHandler: ActionsHandler,
-    callbackContext: CallbackContext
+    callbackContext: CallbackContext,
+    private val lock: ReentrantLock = ReentrantLock(true)
 ) : Callback(callbackContext) {
 
-    private val lock = ReentrantLock(true)
     private val condition = lock.newCondition()
 
+    private val latestSession: AtomicReference<BarcodeCaptureSession?> = AtomicReference()
     private val latestStateData = AtomicReference<SerializableFinishModeCallbackData?>(null)
+
+    fun latestSession() = latestSession.get()
 
     fun onSessionUpdated(
         barcodeCapture: BarcodeCapture,
@@ -54,6 +57,7 @@ class BarcodeCaptureCallback(
                 },
                 callbackContext
             )
+            latestSession.set(session)
             lockAndWait()
             onUnlock(barcodeCapture)
         }
@@ -83,6 +87,7 @@ class BarcodeCaptureCallback(
                 },
                 callbackContext
             )
+            latestSession.set(session)
             lockAndWait()
             onUnlock(barcodeCapture)
         }

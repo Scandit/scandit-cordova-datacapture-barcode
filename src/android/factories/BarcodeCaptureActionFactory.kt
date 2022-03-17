@@ -27,6 +27,8 @@ class BarcodeCaptureActionFactory(
             SUBSCRIBE_BARCODE_SELECTION -> createActionSubscribeBarcodeSelection()
             ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION ->
                 createActionGetCountForBarcodeInBarcodeSelectionSession()
+            ACTION_RESET_BARCODE_CAPTURE_SESSION -> createActionResetBarcodeCaptureSession()
+            ACTION_RESET_BARCODE_TRACKING_SESSION -> createActionResetBarcodeTrackingSession()
             ACTION_RESET_BARCODE_SELECTION_SESSION -> createActionResetBarcodeSelectionSession()
             ACTION_RESET_BARCODE_SELECTION -> createActionResetBarcodeSelection()
             ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION ->
@@ -190,6 +192,16 @@ class BarcodeCaptureActionFactory(
             listener
         )
 
+    private fun createActionResetBarcodeCaptureSession(): Action =
+        ActionResetBarcodeCaptureSession(
+            listener
+        )
+
+    private fun createActionResetBarcodeTrackingSession(): Action =
+        ActionResetBarcodeTrackingSession(
+            listener
+        )
+
     private fun createActionResetBarcodeSelectionSession(): Action =
         ActionResetBarcodeSelectionSession(
             listener
@@ -240,6 +252,8 @@ class BarcodeCaptureActionFactory(
 
         const val ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION =
             "getCountForBarcodeInBarcodeSelectionSession"
+        const val ACTION_RESET_BARCODE_CAPTURE_SESSION = "resetBarcodeCaptureSession"
+        const val ACTION_RESET_BARCODE_TRACKING_SESSION = "resetBarcodeTrackingSession"
         const val ACTION_RESET_BARCODE_SELECTION_SESSION = "resetBarcodeSelectionSession"
         const val ACTION_RESET_BARCODE_SELECTION = "resetBarcodeSelection"
         const val ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION = "unfreezeCameraInBarcodeSelection"

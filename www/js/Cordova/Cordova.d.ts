@@ -18,6 +18,8 @@ export declare enum CordovaFunction {
     ClearTrackedBarcodeViews = "clearTrackedBarcodeViews",
     SubscribeBarcodeSelectionListener = "subscribeBarcodeSelectionListener",
     GetCountForBarcodeInBarcodeSelectionSession = "getCountForBarcodeInBarcodeSelectionSession",
+    ResetBarcodeCaptureSession = "resetBarcodeCaptureSession",
+    ResetBarcodeTrackingSession = "resetBarcodeTrackingSession",
     ResetBarcodeSelectionSession = "resetBarcodeSelectionSession",
     ResetBarcodeSelection = "resetBarcodeSelection",
     UnfreezeCameraInBarcodeSelection = "unfreezeCameraInBarcodeSelection",

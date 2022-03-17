@@ -56,6 +56,8 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
     var lastFrameSequenceId: Int?
 
     var barcodeSelection: BarcodeSelection?
+    var barcodeCaptureSession: BarcodeCaptureSession?
+    var barcodeTrackingSession: BarcodeTrackingSession?
     var barcodeSelectionSession: BarcodeSelectionSession?
     var barcodeSelectionBasicOverlay: BarcodeSelectionBasicOverlay?
 

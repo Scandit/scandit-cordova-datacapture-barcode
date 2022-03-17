@@ -53,6 +53,9 @@ class BarcodeTrackingSession {
         }, {});
         return session;
     }
+    reset() {
+        return this.listenerProxy.reset();
+    }
 }
 exports.BarcodeTrackingSession = BarcodeTrackingSession;
 var BarcodeTrackingBasicOverlayStyle;

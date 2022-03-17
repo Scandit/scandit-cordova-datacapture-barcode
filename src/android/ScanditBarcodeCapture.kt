@@ -247,9 +247,6 @@ class ScanditBarcodeCapture :
         mode: BarcodeCapture,
         json: JsonValue
     ) {
-        if (json.contains("enabled")) {
-            mode.isEnabled = json.requireByKeyAsBoolean("enabled")
-        }
         barcodeCaptureHandler.attachBarcodeCapture(mode)
     }
     //endregion
@@ -490,6 +487,16 @@ class ScanditBarcodeCapture :
         callbackContext.success()
     }
 
+    override fun onResetBarcodeCaptureSession(callbackContext: CallbackContext) {
+        barcodeCallbacks.barcodeCaptureCallback?.latestSession()?.reset()
+        callbackContext.success()
+    }
+
+    override fun onResetBarcodeTrackingSession(callbackContext: CallbackContext) {
+        barcodeCallbacks.barcodeTrackingCallback?.latestSession()?.reset()
+        callbackContext.success()
+    }
+
     override fun onResetBarcodeSelectionSession(callbackContext: CallbackContext) {
         barcodeCallbacks.barcodeSelectionCallback?.latestSession()?.reset()
         callbackContext.success()
@@ -600,6 +607,8 @@ interface BarcodeActionsListeners :
     ActionGetCountForBarcodeInBarcodeSelectionSession.ResultListener,
     ActionUnfreezeCameraInBarcodeSelection.ResultListener,
     ActionResetBarcodeSelection.ResultListener,
+    ActionResetBarcodeCaptureSession.ResultListener,
+    ActionResetBarcodeTrackingSession.ResultListener,
     ActionResetBarcodeSelectionSession.ResultListener,
     ActionSend.ResultListener,
     ActionSetViewForTrackedBarcode.ResultListener,

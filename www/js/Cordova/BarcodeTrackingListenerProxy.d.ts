@@ -5,6 +5,7 @@ export declare class BarcodeTrackingListenerProxy {
     private barcodeTracking;
     static forBarcodeTracking(barcodeTracking: BarcodeTracking): BarcodeTrackingListenerProxy;
     private initialize;
+    reset(): Promise<void>;
     private subscribeListener;
     private notifyListeners;
 }

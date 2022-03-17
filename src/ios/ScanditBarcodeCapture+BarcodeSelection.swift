@@ -57,6 +57,26 @@ extension ScanditBarcodeCapture {
                              callbackId: command.callbackId)
     }
 
+    @objc(resetBarcodeCaptureSession:)
+        func resetBarcodeCaptureSession(command: CDVInvokedUrlCommand) {
+            guard let barcodeCaptureSession = self.barcodeCaptureSession else {
+                commandDelegate.send(.failure(with: .noBarcodeCaptureSession), callbackId: command.callbackId)
+                return
+            }
+            barcodeCaptureSession.reset()
+            commandDelegate.send(.success, callbackId: command.callbackId)
+        }
+
+    @objc(resetBarcodeTrackingSession:)
+        func resetBarcodeTrackingSession(command: CDVInvokedUrlCommand) {
+            guard let barcodeTrackingSession = self.barcodeTrackingSession else {
+                commandDelegate.send(.failure(with: .noBarcodeTrackingSession), callbackId: command.callbackId)
+                return
+            }
+            barcodeTrackingSession.reset()
+            commandDelegate.send(.success, callbackId: command.callbackId)
+        }
+
     @objc(resetBarcodeSelectionSession:)
     func resetBarcodeSelectionSession(command: CDVInvokedUrlCommand) {
         guard let barcodeSelectionSession = self.barcodeSelectionSession else {

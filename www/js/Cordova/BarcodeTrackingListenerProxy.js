@@ -19,6 +19,11 @@ class BarcodeTrackingListenerProxy {
     initialize() {
         this.subscribeListener();
     }
+    reset() {
+        return new Promise((resolve, reject) => {
+            BarcodeTrackingListenerProxy.cordovaExec(resolve, reject, Cordova_1.CordovaFunction.ResetBarcodeTrackingSession, null);
+        });
+    }
     subscribeListener() {
         BarcodeTrackingListenerProxy.cordovaExec(this.notifyListeners.bind(this), null, Cordova_1.CordovaFunction.SubscribeBarcodeTrackingListener, null);
     }

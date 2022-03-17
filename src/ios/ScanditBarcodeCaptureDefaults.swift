@@ -26,24 +26,6 @@ fileprivate extension BarcodeSelectionBasicOverlay {
                                                 BarcodeSelection(context: nil,
                                                                  settings: BarcodeSelectionSettings())).style
     }
-
-    static var dotStyle: BarcodeSelectionBasicOverlay {
-        return BarcodeSelectionBasicOverlay(
-                barcodeSelection: BarcodeSelection(
-                context: nil,
-                settings: BarcodeSelectionSettings()),
-                style: BarcodeSelectionBasicOverlayStyle.dot
-        )
-    }
-
-    static var frameStyle: BarcodeSelectionBasicOverlay {
-        return BarcodeSelectionBasicOverlay(
-                barcodeSelection: BarcodeSelection(
-                context: nil,
-                settings: BarcodeSelectionSettings()),
-                style: BarcodeSelectionBasicOverlayStyle.frame
-        )
-    }
 }
 
 struct ScanditBarcodeCaptureDefaults: Encodable {
@@ -244,38 +226,38 @@ extension ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults {
 extension ScanditBarcodeCaptureDefaults.BarcodeSelectionBasicOverlayDefaults {
 
     init() {
-        DefaultTrackedBrush = BarcodeSelectionBasicOverlay.defaultTrackedBrush.asDefaults
-        DefaultAimedBrush = BarcodeSelectionBasicOverlay.defaultAimedBrush.asDefaults
-        DefaultSelectedBrush = BarcodeSelectionBasicOverlay.defaultSelectedBrush.asDefaults
-        DefaultSelectingBrush = BarcodeSelectionBasicOverlay.defaultSelectingBrush.asDefaults
+        DefaultTrackedBrush = BarcodeSelectionBasicOverlay.defaultTrackedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        DefaultAimedBrush = BarcodeSelectionBasicOverlay.defaultAimedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        DefaultSelectedBrush = BarcodeSelectionBasicOverlay.defaultSelectedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        DefaultSelectingBrush = BarcodeSelectionBasicOverlay.defaultSelectingBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
         defaultStyle = BarcodeSelectionBasicOverlay.defaultStyle.jsonString
         styles = [
             BarcodeSelectionBasicOverlayStyle.dot.jsonString: [
                 "DefaultTrackedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.dotStyle.trackedBrush
+                    BarcodeSelectionBasicOverlay.defaultTrackedBrush(forStyle: .dot)
                 ),
                 "DefaultAimedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.dotStyle.aimedBrush
+                    BarcodeSelectionBasicOverlay.defaultAimedBrush(forStyle: .dot)
                 ),
                 "DefaultSelectedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.dotStyle.selectedBrush
+                    BarcodeSelectionBasicOverlay.defaultSelectedBrush(forStyle: .dot)
                 ),
                 "DefaultSelectingBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.dotStyle.selectingBrush
+                    BarcodeSelectionBasicOverlay.defaultSelectingBrush(forStyle: .dot)
                 ),
             ],
             BarcodeSelectionBasicOverlayStyle.frame.jsonString: [
                 "DefaultTrackedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.frameStyle.trackedBrush
+                    BarcodeSelectionBasicOverlay.defaultTrackedBrush(forStyle: .frame)
                 ),
                 "DefaultAimedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.frameStyle.aimedBrush
+                    BarcodeSelectionBasicOverlay.defaultAimedBrush(forStyle: .frame)
                 ),
                 "DefaultSelectedBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.frameStyle.selectedBrush
+                    BarcodeSelectionBasicOverlay.defaultSelectedBrush(forStyle: .frame)
                 ),
                 "DefaultSelectingBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeSelectionBasicOverlay.frameStyle.selectingBrush
+                    BarcodeSelectionBasicOverlay.defaultSelectingBrush(forStyle: .frame)
                 ),
             ]
         ]

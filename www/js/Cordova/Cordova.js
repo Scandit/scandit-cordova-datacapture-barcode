@@ -35,6 +35,8 @@ var CordovaFunction;
     CordovaFunction["ClearTrackedBarcodeViews"] = "clearTrackedBarcodeViews";
     CordovaFunction["SubscribeBarcodeSelectionListener"] = "subscribeBarcodeSelectionListener";
     CordovaFunction["GetCountForBarcodeInBarcodeSelectionSession"] = "getCountForBarcodeInBarcodeSelectionSession";
+    CordovaFunction["ResetBarcodeCaptureSession"] = "resetBarcodeCaptureSession";
+    CordovaFunction["ResetBarcodeTrackingSession"] = "resetBarcodeTrackingSession";
     CordovaFunction["ResetBarcodeSelectionSession"] = "resetBarcodeSelectionSession";
     CordovaFunction["ResetBarcodeSelection"] = "resetBarcodeSelection";
     CordovaFunction["UnfreezeCameraInBarcodeSelection"] = "unfreezeCameraInBarcodeSelection";

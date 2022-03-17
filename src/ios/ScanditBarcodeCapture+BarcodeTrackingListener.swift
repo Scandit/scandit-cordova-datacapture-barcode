@@ -8,6 +8,8 @@ extension ScanditBarcodeCapture: BarcodeTrackingListener {
             return
         }
 
+        barcodeTrackingSession = session
+
         lastTrackedBarcodes = session.trackedBarcodes
         lastFrameSequenceId = session.frameSequenceId
 
