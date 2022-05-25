@@ -6,25 +6,22 @@ fileprivate extension Brush {
     }
 }
 
+// MARK: - Barcode Capture overlays with styles explicitly set.
 fileprivate extension BarcodeCaptureOverlay {
     static var defaultStyle: BarcodeCaptureOverlayStyle {
-        return BarcodeCaptureOverlay(barcodeCapture:
-                                        BarcodeCapture(context: nil, settings: BarcodeCaptureSettings())).style
+        return BarcodeCaptureOverlayStyle.legacy
     }
 }
 
 fileprivate extension BarcodeTrackingBasicOverlay {
     static var defaultStyle: BarcodeTrackingBasicOverlayStyle {
-        return BarcodeTrackingBasicOverlay(barcodeTracking:
-                                            BarcodeTracking(context: nil, settings: BarcodeTrackingSettings())).style
+        return BarcodeTrackingBasicOverlayStyle.legacy
     }
 }
 
 fileprivate extension BarcodeSelectionBasicOverlay {
     static var defaultStyle: BarcodeSelectionBasicOverlayStyle {
-        return BarcodeSelectionBasicOverlay(barcodeSelection:
-                                                BarcodeSelection(context: nil,
-                                                                 settings: BarcodeSelectionSettings())).style
+        return BarcodeSelectionBasicOverlayStyle.frame
     }
 }
 
@@ -162,26 +159,15 @@ extension ScanditBarcodeCaptureDefaults.SparkCaptureDefaultsContainer {
 
 extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
     init() {
-        DefaultBrush = BarcodeCaptureOverlay.defaultBrush.asDefaults
-        defaultStyle = BarcodeCaptureOverlay.defaultStyle.jsonString
+        let style = BarcodeCaptureOverlay.defaultStyle
+        DefaultBrush = BarcodeCaptureOverlay.defaultBrush(forStyle: style).asDefaults
+        defaultStyle = style.jsonString
         styles = [
             BarcodeCaptureOverlayStyle.legacy.jsonString: [
-                "DefaultBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeCaptureOverlay(
-                        barcodeCapture: BarcodeCapture(
-                        context: nil,
-                        settings: BarcodeCaptureSettings()),
-                    with: BarcodeCaptureOverlayStyle.legacy
-                ).brush)
+                "DefaultBrush": BarcodeCaptureOverlay.defaultBrush(forStyle: BarcodeCaptureOverlayStyle.legacy).asDefaults
             ],
             BarcodeCaptureOverlayStyle.frame.jsonString: [
-                "DefaultBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeCaptureOverlay(
-                        barcodeCapture: BarcodeCapture(
-                        context: nil,
-                        settings: BarcodeCaptureSettings()),
-                    with: BarcodeCaptureOverlayStyle.frame
-                ).brush)
+                "DefaultBrush": BarcodeCaptureOverlay.defaultBrush(forStyle: BarcodeCaptureOverlayStyle.frame).asDefaults
             ]
         ]
     }
@@ -189,35 +175,18 @@ extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
 
 extension ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults {
     init() {
-        DefaultBrush = BarcodeTrackingBasicOverlay.defaultBrush.asDefaults
-        defaultStyle = BarcodeTrackingBasicOverlay.defaultStyle.jsonString
+        let style = BarcodeTrackingBasicOverlay.defaultStyle
+        DefaultBrush = BarcodeTrackingBasicOverlay.defaultBrush(forStyle: style).asDefaults
+        defaultStyle = style.jsonString
         styles = [
             BarcodeTrackingBasicOverlayStyle.legacy.jsonString: [
-                "DefaultBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeTrackingBasicOverlay(
-                        barcodeTracking: BarcodeTracking(
-                        context: nil,
-                        settings: BarcodeTrackingSettings()),
-                    with: BarcodeTrackingBasicOverlayStyle.legacy
-                ).brush ?? BarcodeTrackingBasicOverlay.defaultBrush)
+                "DefaultBrush":  BarcodeTrackingBasicOverlay.defaultBrush(forStyle: BarcodeTrackingBasicOverlayStyle.legacy).asDefaults
             ],
             BarcodeTrackingBasicOverlayStyle.frame.jsonString: [
-                "DefaultBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeTrackingBasicOverlay(
-                        barcodeTracking: BarcodeTracking(
-                        context: nil,
-                        settings: BarcodeTrackingSettings()),
-                    with: BarcodeTrackingBasicOverlayStyle.frame
-                ).brush ?? BarcodeTrackingBasicOverlay.defaultBrush)
+                "DefaultBrush": BarcodeTrackingBasicOverlay.defaultBrush(forStyle: BarcodeTrackingBasicOverlayStyle.frame).asDefaults
             ],
             BarcodeTrackingBasicOverlayStyle.dot.jsonString: [
-                "DefaultBrush": ScanditCaptureCoreDefaults.BrushDefaults.from(
-                    BarcodeTrackingBasicOverlay(
-                        barcodeTracking: BarcodeTracking(
-                        context: nil,
-                        settings: BarcodeTrackingSettings()),
-                    with: BarcodeTrackingBasicOverlayStyle.dot
-                ).brush ?? BarcodeTrackingBasicOverlay.defaultBrush)
+                "DefaultBrush": BarcodeTrackingBasicOverlay.defaultBrush(forStyle: BarcodeTrackingBasicOverlayStyle.dot).asDefaults
             ]
         ]
     }
@@ -307,8 +276,7 @@ extension ScanditBarcodeCaptureDefaults.SymbologySettingsDefaults {
         let settings = BarcodeCaptureSettings()
         return SymbologyDescription.all.reduce(
             into: [String: String](), {(result, symbologyDescription) in
-                let symbology = SymbologyDescription.symbology(fromIdentifier: symbologyDescription.identifier)
-                let settings = settings.settings(for: symbology)
+                let settings = settings.settings(for: symbologyDescription.symbology)
                 result[symbologyDescription.identifier] = settings.jsonString
             })
     }
