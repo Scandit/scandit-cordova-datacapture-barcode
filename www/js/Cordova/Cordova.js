@@ -40,5 +40,4 @@ var CordovaFunction;
     CordovaFunction["ResetBarcodeSelectionSession"] = "resetBarcodeSelectionSession";
     CordovaFunction["ResetBarcodeSelection"] = "resetBarcodeSelection";
     CordovaFunction["UnfreezeCameraInBarcodeSelection"] = "unfreezeCameraInBarcodeSelection";
-    CordovaFunction["SubscribeSparkCaptureListener"] = "subscribeSparkCaptureListener";
 })(CordovaFunction = exports.CordovaFunction || (exports.CordovaFunction = {}));

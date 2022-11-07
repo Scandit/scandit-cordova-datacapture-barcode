@@ -3,8 +3,6 @@ import { PrivateCompositeTypeDescription, SymbologyDescription, SymbologySetting
 import { CameraSettings } from 'Camera+Related';
 import { Color } from 'Common';
 import { CameraSettingsDefaultsJSON } from 'CoreDefaults';
-import { LocationSelection } from 'LocationSelection';
-declare type SparkCaptureFeedback = any;
 declare type BarcodeSelectionFeedback = any;
 declare type BarcodeSelectionFreezeBehavior = any;
 declare type BarcodeSelectionTapBehavior = any;
@@ -86,13 +84,6 @@ export interface Defaults {
             };
         };
     };
-    SparkCapture: {
-        feedback: SparkCaptureFeedback;
-        SparkCaptureSettings: {
-            codeDuplicateFilter: number;
-            locationSelection: LocationSelection;
-        };
-    };
 }
 export interface DefaultsJSON {
     SymbologySettings: {
@@ -165,13 +156,6 @@ export interface DefaultsJSON {
                 strokeColor: string;
                 strokeWidth: number;
             };
-        };
-    };
-    SparkCapture: {
-        feedback: string;
-        SparkCaptureSettings: {
-            codeDuplicateFilter: number;
-            locationSelection: string;
         };
     };
 }

@@ -11,7 +11,6 @@ class BarcodeCaptureCallbacks {
     var barcodeCaptureListener: Callback?
     var barcodeTrackingListener: Callback?
     var barcodeSelectionListener: Callback?
-    var sparkCaptureListener: Callback?
     var barcodeTrackingBasicOverlayListener: Callback?
     var barcodeTrackingAdvancedOverlayListener: Callback?
 
@@ -19,7 +18,6 @@ class BarcodeCaptureCallbacks {
         barcodeCaptureListener = nil
         barcodeTrackingListener = nil
         barcodeSelectionListener = nil
-        sparkCaptureListener = nil
         barcodeTrackingBasicOverlayListener = nil
         barcodeTrackingAdvancedOverlayListener = nil
     }
@@ -34,12 +32,9 @@ class ScanditBarcodeCapture: CDVPlugin, DataCapturePlugin {
         barcodeTrackingDeserializer.delegate = self
         let barcodeSelectionDeserializer = BarcodeSelectionDeserializer()
         barcodeSelectionDeserializer.delegate = self
-        let sparkCaptureDeserializer = SparkCaptureDeserializer()
-        sparkCaptureDeserializer.delegate = self
         return [barcodeCaptureDeserializer,
                 barcodeTrackingDeserializer,
-                barcodeSelectionDeserializer,
-                sparkCaptureDeserializer]
+                barcodeSelectionDeserializer]
     }()
 
     lazy var componentDeserializers: [DataCaptureComponentDeserializer] = []

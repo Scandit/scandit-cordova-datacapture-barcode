@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="scandit-cordova-datacapture-barcode"
-    version="6.14.1"
+    version="6.15.0"
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -20,9 +20,7 @@
         src="www/js/Cordova/BarcodeTrackingBasicOverlayProxy.js"></js-module>
     <js-module name="BarcodeTrackingAdvancedOverlayProxy"
         src="www/js/Cordova/BarcodeTrackingAdvancedOverlayProxy.js"></js-module>
-    <js-module name="SparkCaptureListenerProxy"
-        src="www/js/Cordova/SparkCaptureListenerProxy.js"></js-module>
-
+    
     <js-module name="BarcodeCapture" src="www/js/BarcodeCapture.js">
         <merges target="Scandit" />
     </js-module>
@@ -56,15 +54,6 @@
     <js-module name="BarcodeSelection+Related" src="www/js/BarcodeSelection+Related.js">
         <merges target="Scandit" />
     </js-module>
-    <js-module name="SparkCaptureSettings" src="www/js/SparkCaptureSettings.js">
-        <merges target="Scandit" />
-    </js-module>
-    <js-module name="SparkCapture+Related" src="www/js/SparkCapture+Related.js">
-        <merges target="Scandit" />
-    </js-module>
-    <js-module name="SparkCapture" src="www/js/SparkCapture.js">
-        <merges target="Scandit" />
-    </js-module>
 
     <engines>
         <engine name="cordova-ios" version=">=5.0.0" />
@@ -86,13 +75,11 @@
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeCapture.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeTracking.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeSelection.swift" />
-        <source-file src="src/ios/ScanditBarcodeCapture+SparkCapture.swift" />
         <source-file src="src/ios/ScanditBarcodeCaptureDefaults.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeCaptureListener.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeCaptureDeserializerDelegate.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeTrackingDeserializerDelegate.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeSelectionDeserializerDelegate.swift" />
-        <source-file src="src/ios/ScanditBarcodeCapture+SparkCaptureDeserializerDelegate.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeTrackingListener.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture+BarcodeSelectionListener.swift" />
         <source-file
@@ -100,14 +87,13 @@
         <source-file
             src="src/ios/ScanditBarcodeCapture+BarcodeTrackingAdvancedOverlayDelegate.swift" />
         <source-file src="src/ios/TrackedBarcodesDictionary+Extensions.swift" />
-        <source-file src="src/ios/ScanditBarcodeCapture+SparkCaptureListener.swift" />
         <source-file src="src/ios/BlockingCallbackResults.swift" />
         <source-file src="src/ios/TappableBase64ImageView.swift" />
         <source-file src="src/ios/CommandJSONArgument+ScanditBarcodeCapture.swift" />
 
-        <dependency id="scandit-cordova-datacapture-core" version="6.14.1" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.15.0" />
 
-        <framework src="ScanditBarcodeCapture" spec="= 6.14.1" type="podspec" />
+        <framework src="ScanditBarcodeCapture" spec="= 6.15.0" type="podspec" />
     </platform>
 
     <!-- Android -->
@@ -222,7 +208,7 @@
         <source-file src="src/android/errors/ErrorTrackedBarcodeNotFound.kt"
             target-dir="kotlin/com/scandit/datacapture/cordova/barcode/errors" />
 
-        <dependency id="scandit-cordova-datacapture-core" version="6.14.1" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.15.0" />
 
         <framework custom="true" src="src/android/build.gradle" type="gradleReference" />
 
