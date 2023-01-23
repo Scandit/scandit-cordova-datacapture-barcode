@@ -344,6 +344,7 @@ export class BarcodeTracking implements DataCaptureMode {
     addListener(listener: BarcodeTrackingListener): void;
     removeListener(listener: BarcodeTrackingListener): void;
     private didChange;
+    reset(): Promise<void>;
 }
 
 
