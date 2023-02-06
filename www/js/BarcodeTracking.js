@@ -71,6 +71,10 @@ class BarcodeTracking extends Serializeable_1.DefaultSerializeable {
             return Promise.resolve();
         }
     }
+    reset() {
+        var _a, _b;
+        return (_b = (_a = this.listenerProxy) === null || _a === void 0 ? void 0 : _a.reset()) !== null && _b !== void 0 ? _b : Promise.resolve();
+    }
 }
 __decorate([
     Serializeable_1.nameForSerialization('enabled')
