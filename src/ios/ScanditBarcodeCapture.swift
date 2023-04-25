@@ -1,6 +1,5 @@
 import ScanditBarcodeCapture
 
-// TODO: serialize frame data as argument (https://jira.scandit.com/browse/SDC-1014)
 extension FrameData {
     func toJSON() -> CDVPluginResult.JSONMessage {
         return [:]

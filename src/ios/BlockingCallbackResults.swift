@@ -48,13 +48,13 @@ struct BarcodeCaptureCallbackResult: BlockingListenerCallbackResult {
         guard let result = result, let anchorString = result.anchorString else {
             return nil
         }
-        return Anchor(JSONString: anchorString)
+        return Anchor(jsonString: anchorString)
     }
 
     var offset: PointWithUnit? {
         guard let result = result, let offsetString = result.offsetString else {
             return nil
         }
-        return PointWithUnit(JSONString: offsetString)
+        return PointWithUnit(jsonString: offsetString)
     }
 }

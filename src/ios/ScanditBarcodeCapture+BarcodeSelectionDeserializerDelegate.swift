@@ -3,12 +3,14 @@ import ScanditBarcodeCapture
 extension ScanditBarcodeCapture: BarcodeSelectionDeserializerDelegate {
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didStartDeserializingMode mode: BarcodeSelection,
-                                      from JSONValue: JSONValue) { }
+                                      from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didFinishDeserializingMode mode: BarcodeSelection,
-                                      from JSONValue: JSONValue) {
-        let JSONString = JSONValue.jsonString()
+                                      from jsonValue: JSONValue) {
+        let JSONString = jsonValue.jsonString()
 
         guard let data = JSONString.data(using: .utf8),
             let jsonObject = try? JSONSerialization.jsonObject(with: data),
@@ -25,19 +27,25 @@ extension ScanditBarcodeCapture: BarcodeSelectionDeserializerDelegate {
 
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didStartDeserializingSettings settings: BarcodeSelectionSettings,
-                                      from JSONValue: JSONValue) { }
+                                      from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didFinishDeserializingSettings settings: BarcodeSelectionSettings,
-                                      from JSONValue: JSONValue) { }
+                                      from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didStartDeserializingBasicOverlay overlay: BarcodeSelectionBasicOverlay,
-                                      from JSONValue: JSONValue) { }
+                                      from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeSelectionDeserializer(_ deserializer: BarcodeSelectionDeserializer,
                                       didFinishDeserializingBasicOverlay overlay: BarcodeSelectionBasicOverlay,
-                                      from JSONValue: JSONValue) {
+                                      from jsonValue: JSONValue) {
         barcodeSelectionBasicOverlay = overlay
     }
 }

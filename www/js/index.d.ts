@@ -47,8 +47,8 @@ interface PrivateBarcodeCaptureSession {
     fromJSON(json: BarcodeCaptureSessionJSON): BarcodeCaptureSession;
 }
 export interface BarcodeCaptureListener {
-    didScan?(barcodeCapture: BarcodeCapture, session: BarcodeCaptureSession): void;
-    didUpdateSession?(barcodeCapture: BarcodeCapture, session: BarcodeCaptureSession): void;
+    didScan?(barcodeCapture: BarcodeCapture, session: BarcodeCaptureSession, getFrameData: () => Promise<FrameData>): void;
+    didUpdateSession?(barcodeCapture: BarcodeCapture, session: BarcodeCaptureSession, getFrameData: () => Promise<FrameData>): void;
 }
 export class BarcodeCaptureFeedback {
     success: Feedback;
@@ -378,7 +378,7 @@ export class BarcodeTrackingSession {
     reset(): Promise<void>;
 }
 export interface BarcodeTrackingListener {
-    didUpdateSession?(barcodeTracking: BarcodeTracking, session: BarcodeTrackingSession): void;
+    didUpdateSession?(barcodeTracking: BarcodeTracking, session: BarcodeTrackingSession, getFrameData: () => Promise<FrameData>): void;
 }
 export interface BarcodeTrackingBasicOverlayListener {
     brushForTrackedBarcode?(overlay: BarcodeTrackingBasicOverlay, trackedBarcode: TrackedBarcode): Brush | null;
@@ -612,8 +612,8 @@ interface PrivateBarcodeSelectionSession {
     fromJSON(json: BarcodeSelectionSessionJSON): BarcodeSelectionSession;
 }
 export interface BarcodeSelectionListener {
-    didUpdateSelection?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession): void;
-    didUpdateSession?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession): void;
+    didUpdateSelection?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession, getFrameData: () => Promise<FrameData>): void;
+    didUpdateSession?(barcodeSelection: BarcodeSelection, session: BarcodeSelectionSession, getFrameData: () => Promise<FrameData>): void;
 }
 interface PrivateBarcodeSelectionBasicOverlay {
     toJSON(): object;

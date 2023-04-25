@@ -149,7 +149,9 @@ class ScanditBarcodeCapture :
         session: BarcodeCaptureSession,
         data: FrameData
     ) {
+        ScanditCaptureCore.lastFrame = data
         barcodeCallbacks.barcodeCaptureCallback?.onSessionUpdated(barcodeCapture, session, data)
+        ScanditCaptureCore.lastFrame = null
     }
 
     override fun onBarcodeScanned(
@@ -157,7 +159,9 @@ class ScanditBarcodeCapture :
         session: BarcodeCaptureSession,
         data: FrameData
     ) {
+        ScanditCaptureCore.lastFrame = data
         barcodeCallbacks.barcodeCaptureCallback?.onBarcodeScanned(barcodeCapture, session, data)
+        ScanditCaptureCore.lastFrame = null
     }
     //endregion
 
@@ -167,7 +171,9 @@ class ScanditBarcodeCapture :
         session: BarcodeTrackingSession,
         data: FrameData
     ) {
+        ScanditCaptureCore.lastFrame = data
         barcodeCallbacks.barcodeTrackingCallback?.onSessionUpdated(mode, session)
+        ScanditCaptureCore.lastFrame = null
     }
     //endregion
 
@@ -298,7 +304,9 @@ class ScanditBarcodeCapture :
         session: BarcodeSelectionSession,
         frameData: FrameData?
     ) {
+        ScanditCaptureCore.lastFrame = frameData
         barcodeCallbacks.barcodeSelectionCallback?.onSelectionUpdated(barcodeSelection, session)
+        ScanditCaptureCore.lastFrame = null
     }
 
     override fun onSessionUpdated(
@@ -306,7 +314,9 @@ class ScanditBarcodeCapture :
         session: BarcodeSelectionSession,
         frameData: FrameData?
     ) {
+        ScanditCaptureCore.lastFrame = frameData
         barcodeCallbacks.barcodeSelectionCallback?.onSessionUpdated(barcodeSelection, session)
+        ScanditCaptureCore.lastFrame = null
     }
     //endregion
 

@@ -3,8 +3,8 @@ import ScanditBarcodeCapture
 extension ScanditBarcodeCapture: BarcodeTrackingDeserializerDelegate {
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didFinishDeserializingMode mode: BarcodeTracking,
-                                     from JSONValue: JSONValue) {
-        let JSONString = JSONValue.jsonString()
+                                     from jsonValue: JSONValue) {
+        let JSONString = jsonValue.jsonString()
 
         guard let data = JSONString.data(using: .utf8),
             let jsonObject = try? JSONSerialization.jsonObject(with: data),
@@ -19,19 +19,25 @@ extension ScanditBarcodeCapture: BarcodeTrackingDeserializerDelegate {
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didStartDeserializingMode mode: BarcodeTracking,
-                                     from JSONValue: JSONValue) { }
+                                     from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didStartDeserializingSettings settings: BarcodeTrackingSettings,
-                                     from JSONValue: JSONValue) { }
+                                     from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didFinishDeserializingSettings settings: BarcodeTrackingSettings,
-                                     from JSONValue: JSONValue) { }
+                                     from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didStartDeserializingBasicOverlay overlay: BarcodeTrackingBasicOverlay,
-                                     from JSONValue: JSONValue) {
+                                     from jsonValue: JSONValue) {
         callbackLocks.releaseAll()
 
         overlay.delegate = self
@@ -40,11 +46,13 @@ extension ScanditBarcodeCapture: BarcodeTrackingDeserializerDelegate {
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didFinishDeserializingBasicOverlay overlay: BarcodeTrackingBasicOverlay,
-                                     from JSONValue: JSONValue) { }
+                                     from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didStartDeserializingAdvancedOverlay overlay: BarcodeTrackingAdvancedOverlay,
-                                     from JSONValue: JSONValue) {
+                                     from jsonValue: JSONValue) {
         callbackLocks.releaseAll()
 
         overlay.delegate = self
@@ -53,5 +61,7 @@ extension ScanditBarcodeCapture: BarcodeTrackingDeserializerDelegate {
 
     func barcodeTrackingDeserializer(_ deserializer: BarcodeTrackingDeserializer,
                                      didFinishDeserializingAdvancedOverlay overlay: BarcodeTrackingAdvancedOverlay,
-                                     from JSONValue: JSONValue) { }
+                                     from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 }

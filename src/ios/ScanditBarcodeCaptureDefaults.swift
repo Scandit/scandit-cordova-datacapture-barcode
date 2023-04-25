@@ -30,23 +30,44 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
 
     struct BarcodeCaptureOverlayDefaults: Encodable {
         let defaultStyle: String
-        let DefaultBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultBrush: ScanditCaptureCoreDefaults.BrushDefaults
         let styles: [String: [String: ScanditCaptureCoreDefaults.BrushDefaults]]
+
+        enum CodingKeys: String, CodingKey {
+            case defaultStyle
+            case defaultBrush = "DefaultBrush"
+            case styles
+        }
     }
 
     struct BarcodeTrackingBasicOverlayDefaults: Encodable {
         let defaultStyle: String
-        let DefaultBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultBrush: ScanditCaptureCoreDefaults.BrushDefaults
         let styles: [String: [String: ScanditCaptureCoreDefaults.BrushDefaults]]
+
+        enum CodingKeys: String, CodingKey {
+            case defaultStyle
+            case defaultBrush = "DefaultBrush"
+            case styles
+        }
     }
 
     struct BarcodeSelectionBasicOverlayDefaults: Encodable {
         let defaultStyle: String
-        let DefaultTrackedBrush: ScanditCaptureCoreDefaults.BrushDefaults
-        let DefaultAimedBrush: ScanditCaptureCoreDefaults.BrushDefaults
-        let DefaultSelectedBrush: ScanditCaptureCoreDefaults.BrushDefaults
-        let DefaultSelectingBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultTrackedBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultAimedBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultSelectedBrush: ScanditCaptureCoreDefaults.BrushDefaults
+        let defaultSelectingBrush: ScanditCaptureCoreDefaults.BrushDefaults
         let styles: [String: [String: ScanditCaptureCoreDefaults.BrushDefaults]]
+
+        enum CodingKeys: String, CodingKey {
+            case defaultStyle
+            case defaultTrackedBrush = "DefaultTrackedBrush"
+            case defaultAimedBrush = "DefaultAimedBrush"
+            case defaultSelectedBrush = "DefaultSelectedBrush"
+            case defaultSelectingBrush = "DefaultSelectingBrush"
+            case styles
+        }
     }
 
     struct BarcodeCaptureSettingsDefaults: Encodable {
@@ -69,79 +90,108 @@ struct ScanditBarcodeCaptureDefaults: Encodable {
     }
 
     struct BarcodeCaptureDefaultsContainer: Encodable {
-        let BarcodeCaptureOverlay: BarcodeCaptureOverlayDefaults
-        let BarcodeCaptureSettings: BarcodeCaptureSettingsDefaults
-        let RecommendedCameraSettings: CameraSettingsDefaults
+        let barcodeCaptureOverlay: BarcodeCaptureOverlayDefaults
+        let barcodeCaptureSettings: BarcodeCaptureSettingsDefaults
+        let recommendedCameraSettings: CameraSettingsDefaults
+
+        enum CodingKeys: String, CodingKey {
+            case barcodeCaptureOverlay = "BarcodeCaptureOverlay"
+            case barcodeCaptureSettings = "BarcodeCaptureSettings"
+            case recommendedCameraSettings = "RecommendedCameraSettings"
+        }
     }
 
     struct BarcodeTrackingDefaultsContainer: Encodable {
-        let BarcodeTrackingBasicOverlay: BarcodeTrackingBasicOverlayDefaults
-        let RecommendedCameraSettings: CameraSettingsDefaults
+        let barcodeTrackingBasicOverlay: BarcodeTrackingBasicOverlayDefaults
+        let recommendedCameraSettings: CameraSettingsDefaults
+
+        enum CodingKeys: String, CodingKey {
+            case barcodeTrackingBasicOverlay = "BarcodeTrackingBasicOverlay"
+            case recommendedCameraSettings = "RecommendedCameraSettings"
+        }
     }
 
     struct BarcodeSelectionDefaultsContainer: Encodable {
-        let RecommendedCameraSettings: CameraSettingsDefaults
+        let recommendedCameraSettings: CameraSettingsDefaults
         let feedback: String
-        let BarcodeSelectionSettings: BarcodeSelectionSettingsDefaults
-        let BarcodeSelectionTapSelection: BarcodeSelectionTapSelectionDefaults
-        let BarcodeSelectionAimerSelection: BarcodeSelectionAimerSelectionDefaults
-        let BarcodeSelectionBasicOverlay: BarcodeSelectionBasicOverlayDefaults
+        let barcodeSelectionSettings: BarcodeSelectionSettingsDefaults
+        let barcodeSelectionTapSelection: BarcodeSelectionTapSelectionDefaults
+        let barcodeSelectionAimerSelection: BarcodeSelectionAimerSelectionDefaults
+        let barcodeSelectionBasicOverlay: BarcodeSelectionBasicOverlayDefaults
+
+        enum CodingKeys: String, CodingKey {
+            case recommendedCameraSettings = "RecommendedCameraSettings"
+            case feedback
+            case barcodeSelectionSettings = "BarcodeSelectionSettings"
+            case barcodeSelectionTapSelection = "BarcodeSelectionTapSelection"
+            case barcodeSelectionAimerSelection = "BarcodeSelectionAimerSelection"
+            case barcodeSelectionBasicOverlay = "BarcodeSelectionBasicOverlay"
+        }
     }
 
     typealias SymbologySettingsDefaults = [String: String]
     typealias SymbologyDescriptionsDefaults = [String]
     typealias CompositeTypeDescriptionsDefaults = [String]
 
-    let BarcodeCapture: BarcodeCaptureDefaultsContainer
-    let BarcodeTracking: BarcodeTrackingDefaultsContainer
-    let BarcodeSelection: BarcodeSelectionDefaultsContainer
-    let SymbologySettings: SymbologySettingsDefaults
-    let SymbologyDescriptions: SymbologyDescriptionsDefaults
-    let CompositeTypeDescriptions: CompositeTypeDescriptionsDefaults
+    let barcodeCapture: BarcodeCaptureDefaultsContainer
+    let barcodeTracking: BarcodeTrackingDefaultsContainer
+    let barcodeSelection: BarcodeSelectionDefaultsContainer
+    let symbologySettings: SymbologySettingsDefaults
+    let symbologyDescriptions: SymbologyDescriptionsDefaults
+    let compositeTypeDescriptions: CompositeTypeDescriptionsDefaults
 
     init() {
-        self.BarcodeCapture = BarcodeCaptureDefaultsContainer()
-        self.BarcodeTracking = BarcodeTrackingDefaultsContainer()
-        self.BarcodeSelection = BarcodeSelectionDefaultsContainer()
-        self.SymbologySettings = SymbologySettingsDefaults.fromDefaultSettings()
-        self.SymbologyDescriptions = SymbologyDescription.all.map { $0.jsonString }
-        self.CompositeTypeDescriptions = CompositeTypeDescription.all.map { $0.jsonString }
+        self.barcodeCapture = BarcodeCaptureDefaultsContainer()
+        self.barcodeTracking = BarcodeTrackingDefaultsContainer()
+        self.barcodeSelection = BarcodeSelectionDefaultsContainer()
+        self.symbologySettings = SymbologySettingsDefaults.fromDefaultSettings()
+        self.symbologyDescriptions = SymbologyDescription.all.map { $0.jsonString }
+        self.compositeTypeDescriptions = CompositeTypeDescription.all.map { $0.jsonString }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case barcodeCapture = "BarcodeCapture"
+        case barcodeTracking = "BarcodeTracking"
+        case barcodeSelection = "BarcodeSelection"
+        case symbologySettings = "SymbologySettings"
+        case symbologyDescriptions = "SymbologyDescriptions"
+        case compositeTypeDescriptions = "CompositeTypeDescriptions"
     }
 }
 
 extension ScanditBarcodeCaptureDefaults.BarcodeCaptureDefaultsContainer {
     init() {
-        BarcodeCaptureOverlay = ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults()
-        BarcodeCaptureSettings = ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults()
-        RecommendedCameraSettings = ScanditCaptureCoreDefaults
+        barcodeCaptureOverlay = ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults()
+        barcodeCaptureSettings = ScanditBarcodeCaptureDefaults.BarcodeCaptureSettingsDefaults()
+        recommendedCameraSettings = ScanditCaptureCoreDefaults
             .CameraSettingsDefaults.from(BarcodeCapture.recommendedCameraSettings)
     }
 }
 
 extension ScanditBarcodeCaptureDefaults.BarcodeTrackingDefaultsContainer {
     init() {
-        BarcodeTrackingBasicOverlay = ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults()
-        RecommendedCameraSettings = ScanditCaptureCoreDefaults
+        barcodeTrackingBasicOverlay = ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults()
+        recommendedCameraSettings = ScanditCaptureCoreDefaults
             .CameraSettingsDefaults.from(BarcodeTracking.recommendedCameraSettings)
     }
 }
 
 extension ScanditBarcodeCaptureDefaults.BarcodeSelectionDefaultsContainer {
     init() {
-        RecommendedCameraSettings = ScanditCaptureCoreDefaults
+        recommendedCameraSettings = ScanditCaptureCoreDefaults
             .CameraSettingsDefaults.from(BarcodeSelection.recommendedCameraSettings)
         feedback = BarcodeSelectionFeedback.default.jsonString
-        BarcodeSelectionSettings = ScanditBarcodeCaptureDefaults.BarcodeSelectionSettingsDefaults()
-        BarcodeSelectionTapSelection = ScanditBarcodeCaptureDefaults.BarcodeSelectionTapSelectionDefaults()
-        BarcodeSelectionAimerSelection = ScanditBarcodeCaptureDefaults.BarcodeSelectionAimerSelectionDefaults()
-        BarcodeSelectionBasicOverlay = ScanditBarcodeCaptureDefaults.BarcodeSelectionBasicOverlayDefaults()
+        barcodeSelectionSettings = ScanditBarcodeCaptureDefaults.BarcodeSelectionSettingsDefaults()
+        barcodeSelectionTapSelection = ScanditBarcodeCaptureDefaults.BarcodeSelectionTapSelectionDefaults()
+        barcodeSelectionAimerSelection = ScanditBarcodeCaptureDefaults.BarcodeSelectionAimerSelectionDefaults()
+        barcodeSelectionBasicOverlay = ScanditBarcodeCaptureDefaults.BarcodeSelectionBasicOverlayDefaults()
     }
 }
 
 extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
     init() {
         let style = BarcodeCaptureOverlay.defaultStyle
-        DefaultBrush = BarcodeCaptureOverlay.defaultBrush(forStyle: style).asDefaults
+        defaultBrush = BarcodeCaptureOverlay.defaultBrush(forStyle: style).asDefaults
         defaultStyle = style.jsonString
         styles = [
             BarcodeCaptureOverlayStyle.legacy.jsonString: [
@@ -157,7 +207,7 @@ extension ScanditBarcodeCaptureDefaults.BarcodeCaptureOverlayDefaults {
 extension ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults {
     init() {
         let style = BarcodeTrackingBasicOverlay.defaultStyle
-        DefaultBrush = BarcodeTrackingBasicOverlay.defaultBrush(forStyle: style).asDefaults
+        defaultBrush = BarcodeTrackingBasicOverlay.defaultBrush(forStyle: style).asDefaults
         defaultStyle = style.jsonString
         styles = [
             BarcodeTrackingBasicOverlayStyle.legacy.jsonString: [
@@ -176,10 +226,10 @@ extension ScanditBarcodeCaptureDefaults.BarcodeTrackingBasicOverlayDefaults {
 extension ScanditBarcodeCaptureDefaults.BarcodeSelectionBasicOverlayDefaults {
 
     init() {
-        DefaultTrackedBrush = BarcodeSelectionBasicOverlay.defaultTrackedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
-        DefaultAimedBrush = BarcodeSelectionBasicOverlay.defaultAimedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
-        DefaultSelectedBrush = BarcodeSelectionBasicOverlay.defaultSelectedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
-        DefaultSelectingBrush = BarcodeSelectionBasicOverlay.defaultSelectingBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        defaultTrackedBrush = BarcodeSelectionBasicOverlay.defaultTrackedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        defaultAimedBrush = BarcodeSelectionBasicOverlay.defaultAimedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        defaultSelectedBrush = BarcodeSelectionBasicOverlay.defaultSelectedBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
+        defaultSelectingBrush = BarcodeSelectionBasicOverlay.defaultSelectingBrush(forStyle: BarcodeSelectionBasicOverlay.defaultStyle).asDefaults
         defaultStyle = BarcodeSelectionBasicOverlay.defaultStyle.jsonString
         styles = [
             BarcodeSelectionBasicOverlayStyle.dot.jsonString: [

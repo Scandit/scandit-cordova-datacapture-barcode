@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BarcodeSelectionListenerProxy = void 0;
 const BarcodeSelection_Related_1 = require("scandit-cordova-datacapture-barcode.BarcodeSelection+Related");
+const CameraProxy_1 = require("scandit-cordova-datacapture-core.CameraProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeSelectionListenerEvent;
 (function (BarcodeSelectionListenerEvent) {
@@ -50,7 +51,7 @@ class BarcodeSelectionListenerProxy {
                         const session = BarcodeSelection_Related_1.BarcodeSelectionSession
                             .fromJSON(JSON.parse(event.argument.session));
                         session.listenerProxy = this;
-                        listener.didUpdateSelection(this.barcodeSelection, session);
+                        listener.didUpdateSelection(this.barcodeSelection, session, CameraProxy_1.CameraProxy.getLastFrame);
                     }
                     break;
                 case BarcodeSelectionListenerEvent.DidUpdateSession:
@@ -58,7 +59,7 @@ class BarcodeSelectionListenerProxy {
                         const session = BarcodeSelection_Related_1.BarcodeSelectionSession
                             .fromJSON(JSON.parse(event.argument.session));
                         session.listenerProxy = this;
-                        listener.didUpdateSession(this.barcodeSelection, session);
+                        listener.didUpdateSession(this.barcodeSelection, session, CameraProxy_1.CameraProxy.getLastFrame);
                     }
                     break;
             }

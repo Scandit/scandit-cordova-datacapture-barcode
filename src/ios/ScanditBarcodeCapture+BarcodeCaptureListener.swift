@@ -8,6 +8,9 @@ extension ScanditBarcodeCapture: BarcodeCaptureListener {
             return
         }
 
+        ScanditCaptureCore.lastFrame = frameData
+        defer { ScanditCaptureCore.lastFrame = nil }
+
         barcodeCaptureSession = session
 
         let listenerEvent = ListenerEvent(name: .didScanInBarcodeCapture,
@@ -23,6 +26,9 @@ extension ScanditBarcodeCapture: BarcodeCaptureListener {
         guard let callback = callbacks.barcodeCaptureListener else {
             return
         }
+
+        ScanditCaptureCore.lastFrame = frameData
+        defer { ScanditCaptureCore.lastFrame = nil }
 
         barcodeCaptureSession = session
 

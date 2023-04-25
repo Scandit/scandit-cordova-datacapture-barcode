@@ -8,6 +8,9 @@ extension ScanditBarcodeCapture: BarcodeTrackingListener {
             return
         }
 
+        ScanditCaptureCore.lastFrame = frameData
+        defer { ScanditCaptureCore.lastFrame = nil }
+
         barcodeTrackingSession = session
 
         lastTrackedBarcodes = session.trackedBarcodes

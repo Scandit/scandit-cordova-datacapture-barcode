@@ -3,29 +3,39 @@ import ScanditBarcodeCapture
 extension ScanditBarcodeCapture: BarcodeCaptureDeserializerDelegate {
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didFinishDeserializingMode mode: BarcodeCapture,
-                                    from JSONValue: JSONValue) {
-        mode.isEnabled = JSONValue.bool(forKey: "enabled")
+                                    from jsonValue: JSONValue) {
+        mode.isEnabled = jsonValue.bool(forKey: "enabled")
 
         mode.addListener(self)
     }
 
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didStartDeserializingMode mode: BarcodeCapture,
-                                    from JSONValue: JSONValue) { }
+                                    from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didStartDeserializingSettings settings: BarcodeCaptureSettings,
-                                    from JSONValue: JSONValue) { }
+                                    from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didFinishDeserializingSettings settings: BarcodeCaptureSettings,
-                                    from JSONValue: JSONValue) { }
+                                    from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didStartDeserializingOverlay overlay: BarcodeCaptureOverlay,
-                                    from JSONValue: JSONValue) { }
+                                    from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 
     func barcodeCaptureDeserializer(_ deserializer: BarcodeCaptureDeserializer,
                                     didFinishDeserializingOverlay overlay: BarcodeCaptureOverlay,
-                                    from JSONValue: JSONValue) { }
+                                    from jsonValue: JSONValue) {
+        // Empty on purpose
+    }
 }

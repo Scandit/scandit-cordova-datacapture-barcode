@@ -18,44 +18,46 @@ class BarcodeCaptureActionFactory(
     private val listener: BarcodeActionsListeners
 ) : ActionFactory {
 
-    @Throws(InvalidActionNameError::class)
-    override fun provideAction(actionName: String): Action {
-        return when (actionName) {
-            INJECT_DEFAULTS -> createActionInjectDefaults()
-            SUBSCRIBE_BARCODE_CAPTURE -> createActionSubscribeBarcodeCapture()
-            SUBSCRIBE_BARCODE_TRACKING -> createActionSubscribeBarcodeTracking()
-            SUBSCRIBE_BARCODE_SELECTION -> createActionSubscribeBarcodeSelection()
-            ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION ->
-                createActionGetCountForBarcodeInBarcodeSelectionSession()
-            ACTION_RESET_BARCODE_CAPTURE_SESSION -> createActionResetBarcodeCaptureSession()
-            ACTION_RESET_BARCODE_TRACKING_SESSION -> createActionResetBarcodeTrackingSession()
-            ACTION_RESET_BARCODE_SELECTION_SESSION -> createActionResetBarcodeSelectionSession()
-            ACTION_RESET_BARCODE_SELECTION -> createActionResetBarcodeSelection()
-            ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION ->
-                createActionUnfreezeCameraInBarcodeSelection()
-            ACTION_SELECTION_UPDATED -> createActionSelectionUpdated()
-            ACTION_SELECTION_SESSION_UPDATED -> createActionSelectionSessionUpdated()
-            SEND_SESSION_UPDATED_EVENT -> createActionSessionUpdated()
-            SEND_BARCODE_SCANNED_EVENT -> createActionBarcodeScanned()
-            SEND_BRUSH_FOR_TRACKED_BARCODE -> createActionSendBrushForTrackedBarcode()
-            SEND_DID_TAP_TRACKED_BARCODE -> createActionTapOnTrackedBarcode()
-            FINISH_BLOCKING_ACTION -> createActionFinishBlocking()
-            SEND_TRACKING_SESSION_UPDATED_EVENT -> createActionTrackingSessionUpdated()
-            SUBSCRIBE_BASIC_OVERLAY_LISTENER -> createActionSubscribeBasicOverlay()
-            SUBSCRIBE_ADVANCED_OVERLAY_LISTENER -> createActionSubscribeAdvancedOverlay()
-            SET_BRUSH_FOR_TRACKED_BARCODE -> createActionSetBrushForTrackedBarcode()
-            CLEAR_TRACKED_BARCODE_BRUSHES -> createActionClearTrackedBarcodeBrushes()
-            SEND_VIEW_FOR_TRACKED_BARCODE -> createActionSendViewForTrackedBarcode()
-            SEND_OFFSET_FOR_TRACKED_BARCODE -> createActionSendOffsetForTrackedBarcode()
-            SEND_ANCHOR_FOR_TRACKED_BARCODE -> createActionSendAnchorForTrackedBarcode()
-            SEND_TAP_VIEW_FOR_TRACKED_BARCODE -> createActionSendTapViewForTrackedBarcode()
-            SET_VIEW_FOR_TRACKED_BARCODE -> createActionSetViewForTrackedBarcode()
-            SET_OFFSET_FOR_TRACKED_BARCODE -> createActionSetOffsetForTrackedBarcode()
-            SET_ANCHOR_FOR_TRACKED_BARCODE -> createActionSetAnchorForTrackedBarcode()
-            CLEAR_TRACKED_BARCODE_VIEWS -> createActionClearTrackedBarcodeViews()
-            else -> throw InvalidActionNameError(actionName)
-        }
+    private val availableActions: Map<String, Action> by lazy {
+        mapOf(
+            INJECT_DEFAULTS to createActionInjectDefaults(),
+            SUBSCRIBE_BARCODE_CAPTURE to createActionSubscribeBarcodeCapture(),
+            SUBSCRIBE_BARCODE_TRACKING to createActionSubscribeBarcodeTracking(),
+            SUBSCRIBE_BARCODE_SELECTION to createActionSubscribeBarcodeSelection(),
+            ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION to
+                createActionGetCountForBarcodeInBarcodeSelectionSession(),
+            ACTION_RESET_BARCODE_CAPTURE_SESSION to createActionResetBarcodeCaptureSession(),
+            ACTION_RESET_BARCODE_TRACKING_SESSION to createActionResetBarcodeTrackingSession(),
+            ACTION_RESET_BARCODE_SELECTION_SESSION to createActionResetBarcodeSelectionSession(),
+            ACTION_RESET_BARCODE_SELECTION to createActionResetBarcodeSelection(),
+            ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION to
+                createActionUnfreezeCameraInBarcodeSelection(),
+            ACTION_SELECTION_UPDATED to createActionSelectionUpdated(),
+            ACTION_SELECTION_SESSION_UPDATED to createActionSelectionSessionUpdated(),
+            SEND_SESSION_UPDATED_EVENT to createActionSessionUpdated(),
+            SEND_BARCODE_SCANNED_EVENT to createActionBarcodeScanned(),
+            SEND_BRUSH_FOR_TRACKED_BARCODE to createActionSendBrushForTrackedBarcode(),
+            SEND_DID_TAP_TRACKED_BARCODE to createActionTapOnTrackedBarcode(),
+            FINISH_BLOCKING_ACTION to createActionFinishBlocking(),
+            SEND_TRACKING_SESSION_UPDATED_EVENT to createActionTrackingSessionUpdated(),
+            SUBSCRIBE_BASIC_OVERLAY_LISTENER to createActionSubscribeBasicOverlay(),
+            SUBSCRIBE_ADVANCED_OVERLAY_LISTENER to createActionSubscribeAdvancedOverlay(),
+            SET_BRUSH_FOR_TRACKED_BARCODE to createActionSetBrushForTrackedBarcode(),
+            CLEAR_TRACKED_BARCODE_BRUSHES to createActionClearTrackedBarcodeBrushes(),
+            SEND_VIEW_FOR_TRACKED_BARCODE to createActionSendViewForTrackedBarcode(),
+            SEND_OFFSET_FOR_TRACKED_BARCODE to createActionSendOffsetForTrackedBarcode(),
+            SEND_ANCHOR_FOR_TRACKED_BARCODE to createActionSendAnchorForTrackedBarcode(),
+            SEND_TAP_VIEW_FOR_TRACKED_BARCODE to createActionSendTapViewForTrackedBarcode(),
+            SET_VIEW_FOR_TRACKED_BARCODE to createActionSetViewForTrackedBarcode(),
+            SET_OFFSET_FOR_TRACKED_BARCODE to createActionSetOffsetForTrackedBarcode(),
+            SET_ANCHOR_FOR_TRACKED_BARCODE to createActionSetAnchorForTrackedBarcode(),
+            CLEAR_TRACKED_BARCODE_VIEWS to createActionClearTrackedBarcodeViews()
+        )
     }
+
+    @Throws(InvalidActionNameError::class)
+    override fun provideAction(actionName: String): Action =
+        availableActions[actionName] ?: throw InvalidActionNameError(actionName)
 
     override fun canBeRunWithoutCameraPermission(actionName: String): Boolean = true
 

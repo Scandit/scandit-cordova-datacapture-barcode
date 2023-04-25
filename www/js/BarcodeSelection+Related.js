@@ -33,13 +33,10 @@ class PrivateBarcodeSelectionStrategy {
         switch (json.type) {
             case BarcodeSelectionStrategyType.Auto:
                 return BarcodeSelectionAutoSelectionStrategy.autoSelectionStrategy;
-                break;
             case BarcodeSelectionStrategyType.Manual:
                 return BarcodeSelectionManualSelectionStrategy.manualSelectionStrategy;
-                break;
             default:
                 throw new Error('Unknown selection strategy type: ' + json.type);
-                break;
         }
     }
 }
@@ -84,13 +81,10 @@ class PrivateBarcodeSelectionType {
         switch (json.type) {
             case BarcodeSelectionTypeName.Aimer:
                 return PrivateBarcodeSelectionAimerSelection.fromJSON(json);
-                break;
             case BarcodeSelectionTypeName.Tap:
                 return PrivateBarcodeSelectionTapSelection.fromJSON(json);
-                break;
             default:
                 throw new Error('Unknown selection strategy type: ' + json.type);
-                break;
         }
     }
 }

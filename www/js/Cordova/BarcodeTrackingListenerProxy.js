@@ -4,6 +4,7 @@ exports.BarcodeTrackingListenerProxy = void 0;
 /// <amd-module name="scandit-cordova-datacapture-barcode.BarcodeTrackingListenerProxy"/>
 // ^ needed because Cordova can't resolve "../xx" style dependencies
 const BarcodeTracking_Related_1 = require("scandit-cordova-datacapture-barcode.BarcodeTracking+Related");
+const CameraProxy_1 = require("scandit-cordova-datacapture-core.CameraProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeTrackingListenerEvent;
 (function (BarcodeTrackingListenerEvent) {
@@ -44,7 +45,7 @@ class BarcodeTrackingListenerProxy {
                 case BarcodeTrackingListenerEvent.DidUpdateSession:
                     if (listener.didUpdateSession) {
                         listener.didUpdateSession(this.barcodeTracking, BarcodeTracking_Related_1.BarcodeTrackingSession
-                            .fromJSON(JSON.parse(event.argument.session)));
+                            .fromJSON(JSON.parse(event.argument.session)), CameraProxy_1.CameraProxy.getLastFrame);
                     }
                     break;
             }

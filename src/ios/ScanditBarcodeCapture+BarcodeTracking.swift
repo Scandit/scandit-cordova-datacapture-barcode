@@ -107,7 +107,7 @@ extension ScanditBarcodeCapture {
             return
         }
 
-        guard let anchorString = json.anchor, let anchor = Anchor(JSONString: anchorString) else {
+        guard let anchorString = json.anchor, let anchor = Anchor(jsonString: anchorString) else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -135,7 +135,7 @@ extension ScanditBarcodeCapture {
             return
         }
 
-        guard let offsetString = json.offset, let offsetValue = PointWithUnit(JSONString: offsetString) else {
+        guard let offsetString = json.offset, let offsetValue = PointWithUnit(jsonString: offsetString) else {
             offset[trackedBarcode.identifier] = PointWithUnit.zero
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
