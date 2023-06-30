@@ -54,13 +54,6 @@ var BarcodeCaptureOverlayStyle;
     BarcodeCaptureOverlayStyle["Legacy"] = "legacy";
 })(BarcodeCaptureOverlayStyle = exports.BarcodeCaptureOverlayStyle || (exports.BarcodeCaptureOverlayStyle = {}));
 class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
-    constructor() {
-        super();
-        this.type = 'barcodeCapture';
-        this._shouldShowScanAreaGuides = false;
-        this._viewfinder = null;
-        this._brush = BarcodeCaptureOverlay.defaultBrush;
-    }
     static get defaultBrush() {
         // tslint:disable-next-line:no-console
         console.warn('defaultBrush is deprecated and will be removed in a future release. ' +
@@ -107,21 +100,28 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         }
         return overlay;
     }
+    constructor() {
+        super();
+        this.type = 'barcodeCapture';
+        this._shouldShowScanAreaGuides = false;
+        this._viewfinder = null;
+        this._brush = BarcodeCaptureOverlay.defaultBrush;
+    }
 }
 __decorate([
     Serializeable_1.ignoreFromSerialization
 ], BarcodeCaptureOverlay.prototype, "barcodeCapture", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('shouldShowScanAreaGuides')
+    (0, Serializeable_1.nameForSerialization)('shouldShowScanAreaGuides')
 ], BarcodeCaptureOverlay.prototype, "_shouldShowScanAreaGuides", void 0);
 __decorate([
-    Serializeable_1.serializationDefault(Viewfinder_1.NoViewfinder),
-    Serializeable_1.nameForSerialization('viewfinder')
+    (0, Serializeable_1.serializationDefault)(Viewfinder_1.NoViewfinder),
+    (0, Serializeable_1.nameForSerialization)('viewfinder')
 ], BarcodeCaptureOverlay.prototype, "_viewfinder", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('brush')
+    (0, Serializeable_1.nameForSerialization)('brush')
 ], BarcodeCaptureOverlay.prototype, "_brush", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('style')
+    (0, Serializeable_1.nameForSerialization)('style')
 ], BarcodeCaptureOverlay.prototype, "_style", void 0);
 exports.BarcodeCaptureOverlay = BarcodeCaptureOverlay;

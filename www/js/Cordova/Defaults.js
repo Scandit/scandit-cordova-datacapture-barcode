@@ -7,7 +7,7 @@ const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");
 const Camera_Related_1 = require("scandit-cordova-datacapture-core.Camera+Related");
 const Common_1 = require("scandit-cordova-datacapture-core.Common");
 const Feedback_1 = require("scandit-cordova-datacapture-core.Feedback");
-exports.defaultsFromJSON = (json) => {
+const defaultsFromJSON = (json) => {
     return {
         SymbologySettings: Object.keys(json.SymbologySettings)
             .reduce((settings, identifier) => {
@@ -179,3 +179,4 @@ exports.defaultsFromJSON = (json) => {
         },
     };
 };
+exports.defaultsFromJSON = defaultsFromJSON;

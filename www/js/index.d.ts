@@ -278,7 +278,6 @@ interface PrivateLocalizedOnlyBarcode {
 export interface TrackedBarcodeJSON {
     deltaTime: number;
     identifier: number;
-    shouldAnimateFromPreviousToNextState: boolean;
     barcode: BarcodeJSON;
     predictedLocation: QuadrilateralJSON;
     location: QuadrilateralJSON;
@@ -299,7 +298,6 @@ export class TrackedBarcode {
     private _identifier;
     get identifier(): number;
     private sessionFrameSequenceID;
-    private _shouldAnimateFromPreviousToNextState;
     get shouldAnimateFromPreviousToNextState(): boolean;
     private static fromJSON;
 }

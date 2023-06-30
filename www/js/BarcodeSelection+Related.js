@@ -90,14 +90,14 @@ class PrivateBarcodeSelectionType {
 }
 exports.PrivateBarcodeSelectionType = PrivateBarcodeSelectionType;
 class BarcodeSelectionAimerSelection extends Serializeable_1.DefaultSerializeable {
+    static get aimerSelection() {
+        return new BarcodeSelectionAimerSelection();
+    }
     constructor() {
         super();
         this.type = BarcodeSelectionTypeName.Aimer;
         this.selectionStrategy = Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionAimerSelection
             .defaultSelectionStrategy(PrivateBarcodeSelectionStrategy.fromJSON);
-    }
-    static get aimerSelection() {
-        return new BarcodeSelectionAimerSelection();
     }
 }
 exports.BarcodeSelectionAimerSelection = BarcodeSelectionAimerSelection;
@@ -172,17 +172,6 @@ var BarcodeSelectionBasicOverlayStyle;
     BarcodeSelectionBasicOverlayStyle["Dot"] = "dot";
 })(BarcodeSelectionBasicOverlayStyle = exports.BarcodeSelectionBasicOverlayStyle || (exports.BarcodeSelectionBasicOverlayStyle = {}));
 class BarcodeSelectionBasicOverlay extends Serializeable_1.DefaultSerializeable {
-    constructor() {
-        super();
-        this.type = 'barcodeSelectionBasic';
-        this._trackedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.strokeWidth);
-        this._aimedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.strokeWidth);
-        this._selectedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.strokeWidth);
-        this._selectingBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.strokeWidth);
-        this._shouldShowScanAreaGuides = false;
-        this._shouldShowHints = true;
-        this._viewfinder = new Viewfinder_1.AimerViewfinder();
-    }
     get trackedBrush() {
         return this._trackedBrush;
     }
@@ -262,32 +251,43 @@ class BarcodeSelectionBasicOverlay extends Serializeable_1.DefaultSerializeable 
         }
         return overlay;
     }
+    constructor() {
+        super();
+        this.type = 'barcodeSelectionBasic';
+        this._trackedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultTrackedBrush.strokeWidth);
+        this._aimedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultAimedBrush.strokeWidth);
+        this._selectedBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectedBrush.strokeWidth);
+        this._selectingBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionBasicOverlay.defaultStyle].DefaultSelectingBrush.strokeWidth);
+        this._shouldShowScanAreaGuides = false;
+        this._shouldShowHints = true;
+        this._viewfinder = new Viewfinder_1.AimerViewfinder();
+    }
 }
 __decorate([
     Serializeable_1.ignoreFromSerialization
 ], BarcodeSelectionBasicOverlay.prototype, "barcodeSelection", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('trackedBrush')
+    (0, Serializeable_1.nameForSerialization)('trackedBrush')
 ], BarcodeSelectionBasicOverlay.prototype, "_trackedBrush", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('aimedBrush')
+    (0, Serializeable_1.nameForSerialization)('aimedBrush')
 ], BarcodeSelectionBasicOverlay.prototype, "_aimedBrush", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('selectedBrush')
+    (0, Serializeable_1.nameForSerialization)('selectedBrush')
 ], BarcodeSelectionBasicOverlay.prototype, "_selectedBrush", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('selectingBrush')
+    (0, Serializeable_1.nameForSerialization)('selectingBrush')
 ], BarcodeSelectionBasicOverlay.prototype, "_selectingBrush", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('style')
+    (0, Serializeable_1.nameForSerialization)('style')
 ], BarcodeSelectionBasicOverlay.prototype, "_style", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('shouldShowScanAreaGuides')
+    (0, Serializeable_1.nameForSerialization)('shouldShowScanAreaGuides')
 ], BarcodeSelectionBasicOverlay.prototype, "_shouldShowScanAreaGuides", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('shouldShowHints')
+    (0, Serializeable_1.nameForSerialization)('shouldShowHints')
 ], BarcodeSelectionBasicOverlay.prototype, "_shouldShowHints", void 0);
 __decorate([
-    Serializeable_1.nameForSerialization('viewfinder')
+    (0, Serializeable_1.nameForSerialization)('viewfinder')
 ], BarcodeSelectionBasicOverlay.prototype, "_viewfinder", void 0);
 exports.BarcodeSelectionBasicOverlay = BarcodeSelectionBasicOverlay;
