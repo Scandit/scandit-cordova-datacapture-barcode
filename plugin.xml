@@ -91,8 +91,6 @@
         <source-file src="src/ios/TappableBase64ImageView.swift" />
         <source-file src="src/ios/CommandJSONArgument+ScanditBarcodeCapture.swift" />
 
-        <dependency id="scandit-cordova-datacapture-core" version="6.18.1" />
-
         <podspec>
 			<config>
 				<source url="https://cdn.cocoapods.org/"/>
