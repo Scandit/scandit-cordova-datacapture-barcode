@@ -8,7 +8,7 @@ const CameraProxy_1 = require("scandit-cordova-datacapture-core.CameraProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeTrackingListenerEvent;
 (function (BarcodeTrackingListenerEvent) {
-    BarcodeTrackingListenerEvent["DidUpdateSession"] = "didUpdateSessionInBarcodeTracking";
+    BarcodeTrackingListenerEvent["DidUpdateSession"] = "BarcodeTrackingListener.didUpdateSession";
 })(BarcodeTrackingListenerEvent || (BarcodeTrackingListenerEvent = {}));
 class BarcodeTrackingListenerProxy {
     static forBarcodeTracking(barcodeTracking) {
@@ -46,6 +46,10 @@ class BarcodeTrackingListenerProxy {
                     if (listener.didUpdateSession) {
                         listener.didUpdateSession(this.barcodeTracking, BarcodeTracking_Related_1.BarcodeTrackingSession
                             .fromJSON(JSON.parse(event.argument.session)), CameraProxy_1.CameraProxy.getLastFrame);
+                    }
+                    // TODO: Remove when iOS migrated to use the shared module
+                    if (!event.shouldNotifyWhenFinished) {
+                        BarcodeTrackingListenerProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.FinishBarcodeTrackingDidUpdateSession, [{ 'enabled': this.barcodeTracking.isEnabled }]);
                     }
                     break;
             }

@@ -6,16 +6,22 @@
 
 package com.scandit.datacapture.cordova.barcode.factories
 
-import com.scandit.datacapture.cordova.barcode.BarcodeActionsListeners
 import com.scandit.datacapture.cordova.barcode.actions.*
-import com.scandit.datacapture.cordova.barcode.utils.FinishCallbackHelper
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.cordova.core.actions.ActionSend
 import com.scandit.datacapture.cordova.core.errors.InvalidActionNameError
 import com.scandit.datacapture.cordova.core.factories.ActionFactory
+import com.scandit.datacapture.cordova.core.utils.CordovaEventEmitter
+import com.scandit.datacapture.frameworks.barcode.BarcodeModule
+import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
+import com.scandit.datacapture.frameworks.barcode.selection.BarcodeSelectionModule
+import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
 
 class BarcodeCaptureActionFactory(
-    private val listener: BarcodeActionsListeners
+    private val barcodeModule: BarcodeModule,
+    private val barcodeCaptureModule: BarcodeCaptureModule,
+    private val barcodeTrackingModule: BarcodeTrackingModule,
+    private val barcodeSelectionModule: BarcodeSelectionModule,
+    private val eventEmitter: CordovaEventEmitter
 ) : ActionFactory {
 
     private val availableActions: Map<String, Action> by lazy {
@@ -32,26 +38,27 @@ class BarcodeCaptureActionFactory(
             ACTION_RESET_BARCODE_SELECTION to createActionResetBarcodeSelection(),
             ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION to
                 createActionUnfreezeCameraInBarcodeSelection(),
-            ACTION_SELECTION_UPDATED to createActionSelectionUpdated(),
-            ACTION_SELECTION_SESSION_UPDATED to createActionSelectionSessionUpdated(),
-            SEND_SESSION_UPDATED_EVENT to createActionSessionUpdated(),
-            SEND_BARCODE_SCANNED_EVENT to createActionBarcodeScanned(),
-            SEND_BRUSH_FOR_TRACKED_BARCODE to createActionSendBrushForTrackedBarcode(),
-            SEND_DID_TAP_TRACKED_BARCODE to createActionTapOnTrackedBarcode(),
-            FINISH_BLOCKING_ACTION to createActionFinishBlocking(),
-            SEND_TRACKING_SESSION_UPDATED_EVENT to createActionTrackingSessionUpdated(),
             SUBSCRIBE_BASIC_OVERLAY_LISTENER to createActionSubscribeBasicOverlay(),
             SUBSCRIBE_ADVANCED_OVERLAY_LISTENER to createActionSubscribeAdvancedOverlay(),
             SET_BRUSH_FOR_TRACKED_BARCODE to createActionSetBrushForTrackedBarcode(),
             CLEAR_TRACKED_BARCODE_BRUSHES to createActionClearTrackedBarcodeBrushes(),
-            SEND_VIEW_FOR_TRACKED_BARCODE to createActionSendViewForTrackedBarcode(),
-            SEND_OFFSET_FOR_TRACKED_BARCODE to createActionSendOffsetForTrackedBarcode(),
-            SEND_ANCHOR_FOR_TRACKED_BARCODE to createActionSendAnchorForTrackedBarcode(),
-            SEND_TAP_VIEW_FOR_TRACKED_BARCODE to createActionSendTapViewForTrackedBarcode(),
             SET_VIEW_FOR_TRACKED_BARCODE to createActionSetViewForTrackedBarcode(),
             SET_OFFSET_FOR_TRACKED_BARCODE to createActionSetOffsetForTrackedBarcode(),
             SET_ANCHOR_FOR_TRACKED_BARCODE to createActionSetAnchorForTrackedBarcode(),
-            CLEAR_TRACKED_BARCODE_VIEWS to createActionClearTrackedBarcodeViews()
+            CLEAR_TRACKED_BARCODE_VIEWS to createActionClearTrackedBarcodeViews(),
+
+            FINISH_BARCODE_CAPTURE_DID_UPDATE_SESSION to ActionFinishBarcodeCaptureSessionUpdate(
+                barcodeCaptureModule
+            ),
+            FINISH_BARCODE_CAPTURE_DID_CAPTURE to ActionFinishBarcodeCaptureDidScan(
+                barcodeCaptureModule
+            ),
+            FINISH_BARCODE_SELECTION_DID_UPDATE_SELECTION to
+                ActionFinishBarcodeSelectionDidUpdateSelection(barcodeSelectionModule),
+            FINISH_BARCODE_SELECTION_DID_UPDATE_SESSION to
+                ActionFinishBarcodeSelectionDidUpdateSession(barcodeSelectionModule),
+            FINISH_BARCODE_TRACKING_DID_UPDATE_SESSION to
+                ActionFinishBarcodeTrackingDidUpdateSession(barcodeTrackingModule),
         )
     }
 
@@ -61,157 +68,80 @@ class BarcodeCaptureActionFactory(
 
     override fun canBeRunWithoutCameraPermission(actionName: String): Boolean = true
 
-    private fun createActionInjectDefaults(): Action = ActionInjectDefaults(listener)
+    private fun createActionInjectDefaults(): Action = ActionInjectDefaults(
+        barcodeModule, barcodeCaptureModule, barcodeTrackingModule, barcodeSelectionModule
+    )
 
     private fun createActionSubscribeBarcodeCapture(): Action = ActionSubscribeBarcodeCapture(
-        listener
+        barcodeCaptureModule, eventEmitter
     )
 
     private fun createActionSubscribeBarcodeTracking(): Action = ActionSubscribeBarcodeTracking(
-        listener
+        barcodeTrackingModule, eventEmitter
     )
 
     private fun createActionSubscribeBarcodeSelection(): Action = ActionSubscribeBarcodeSelection(
-        listener
-    )
-
-    private fun createActionSessionUpdated(): Action = ActionSend(
-        ACTION_CAPTURE_SESSION_UPDATED,
-        listener,
-        finishCallbackId = ACTION_CAPTURE_SESSION_UPDATED,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionSelectionSessionUpdated(): Action = ActionSend(
-        ACTION_SELECTION_SESSION_UPDATED,
-        listener,
-        finishCallbackId = ACTION_SELECTION_SESSION_UPDATED,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionSelectionUpdated(): Action = ActionSend(
-        ACTION_SELECTION_UPDATED,
-        listener,
-        finishCallbackId = ACTION_SELECTION_UPDATED,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionBarcodeScanned(): Action = ActionSend(
-        ACTION_BARCODE_SCANNED,
-        listener,
-        finishCallbackId = ACTION_BARCODE_SCANNED,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionFinishBlocking(): Action = ActionFinishCallback(
-        listener, FinishCallbackHelper()
-    )
-
-    private fun createActionTrackingSessionUpdated(): Action = ActionSend(
-        ACTION_TRACKING_SESSION_UPDATED,
-        listener,
-        finishCallbackId = ACTION_TRACKING_SESSION_UPDATED,
-        shouldNotifyWhenFinished = true
+        barcodeSelectionModule, eventEmitter
     )
 
     private fun createActionSubscribeBasicOverlay(): Action = ActionSubscribeBasicOverlay(
-        listener
+        barcodeTrackingModule, eventEmitter
     )
 
     private fun createActionSubscribeAdvancedOverlay(): Action = ActionSubscribeAdvancedOverlay(
-        listener
+        barcodeTrackingModule, eventEmitter
     )
 
     private fun createActionSetBrushForTrackedBarcode(): Action = ActionSetBrushForTrackedBarcode(
-        listener
+        barcodeTrackingModule
     )
 
     private fun createActionClearTrackedBarcodeBrushes(): Action = ActionClearTrackedBarcodeBrushes(
-        listener
-    )
-
-    private fun createActionSendBrushForTrackedBarcode(): Action = ActionSend(
-        ACTION_BRUSH_FOR_TRACKED_BARCODE,
-        listener,
-        finishCallbackId = ACTION_BRUSH_FOR_TRACKED_BARCODE,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionTapOnTrackedBarcode(): Action = ActionSend(
-        ACTION_TAP_TRACKED_BARCODE, listener
-    )
-
-    private fun createActionSendViewForTrackedBarcode(): Action = ActionSend(
-        ACTION_VIEW_FOR_TRACKED_BARCODE,
-        listener,
-        finishCallbackId = ACTION_VIEW_FOR_TRACKED_BARCODE,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionSendOffsetForTrackedBarcode(): Action = ActionSend(
-        ACTION_OFFSET_FOR_TRACKED_BARCODE,
-        listener,
-        finishCallbackId = ACTION_OFFSET_FOR_TRACKED_BARCODE,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionSendAnchorForTrackedBarcode(): Action = ActionSend(
-        ACTION_ANCHOR_FOR_TRACKED_BARCODE,
-        listener,
-        finishCallbackId = ACTION_ANCHOR_FOR_TRACKED_BARCODE,
-        shouldNotifyWhenFinished = true
-    )
-
-    private fun createActionSendTapViewForTrackedBarcode(): Action = ActionSend(
-        ACTION_TAP_VIEW_FOR_TRACKED_BARCODE,
-        listener,
-        finishCallbackId = ACTION_TAP_VIEW_FOR_TRACKED_BARCODE,
-        shouldNotifyWhenFinished = true
+        barcodeTrackingModule
     )
 
     private fun createActionSetViewForTrackedBarcode(): Action = ActionSetViewForTrackedBarcode(
-        listener
+        barcodeTrackingModule
     )
 
     private fun createActionSetOffsetForTrackedBarcode(): Action = ActionSetOffsetForTrackedBarcode(
-        listener
+        barcodeTrackingModule
     )
 
     private fun createActionSetAnchorForTrackedBarcode(): Action = ActionSetAnchorForTrackedBarcode(
-        listener
+        barcodeTrackingModule
     )
 
     private fun createActionClearTrackedBarcodeViews(): Action = ActionClearTrackedBarcodeViews(
-        listener
+        barcodeTrackingModule
     )
 
     private fun createActionResetBarcodeSelection(): Action = ActionResetBarcodeSelection(
-        listener
+        barcodeSelectionModule
     )
 
     private fun createActionGetCountForBarcodeInBarcodeSelectionSession(): Action =
         ActionGetCountForBarcodeInBarcodeSelectionSession(
-            listener
+            barcodeSelectionModule
         )
 
-    private fun createActionResetBarcodeCaptureSession(): Action =
-        ActionResetBarcodeCaptureSession(
-            listener
-        )
+    private fun createActionResetBarcodeCaptureSession(): Action = ActionResetBarcodeCaptureSession(
+        barcodeCaptureModule
+    )
 
     private fun createActionResetBarcodeTrackingSession(): Action =
         ActionResetBarcodeTrackingSession(
-            listener
+            barcodeTrackingModule
         )
 
     private fun createActionResetBarcodeSelectionSession(): Action =
         ActionResetBarcodeSelectionSession(
-            listener
+            barcodeSelectionModule
         )
 
     private fun createActionUnfreezeCameraInBarcodeSelection(): Action =
         ActionUnfreezeCameraInBarcodeSelection(
-            listener
+            barcodeSelectionModule
         )
 
     companion object {
@@ -219,7 +149,19 @@ class BarcodeCaptureActionFactory(
         private const val SUBSCRIBE_BARCODE_CAPTURE = "subscribeBarcodeCaptureListener"
         private const val SUBSCRIBE_BARCODE_TRACKING = "subscribeBarcodeTrackingListener"
         private const val SUBSCRIBE_BARCODE_SELECTION = "subscribeBarcodeSelectionListener"
-        private const val FINISH_BLOCKING_ACTION = "finishCallback"
+
+        private const val FINISH_BARCODE_CAPTURE_DID_UPDATE_SESSION =
+            "finishBarcodeCaptureDidUpdateSession"
+        private const val FINISH_BARCODE_CAPTURE_DID_CAPTURE = "finishBarcodeCaptureDidScan"
+
+        private const val FINISH_BARCODE_SELECTION_DID_UPDATE_SELECTION =
+            "finishBarcodeSelectionDidUpdateSelection"
+        private const val FINISH_BARCODE_SELECTION_DID_UPDATE_SESSION =
+            "finishBarcodeSelectionDidUpdateSession"
+
+        private const val FINISH_BARCODE_TRACKING_DID_UPDATE_SESSION =
+            "finishBarcodeTrackingDidUpdateSession"
+
         private const val SUBSCRIBE_BASIC_OVERLAY_LISTENER =
             "subscribeBarcodeTrackingBasicOverlayListener"
         private const val SET_BRUSH_FOR_TRACKED_BARCODE = "setBrushForTrackedBarcode"
@@ -227,30 +169,10 @@ class BarcodeCaptureActionFactory(
 
         private const val SUBSCRIBE_ADVANCED_OVERLAY_LISTENER =
             "subscribeBarcodeTrackingAdvancedOverlayListener"
-        const val SEND_VIEW_FOR_TRACKED_BARCODE = "sendViewForTrackedBarcodeEvent"
-        const val SEND_OFFSET_FOR_TRACKED_BARCODE = "sendOffsetForTrackedBarcodeEvent"
-        const val SEND_ANCHOR_FOR_TRACKED_BARCODE = "sendAnchorForTrackedBarcodeEvent"
-        const val SEND_TAP_VIEW_FOR_TRACKED_BARCODE = "sendTapViewForTrackedBarcodeEvent"
         const val SET_VIEW_FOR_TRACKED_BARCODE = "setViewForTrackedBarcode"
         const val SET_OFFSET_FOR_TRACKED_BARCODE = "setOffsetForTrackedBarcode"
         const val SET_ANCHOR_FOR_TRACKED_BARCODE = "setAnchorForTrackedBarcode"
         const val CLEAR_TRACKED_BARCODE_VIEWS = "clearTrackedBarcodeViews"
-
-        const val SEND_BRUSH_FOR_TRACKED_BARCODE = "sendBrushForTrackedBarcodeEvent"
-        const val SEND_DID_TAP_TRACKED_BARCODE = "sendDidTapTrackedBarcodeEvent"
-
-        const val SEND_SESSION_UPDATED_EVENT = "sendSessionUpdateEvent"
-        const val SEND_BARCODE_SCANNED_EVENT = "sendBarcodeScannedEvent"
-
-        const val ACTION_BARCODE_SCANNED = "didScanInBarcodeCapture"
-        const val ACTION_CAPTURE_SESSION_UPDATED = "didUpdateSessionInBarcodeCapture"
-        const val ACTION_TRACKING_SESSION_UPDATED = "didUpdateSessionInBarcodeTracking"
-        const val ACTION_BRUSH_FOR_TRACKED_BARCODE = "brushForTrackedBarcode"
-        const val ACTION_TAP_TRACKED_BARCODE = "didTapTrackedBarcode"
-        const val ACTION_VIEW_FOR_TRACKED_BARCODE = "viewForTrackedBarcode"
-        const val ACTION_OFFSET_FOR_TRACKED_BARCODE = "offsetForTrackedBarcode"
-        const val ACTION_ANCHOR_FOR_TRACKED_BARCODE = "anchorForTrackedBarcode"
-        const val ACTION_TAP_VIEW_FOR_TRACKED_BARCODE = "didTapViewForTrackedBarcode"
 
         const val ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION =
             "getCountForBarcodeInBarcodeSelectionSession"
@@ -259,9 +181,5 @@ class BarcodeCaptureActionFactory(
         const val ACTION_RESET_BARCODE_SELECTION_SESSION = "resetBarcodeSelectionSession"
         const val ACTION_RESET_BARCODE_SELECTION = "resetBarcodeSelection"
         const val ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION = "unfreezeCameraInBarcodeSelection"
-        const val ACTION_SELECTION_UPDATED = "didUpdateSelectionInBarcodeSelection"
-        const val ACTION_SELECTION_SESSION_UPDATED = "didUpdateSessionInBarcodeSelection"
-
-        const val SEND_TRACKING_SESSION_UPDATED_EVENT = "sendTrackingSessionUpdateEvent"
     }
 }

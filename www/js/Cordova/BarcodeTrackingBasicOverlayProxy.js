@@ -7,8 +7,8 @@ const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeTrackingBasicOverlayListenerEvent;
 (function (BarcodeTrackingBasicOverlayListenerEvent) {
-    BarcodeTrackingBasicOverlayListenerEvent["BrushForTrackedBarcode"] = "brushForTrackedBarcode";
-    BarcodeTrackingBasicOverlayListenerEvent["DidTapTrackedBarcode"] = "didTapTrackedBarcode";
+    BarcodeTrackingBasicOverlayListenerEvent["BrushForTrackedBarcode"] = "BarcodeTrackingBasicOverlayListener.brushForTrackedBarcode";
+    BarcodeTrackingBasicOverlayListenerEvent["DidTapTrackedBarcode"] = "BarcodeTrackingBasicOverlayListener.didTapTrackedBarcode";
 })(BarcodeTrackingBasicOverlayListenerEvent || (BarcodeTrackingBasicOverlayListenerEvent = {}));
 class BarcodeTrackingBasicOverlayProxy {
     static forOverlay(overlay) {
@@ -47,7 +47,12 @@ class BarcodeTrackingBasicOverlayProxy {
                     const trackedBarcode = Barcode_1.TrackedBarcode
                         .fromJSON(JSON.parse(event.argument.trackedBarcode));
                     const brush = this.overlay.listener.brushForTrackedBarcode(this.overlay, trackedBarcode);
-                    return { brush: brush ? JSON.stringify(brush.toJSON()) : null };
+                    const result = {
+                        brush: brush ? JSON.stringify(brush.toJSON()) : null,
+                        sessionFrameSequenceID: trackedBarcode.sessionFrameSequenceID,
+                        trackedBarcodeID: trackedBarcode.identifier
+                    };
+                    BarcodeTrackingBasicOverlayProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.SetBrushForTrackedBarcode, [result]);
                 }
                 break;
             case BarcodeTrackingBasicOverlayListenerEvent.DidTapTrackedBarcode:
