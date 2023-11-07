@@ -105,6 +105,7 @@ class ScanditBarcodeCapture :
         barcodeCaptureModule.onDestroy()
         barcodeTrackingModule.onDestroy()
         barcodeSelectionModule.onDestroy()
+        pluginInitialize()
     }
 
     override fun execute(
