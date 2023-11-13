@@ -7,7 +7,60 @@
 package com.scandit.datacapture.cordova.barcode.data
 
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import com.scandit.datacapture.core.common.geometry.Anchor
+import com.scandit.datacapture.core.common.geometry.AnchorDeserializer
+import com.scandit.datacapture.core.common.geometry.PointWithUnit
+import com.scandit.datacapture.core.common.geometry.PointWithUnitDeserializer
 import org.json.JSONObject
+
+class SerializableFinishAdvancedOverlayViewData(val view: SerializableAdvancedOverlayView?) {
+
+    companion object {
+        fun fromJson(json: JSONObject?): SerializableFinishAdvancedOverlayViewData? {
+            if (json == null) return null
+
+            return SerializableFinishAdvancedOverlayViewData(
+                view = SerializableAdvancedOverlayView.fromJson(json.optJSONObject(FIELD_VIEW))
+            )
+        }
+    }
+}
+
+class SerializableFinishAdvancedOverlayOffsetData(val offset: PointWithUnit?) {
+
+    companion object {
+        fun fromJson(json: JSONObject?): SerializableFinishAdvancedOverlayOffsetData? {
+            if (json == null) return null
+
+            val offset: PointWithUnit? = json.optString(FIELD_OFFSET).let { offsetString ->
+                if (offsetString.isEmpty()) {
+                    null
+                } else {
+                    PointWithUnitDeserializer.fromJson(offsetString)
+                }
+            }
+            return SerializableFinishAdvancedOverlayOffsetData(offset)
+        }
+    }
+}
+
+class SerializableFinishAdvancedOverlayAnchorData(val anchor: Anchor?) {
+
+    companion object {
+        fun fromJson(json: JSONObject?): SerializableFinishAdvancedOverlayAnchorData? {
+            if (json == null) return null
+
+            val anchor: Anchor? = json.optString(FIELD_ANCHOR).let { anchorString ->
+                if (anchorString.isEmpty()) {
+                    null
+                } else {
+                    AnchorDeserializer.fromJson(anchorString)
+                }
+            }
+            return SerializableFinishAdvancedOverlayAnchorData(anchor)
+        }
+    }
+}
 
 data class SerializableAdvancedOverlayViewActionData(
     val view: SerializableAdvancedOverlayView?,
@@ -84,6 +137,38 @@ data class SerializableAdvancedOverlayViewOptions(
     }
 }
 
+data class SerializableAdvancedOverlayOffsetActionData(
+    val offset: PointWithUnit,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
+) {
+
+    constructor(json: JSONObject) : this(
+        offset = PointWithUnitDeserializer.fromJson(json.getString(FIELD_OFFSET)),
+        trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
+        sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+            json.getLong(FIELD_FRAME_SEQUENCE_ID)
+        } else null
+    )
+}
+
+data class SerializableAdvancedOverlayAnchorActionData(
+    val anchor: Anchor,
+    val trackedBarcodeId: Int,
+    val sessionFrameSequenceId: Long?
+) {
+
+    constructor(json: JSONObject) : this(
+        anchor = AnchorDeserializer.fromJson(json.getString(FIELD_ANCHOR)),
+        trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
+        sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
+            json.getLong(FIELD_FRAME_SEQUENCE_ID)
+        } else null
+    )
+}
+
 private const val FIELD_VIEW = "view"
+private const val FIELD_OFFSET = "offset"
+private const val FIELD_ANCHOR = "anchor"
 private const val FIELD_TRACKED_BARCODE_ID = "trackedBarcodeID"
 private const val FIELD_FRAME_SEQUENCE_ID = "sessionFrameSequenceID"

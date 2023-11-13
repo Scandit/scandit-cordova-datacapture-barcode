@@ -16,7 +16,7 @@ const Viewfinder_1 = require("scandit-cordova-datacapture-core.Viewfinder");
 class BarcodeSelectionFeedback extends Serializeable_1.DefaultSerializeable {
     constructor() {
         super(...arguments);
-        this.selection = Cordova_1.Cordova.defaults.BarcodeSelection.Feedback.selection;
+        this.selection = Cordova_1.Cordova.defaults.BarcodeSelection.feedback.selection;
     }
     static get default() {
         return new BarcodeSelectionFeedback();

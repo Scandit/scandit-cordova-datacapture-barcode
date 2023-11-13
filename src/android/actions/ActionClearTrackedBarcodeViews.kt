@@ -7,16 +7,18 @@
 package com.scandit.datacapture.cordova.barcode.actions
 
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 
 class ActionClearTrackedBarcodeViews(
-    private val barcodeTrackingModule: BarcodeTrackingModule
+    private val listener: ResultListener
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeTrackingModule.clearAdvancedOverlayTrackedBarcodeViews()
-        callbackContext.success()
+        listener.onClearTrackedBarcodeViews(callbackContext)
+    }
+
+    interface ResultListener {
+        fun onClearTrackedBarcodeViews(callbackContext: CallbackContext)
     }
 }

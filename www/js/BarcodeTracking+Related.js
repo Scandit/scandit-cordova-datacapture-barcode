@@ -69,7 +69,7 @@ class BarcodeTrackingBasicOverlay extends Serializeable_1.DefaultSerializeable {
         // tslint:disable-next-line:no-console
         console.warn('defaultBrush is deprecated and will be removed in a future release. ' +
             'Use .brush to get the default for your selected style');
-        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
+        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
     }
     get defaultBrush() {
         return this._defaultBrush;
@@ -111,7 +111,7 @@ class BarcodeTrackingBasicOverlay extends Serializeable_1.DefaultSerializeable {
         const overlay = new BarcodeTrackingBasicOverlay();
         overlay.barcodeTracking = barcodeTracking;
         overlay._style = style;
-        overlay._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[overlay._style].DefaultBrush.strokeWidth);
+        overlay._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[overlay._style].DefaultBrush.strokeWidth);
         if (view) {
             view.addOverlay(overlay);
         }
@@ -121,7 +121,7 @@ class BarcodeTrackingBasicOverlay extends Serializeable_1.DefaultSerializeable {
     constructor() {
         super();
         this.type = 'barcodeTrackingBasic';
-        this._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
+        this._defaultBrush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.styles[Cordova_1.Cordova.defaults.BarcodeTracking.BarcodeTrackingBasicOverlay.defaultStyle].DefaultBrush.strokeWidth);
         this._shouldShowScanAreaGuides = false;
         this.listener = null;
     }

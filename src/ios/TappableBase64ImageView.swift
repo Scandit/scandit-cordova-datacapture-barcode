@@ -1,13 +1,4 @@
-/*
- * This file is part of the Scandit Data Capture SDK
- *
- * Copyright (C) 2023- Scandit AG. All rights reserved.
- */
-
-import ScanditFrameworksBarcode
-import UIKit
-
-class TappableBase64ImageView: UIImageView, TappableView {
+class TappableBase64ImageView: UIImageView {
     struct JSON: Decodable {
         struct OptionsJSON: Decodable {
             // swiftlint:disable:next nesting

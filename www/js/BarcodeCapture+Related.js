@@ -58,7 +58,7 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         // tslint:disable-next-line:no-console
         console.warn('defaultBrush is deprecated and will be removed in a future release. ' +
             'Use .brush to get the default for your selected style');
-        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].strokeWidth);
+        return new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.defaultStyle].DefaultBrush.strokeWidth);
     }
     get brush() {
         return this._brush;
@@ -94,7 +94,7 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         const overlay = new BarcodeCaptureOverlay();
         overlay.barcodeCapture = barcodeCapture;
         overlay._style = style;
-        overlay._brush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].strokeWidth);
+        overlay._brush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.styles[overlay._style].DefaultBrush.strokeWidth);
         if (view) {
             view.addOverlay(overlay);
         }

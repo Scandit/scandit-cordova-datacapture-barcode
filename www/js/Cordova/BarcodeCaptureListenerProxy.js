@@ -8,8 +8,8 @@ const CameraProxy_1 = require("scandit-cordova-datacapture-core.CameraProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeCaptureListenerEvent;
 (function (BarcodeCaptureListenerEvent) {
-    BarcodeCaptureListenerEvent["DidScan"] = "BarcodeCaptureListener.didScan";
-    BarcodeCaptureListenerEvent["DidUpdateSession"] = "BarcodeCaptureListener.didUpdateSession";
+    BarcodeCaptureListenerEvent["DidScan"] = "didScanInBarcodeCapture";
+    BarcodeCaptureListenerEvent["DidUpdateSession"] = "didUpdateSessionInBarcodeCapture";
 })(BarcodeCaptureListenerEvent || (BarcodeCaptureListenerEvent = {}));
 class BarcodeCaptureListenerProxy {
     static forBarcodeCapture(barcodeCapture) {
@@ -48,19 +48,11 @@ class BarcodeCaptureListenerProxy {
                         listener.didScan(this.barcodeCapture, BarcodeCapture_Related_1.BarcodeCaptureSession
                             .fromJSON(JSON.parse(event.argument.session)), CameraProxy_1.CameraProxy.getLastFrame);
                     }
-                    // TODO: Remove this check when iOS migrated to use the shared module. It should always call FinishBarcodeCaptureDidScan
-                    if (!event.shouldNotifyWhenFinished) {
-                        BarcodeCaptureListenerProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.FinishBarcodeCaptureDidScan, [{ 'enabled': this.barcodeCapture.isEnabled }]);
-                    }
                     break;
                 case BarcodeCaptureListenerEvent.DidUpdateSession:
                     if (listener.didUpdateSession) {
                         listener.didUpdateSession(this.barcodeCapture, BarcodeCapture_Related_1.BarcodeCaptureSession
                             .fromJSON(JSON.parse(event.argument.session)), CameraProxy_1.CameraProxy.getLastFrame);
-                    }
-                    // TODO: Remove this check when iOS migrated to use the shared module. It should always call FinishBarcodeCaptureDidUpdateSession
-                    if (!event.shouldNotifyWhenFinished) {
-                        BarcodeCaptureListenerProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.FinishBarcodeCaptureDidUpdateSession, [{ 'enabled': this.barcodeCapture.isEnabled }]);
                     }
                     break;
             }
