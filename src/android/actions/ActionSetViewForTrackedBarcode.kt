@@ -6,36 +6,70 @@
 
 package com.scandit.datacapture.cordova.barcode.actions
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import com.scandit.datacapture.cordova.barcode.data.SerializableAdvancedOverlayViewActionData
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.cordova.core.actions.ActionJsonParseErrorResultListener
+import com.scandit.datacapture.cordova.core.errors.JsonParseError
+import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
+import com.scandit.datacapture.frameworks.core.utils.MainThread
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONException
 
 class ActionSetViewForTrackedBarcode(
-    private val listener: ResultListener
+    private val barcodeTrackingModule: BarcodeTrackingModule
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
-            val parsedData = SerializableAdvancedOverlayViewActionData(
+            val data = SerializableAdvancedOverlayViewActionData(
                 args.getJSONObject(0)
             )
-            listener.onViewForTrackedBarcode(parsedData, callbackContext)
+
+            val image = getBitmapFromBase64String(data.view?.data)
+
+            MainThread.runOnMainThread {
+                val view = barcodeTrackingModule.getTrackedBarcodeViewFromBitmap(
+                    data.trackedBarcodeId,
+                    image
+                ) ?: return@runOnMainThread
+
+                view.layoutParams = ViewGroup.MarginLayoutParams(
+                    data.view?.options?.width ?: WRAP_CONTENT,
+                    data.view?.options?.height ?: WRAP_CONTENT
+                )
+
+                barcodeTrackingModule.setViewForTrackedBarcode(
+                    view,
+                    data.trackedBarcodeId,
+                    data.sessionFrameSequenceId
+                )
+            }
+
+            callbackContext.success()
         } catch (e: JSONException) {
             println(e)
-            listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
-            println(e)
-            listener.onJsonParseError(e, callbackContext)
+            callbackContext.error(JsonParseError(e.message).toString())
+        } catch (e: RuntimeException) {
+            callbackContext.error(JsonParseError(e.message).toString())
         }
     }
 
-    interface ResultListener : ActionJsonParseErrorResultListener {
-        fun onViewForTrackedBarcode(
-            data: SerializableAdvancedOverlayViewActionData,
-            callbackContext: CallbackContext
-        )
+    fun getBitmapFromBase64String(string: String?): Bitmap? {
+        string ?: return null
+
+        val index = string.indexOf(",")
+        return try {
+            val trimmedString = string.removeRange(0, index)
+            val bytes = Base64.decode(trimmedString, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        } catch (e: Exception) {
+            println(e)
+            null
+        }
     }
 }

@@ -6,36 +6,29 @@
 
 package com.scandit.datacapture.cordova.barcode.actions
 
-import com.scandit.datacapture.cordova.barcode.data.SerializableBrushAndTrackedBarcode
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.cordova.core.actions.ActionJsonParseErrorResultListener
+import com.scandit.datacapture.cordova.core.errors.JsonParseError
+import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONException
 
 class ActionSetBrushForTrackedBarcode(
-    private val listener: ResultListener
+    private val barcodeTrackingModule: BarcodeTrackingModule
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
-            val parsedData = SerializableBrushAndTrackedBarcode(
-                args.getJSONObject(0)
+            val payload = args.getJSONObject(0)
+            barcodeTrackingModule.setBasicOverlayBrushForTrackedBarcode(
+                payload.toString()
             )
-            listener.onBrushForTrackedBarcode(parsedData, callbackContext)
-        } catch (e: JSONException) {
-            println(e)
-            listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
-            println(e)
-            listener.onJsonParseError(e, callbackContext)
-        }
-    }
 
-    interface ResultListener : ActionJsonParseErrorResultListener {
-        fun onBrushForTrackedBarcode(
-            data: SerializableBrushAndTrackedBarcode,
-            callbackContext: CallbackContext
-        )
+            callbackContext.success()
+        } catch (e: JSONException) {
+            callbackContext.error(JsonParseError(e.message).toString())
+        } catch (e: RuntimeException) {
+            callbackContext.error(JsonParseError(e.message).toString())
+        }
     }
 }
