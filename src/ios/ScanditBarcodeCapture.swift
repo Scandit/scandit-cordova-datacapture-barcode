@@ -91,8 +91,8 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(subscribeBarcodeTrackingBasicOverlayListener:)
     func subscribeBarcodeTrackingBasicOverlayListener(command: CDVInvokedUrlCommand) {
-        emitter.registerCallback(with: .brushForTrackedBarcode, call: command)
-        emitter.registerCallback(with: .didTapOnTrackedBarcode, call: command)
+        emitter.registerCallback(with: FrameworksBarcodeTrackingEvent.brushForTrackedBarcode, call: command)
+        emitter.registerCallback(with: FrameworksBarcodeTrackingEvent.didTapOnTrackedBarcode, call: command)
         barcodeTrackingModule.addBasicOverlayListener()
         commandDelegate.send(.keepCallback, callbackId: command.callbackId)
     }
