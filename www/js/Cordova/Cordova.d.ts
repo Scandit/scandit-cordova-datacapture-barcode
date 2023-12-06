@@ -7,8 +7,6 @@ export declare const Cordova: {
 };
 export declare enum CordovaFunction {
     SubscribeBarcodeCaptureListener = "subscribeBarcodeCaptureListener",
-    FinishBarcodeCaptureDidScan = "finishBarcodeCaptureDidScan",
-    FinishBarcodeCaptureDidUpdateSession = "finishBarcodeCaptureDidUpdateSession",
     SubscribeBarcodeTrackingListener = "subscribeBarcodeTrackingListener",
     SubscribeBarcodeTrackingBasicOverlayListener = "subscribeBarcodeTrackingBasicOverlayListener",
     SetBrushForTrackedBarcode = "setBrushForTrackedBarcode",
@@ -18,15 +16,11 @@ export declare enum CordovaFunction {
     SetAnchorForTrackedBarcode = "setAnchorForTrackedBarcode",
     SetOffsetForTrackedBarcode = "setOffsetForTrackedBarcode",
     ClearTrackedBarcodeViews = "clearTrackedBarcodeViews",
-    FinishBarcodeTrackingDidUpdateSession = "finishBarcodeTrackingDidUpdateSession",
-    FinishBarcodeTrackingBrushForTrackedBarcode = "finishBarcodeTrackingBrushForTrackedBarcode",
     SubscribeBarcodeSelectionListener = "subscribeBarcodeSelectionListener",
     GetCountForBarcodeInBarcodeSelectionSession = "getCountForBarcodeInBarcodeSelectionSession",
     ResetBarcodeCaptureSession = "resetBarcodeCaptureSession",
     ResetBarcodeTrackingSession = "resetBarcodeTrackingSession",
     ResetBarcodeSelectionSession = "resetBarcodeSelectionSession",
     ResetBarcodeSelection = "resetBarcodeSelection",
-    UnfreezeCameraInBarcodeSelection = "unfreezeCameraInBarcodeSelection",
-    FinishBarcodeSelectionDidUpdateSelection = "finishBarcodeSelectionDidUpdateSelection",
-    FinishBarcodeSelectionDidUpdateSession = "finishBarcodeSelectionDidUpdateSession"
+    UnfreezeCameraInBarcodeSelection = "unfreezeCameraInBarcodeSelection"
 }

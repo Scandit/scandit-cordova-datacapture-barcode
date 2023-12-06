@@ -7,10 +7,10 @@ const Barcode_1 = require("scandit-cordova-datacapture-barcode.Barcode");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeTrackingAdvancedOverlayListenerEvent;
 (function (BarcodeTrackingAdvancedOverlayListenerEvent) {
-    BarcodeTrackingAdvancedOverlayListenerEvent["ViewForTrackedBarcode"] = "BarcodeTrackingAdvancedOverlayListener.viewForTrackedBarcode";
-    BarcodeTrackingAdvancedOverlayListenerEvent["AnchorForTrackedBarcode"] = "BarcodeTrackingAdvancedOverlayListener.anchorForTrackedBarcode";
-    BarcodeTrackingAdvancedOverlayListenerEvent["OffsetForTrackedBarcode"] = "BarcodeTrackingAdvancedOverlayListener.offsetForTrackedBarcode";
-    BarcodeTrackingAdvancedOverlayListenerEvent["DidTapViewForTrackedBarcode"] = "BarcodeTrackingAdvancedOverlayListener.didTapViewForTrackedBarcode";
+    BarcodeTrackingAdvancedOverlayListenerEvent["ViewForTrackedBarcode"] = "viewForTrackedBarcode";
+    BarcodeTrackingAdvancedOverlayListenerEvent["AnchorForTrackedBarcode"] = "anchorForTrackedBarcode";
+    BarcodeTrackingAdvancedOverlayListenerEvent["OffsetForTrackedBarcode"] = "offsetForTrackedBarcode";
+    BarcodeTrackingAdvancedOverlayListenerEvent["DidTapViewForTrackedBarcode"] = "didTapViewForTrackedBarcode";
 })(BarcodeTrackingAdvancedOverlayListenerEvent || (BarcodeTrackingAdvancedOverlayListenerEvent = {}));
 class BarcodeTrackingAdvancedOverlayProxy {
     static forOverlay(overlay) {

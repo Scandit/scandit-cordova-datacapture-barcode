@@ -11,10 +11,6 @@ const BarcodeSelection_Related_1 = require("scandit-cordova-datacapture-barcode.
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 const Serializeable_1 = require("scandit-cordova-datacapture-core.Serializeable");
 class BarcodeSelectionSettings extends Serializeable_1.DefaultSerializeable {
-    get enabledSymbologies() {
-        return Object.keys(this.symbologies)
-            .filter(symbology => this.symbologies[symbology].isEnabled);
-    }
     constructor() {
         super();
         this.codeDuplicateFilter = Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionSettings.codeDuplicateFilter;
@@ -22,6 +18,10 @@ class BarcodeSelectionSettings extends Serializeable_1.DefaultSerializeable {
         this.selectionType = Cordova_1.Cordova.defaults.BarcodeSelection.BarcodeSelectionSettings.selectionType(BarcodeSelection_Related_1.PrivateBarcodeSelectionType.fromJSON);
         this.properties = {};
         this.symbologies = {};
+    }
+    get enabledSymbologies() {
+        return Object.keys(this.symbologies)
+            .filter(symbology => this.symbologies[symbology].isEnabled);
     }
     settingsForSymbology(symbology) {
         if (!this.symbologies[symbology]) {
@@ -45,6 +45,6 @@ class BarcodeSelectionSettings extends Serializeable_1.DefaultSerializeable {
     }
 }
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('singleBarcodeAutoDetectionEnabled')
+    Serializeable_1.nameForSerialization('singleBarcodeAutoDetectionEnabled')
 ], BarcodeSelectionSettings.prototype, "singleBarcodeAutoDetection", void 0);
 exports.BarcodeSelectionSettings = BarcodeSelectionSettings;

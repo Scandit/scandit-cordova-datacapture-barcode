@@ -100,13 +100,13 @@ class BarcodeSelection extends Serializeable_1.DefaultSerializeable {
     }
 }
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('enabled')
+    Serializeable_1.nameForSerialization('enabled')
 ], BarcodeSelection.prototype, "_isEnabled", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('feedback')
+    Serializeable_1.nameForSerialization('feedback')
 ], BarcodeSelection.prototype, "_feedback", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('pointOfInterest')
+    Serializeable_1.nameForSerialization('pointOfInterest')
 ], BarcodeSelection.prototype, "_pointOfInterest", void 0);
 __decorate([
     Serializeable_1.ignoreFromSerialization

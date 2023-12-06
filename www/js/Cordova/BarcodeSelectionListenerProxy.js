@@ -6,8 +6,8 @@ const CameraProxy_1 = require("scandit-cordova-datacapture-core.CameraProxy");
 const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 var BarcodeSelectionListenerEvent;
 (function (BarcodeSelectionListenerEvent) {
-    BarcodeSelectionListenerEvent["DidUpdateSelection"] = "BarcodeSelectionListener.didUpdateSelection";
-    BarcodeSelectionListenerEvent["DidUpdateSession"] = "BarcodeSelectionListener.didUpdateSession";
+    BarcodeSelectionListenerEvent["DidUpdateSelection"] = "didUpdateSelectionInBarcodeSelection";
+    BarcodeSelectionListenerEvent["DidUpdateSession"] = "didUpdateSessionInBarcodeSelection";
 })(BarcodeSelectionListenerEvent || (BarcodeSelectionListenerEvent = {}));
 class BarcodeSelectionListenerProxy {
     static forBarcodeSelection(barcodeSelection) {
@@ -53,10 +53,6 @@ class BarcodeSelectionListenerProxy {
                         session.listenerProxy = this;
                         listener.didUpdateSelection(this.barcodeSelection, session, CameraProxy_1.CameraProxy.getLastFrame);
                     }
-                    // TODO: Remove this check when iOS migrated to use the shared module. It should always call FinishBarcodeSelectionDidUpdateSelection
-                    if (!event.shouldNotifyWhenFinished) {
-                        BarcodeSelectionListenerProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.FinishBarcodeSelectionDidUpdateSelection, [{ 'enabled': this.barcodeSelection.isEnabled }]);
-                    }
                     break;
                 case BarcodeSelectionListenerEvent.DidUpdateSession:
                     if (listener.didUpdateSession) {
@@ -64,10 +60,6 @@ class BarcodeSelectionListenerProxy {
                             .fromJSON(JSON.parse(event.argument.session));
                         session.listenerProxy = this;
                         listener.didUpdateSession(this.barcodeSelection, session, CameraProxy_1.CameraProxy.getLastFrame);
-                    }
-                    // TODO: Remove this check when iOS migrated to use the shared module. It should always call FinishBarcodeSelectionDidUpdateSession
-                    if (!event.shouldNotifyWhenFinished) {
-                        BarcodeSelectionListenerProxy.cordovaExec(null, null, Cordova_1.CordovaFunction.FinishBarcodeSelectionDidUpdateSession, [{ 'enabled': this.barcodeSelection.isEnabled }]);
                     }
                     break;
             }

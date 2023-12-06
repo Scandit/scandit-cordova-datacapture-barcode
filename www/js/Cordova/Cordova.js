@@ -10,22 +10,20 @@ const Defaults_1 = require("scandit-cordova-datacapture-barcode.Defaults");
 exports.Cordova = {
     pluginName: 'ScanditBarcodeCapture',
     defaults: {},
-    exec: (success, error, functionName, args) => (0, CommonCordova_1.cordovaExec)(success, error, exports.Cordova.pluginName, functionName, args),
+    exec: (success, error, functionName, args) => CommonCordova_1.cordovaExec(success, error, exports.Cordova.pluginName, functionName, args),
 };
 const getDefaults = new Promise((resolve, reject) => {
     exports.Cordova.exec((defaultsJSON) => {
-        exports.Cordova.defaults = (0, Defaults_1.defaultsFromJSON)(defaultsJSON);
+        exports.Cordova.defaults = Defaults_1.defaultsFromJSON(defaultsJSON);
         resolve();
     }, reject, 'getDefaults', null);
 });
-(0, CommonCordova_1.initializePlugin)(exports.Cordova.pluginName, getDefaults);
+CommonCordova_1.initializePlugin(exports.Cordova.pluginName, getDefaults);
 // To circumvent a circular dependency
 Barcode_1.SymbologyDescription.defaults = () => exports.Cordova.defaults;
 var CordovaFunction;
 (function (CordovaFunction) {
     CordovaFunction["SubscribeBarcodeCaptureListener"] = "subscribeBarcodeCaptureListener";
-    CordovaFunction["FinishBarcodeCaptureDidScan"] = "finishBarcodeCaptureDidScan";
-    CordovaFunction["FinishBarcodeCaptureDidUpdateSession"] = "finishBarcodeCaptureDidUpdateSession";
     CordovaFunction["SubscribeBarcodeTrackingListener"] = "subscribeBarcodeTrackingListener";
     CordovaFunction["SubscribeBarcodeTrackingBasicOverlayListener"] = "subscribeBarcodeTrackingBasicOverlayListener";
     CordovaFunction["SetBrushForTrackedBarcode"] = "setBrushForTrackedBarcode";
@@ -35,8 +33,6 @@ var CordovaFunction;
     CordovaFunction["SetAnchorForTrackedBarcode"] = "setAnchorForTrackedBarcode";
     CordovaFunction["SetOffsetForTrackedBarcode"] = "setOffsetForTrackedBarcode";
     CordovaFunction["ClearTrackedBarcodeViews"] = "clearTrackedBarcodeViews";
-    CordovaFunction["FinishBarcodeTrackingDidUpdateSession"] = "finishBarcodeTrackingDidUpdateSession";
-    CordovaFunction["FinishBarcodeTrackingBrushForTrackedBarcode"] = "finishBarcodeTrackingBrushForTrackedBarcode";
     CordovaFunction["SubscribeBarcodeSelectionListener"] = "subscribeBarcodeSelectionListener";
     CordovaFunction["GetCountForBarcodeInBarcodeSelectionSession"] = "getCountForBarcodeInBarcodeSelectionSession";
     CordovaFunction["ResetBarcodeCaptureSession"] = "resetBarcodeCaptureSession";
@@ -44,6 +40,4 @@ var CordovaFunction;
     CordovaFunction["ResetBarcodeSelectionSession"] = "resetBarcodeSelectionSession";
     CordovaFunction["ResetBarcodeSelection"] = "resetBarcodeSelection";
     CordovaFunction["UnfreezeCameraInBarcodeSelection"] = "unfreezeCameraInBarcodeSelection";
-    CordovaFunction["FinishBarcodeSelectionDidUpdateSelection"] = "finishBarcodeSelectionDidUpdateSelection";
-    CordovaFunction["FinishBarcodeSelectionDidUpdateSession"] = "finishBarcodeSelectionDidUpdateSession";
 })(CordovaFunction = exports.CordovaFunction || (exports.CordovaFunction = {}));

@@ -50,6 +50,13 @@ var CompositeType;
     CompositeType["C"] = "C";
 })(CompositeType = exports.CompositeType || (exports.CompositeType = {}));
 class SymbologyDescription {
+    constructor(symbology) {
+        if (!symbology) {
+            return;
+        }
+        return SymbologyDescription.all[SymbologyDescription.all
+            .findIndex(description => description.identifier === symbology)];
+    }
     static get all() {
         return this.defaults().SymbologyDescriptions;
     }
@@ -79,13 +86,6 @@ class SymbologyDescription {
             return null;
         }
         return new SymbologyDescription(identifier);
-    }
-    constructor(symbology) {
-        if (!symbology) {
-            return;
-        }
-        return SymbologyDescription.all[SymbologyDescription.all
-            .findIndex(description => description.identifier === symbology)];
     }
 }
 exports.SymbologyDescription = SymbologyDescription;
@@ -119,10 +119,10 @@ __decorate([
     Serializeable_1.ignoreFromSerialization
 ], SymbologySettings.prototype, "_symbology", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('enabled')
+    Serializeable_1.nameForSerialization('enabled')
 ], SymbologySettings.prototype, "isEnabled", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('colorInvertedEnabled')
+    Serializeable_1.nameForSerialization('colorInvertedEnabled')
 ], SymbologySettings.prototype, "isColorInvertedEnabled", void 0);
 exports.SymbologySettings = SymbologySettings;
 var Checksum;
@@ -180,13 +180,13 @@ class Range {
     }
 }
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('minimum')
+    Serializeable_1.nameForSerialization('minimum')
 ], Range.prototype, "_minimum", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('maximum')
+    Serializeable_1.nameForSerialization('maximum')
 ], Range.prototype, "_maximum", void 0);
 __decorate([
-    (0, Serializeable_1.nameForSerialization)('step')
+    Serializeable_1.nameForSerialization('step')
 ], Range.prototype, "_step", void 0);
 exports.Range = Range;
 class Barcode {
@@ -203,7 +203,6 @@ class Barcode {
     get isColorInverted() { return this._isColorInverted; }
     get symbolCount() { return this._symbolCount; }
     get frameID() { return this._frameID; }
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     get selectionIdentifier() { return this.data + this.symbology; }
     static fromJSON(json) {
         const barcode = new Barcode();
@@ -245,17 +244,14 @@ class TrackedBarcode {
     get predictedLocation() { return this._predictedLocation; }
     get location() { return this._location; }
     get identifier() { return this._identifier; }
-    get shouldAnimateFromPreviousToNextState() {
-        // tslint:disable-next-line:no-console
-        console.warn('shouldAnimateFromPreviousToNextState is deprecated and returns "false" when accessed');
-        return false;
-    }
+    get shouldAnimateFromPreviousToNextState() { return this._shouldAnimateFromPreviousToNextState; }
     static fromJSON(json) {
         const trackedBarcode = new TrackedBarcode();
         trackedBarcode._deltaTime = json.deltaTime;
         trackedBarcode._identifier = json.identifier;
+        trackedBarcode._shouldAnimateFromPreviousToNextState = json.shouldAnimateFromPreviousToNextState;
         trackedBarcode._barcode = Barcode.fromJSON(json.barcode);
-        trackedBarcode._predictedLocation = Common_1.Quadrilateral.fromJSON(json.location);
+        trackedBarcode._predictedLocation = Common_1.Quadrilateral.fromJSON(json.predictedLocation);
         trackedBarcode._location = Common_1.Quadrilateral.fromJSON(json.location);
         return trackedBarcode;
     }

@@ -6,40 +6,36 @@
 
 package com.scandit.datacapture.cordova.barcode.actions
 
+import com.scandit.datacapture.cordova.barcode.data.SerializableAdvancedOverlayAnchorActionData
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.cordova.core.errors.JsonParseError
-import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
+import com.scandit.datacapture.cordova.core.actions.ActionJsonParseErrorResultListener
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONException
 
 class ActionSetAnchorForTrackedBarcode(
-    private val barcodeTrackingModule: BarcodeTrackingModule
+    private val listener: ResultListener
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
         try {
-            val argument = args.getJSONObject(0)
-            val payload = hashMapOf<String, Any?>(
-                "anchor" to argument.getString(FIELD_ANCHOR),
-                "identifier" to argument.getInt(FIELD_TRACKED_BARCODE_ID),
-                "sessionFrameSequenceID" to if (argument.has(FIELD_FRAME_SEQUENCE_ID)) {
-                    argument.getLong(FIELD_FRAME_SEQUENCE_ID)
-                } else null
+            val parsedData = SerializableAdvancedOverlayAnchorActionData(
+                args.getJSONObject(0)
             )
-            barcodeTrackingModule.setAnchorForTrackedBarcode(payload)
-
-            callbackContext.success()
+            listener.onAnchorForTrackedBarcode(parsedData, callbackContext)
         } catch (e: JSONException) {
-            callbackContext.error(JsonParseError(e.message).toString())
-        } catch (e: RuntimeException) {
-            callbackContext.error(JsonParseError(e.message).toString())
+            println(e)
+            listener.onJsonParseError(e, callbackContext)
+        } catch (e: RuntimeException) { // TODO [SDC-1851] - fine-catch deserializer exceptions
+            println(e)
+            listener.onJsonParseError(e, callbackContext)
         }
     }
 
-    companion object {
-        private const val FIELD_ANCHOR = "anchor"
-        private const val FIELD_TRACKED_BARCODE_ID = "trackedBarcodeID"
-        private const val FIELD_FRAME_SEQUENCE_ID = "sessionFrameSequenceID"
+    interface ResultListener : ActionJsonParseErrorResultListener {
+        fun onAnchorForTrackedBarcode(
+            data: SerializableAdvancedOverlayAnchorActionData,
+            callbackContext: CallbackContext
+        )
     }
 }

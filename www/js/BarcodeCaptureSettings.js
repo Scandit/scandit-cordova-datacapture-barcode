@@ -11,6 +11,14 @@ const Cordova_1 = require("scandit-cordova-datacapture-barcode.Cordova");
 const LocationSelection_1 = require("scandit-cordova-datacapture-core.LocationSelection");
 const Serializeable_1 = require("scandit-cordova-datacapture-core.Serializeable");
 class BarcodeCaptureSettings extends Serializeable_1.DefaultSerializeable {
+    constructor() {
+        super();
+        this.codeDuplicateFilter = Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureSettings.codeDuplicateFilter;
+        this.locationSelection = null;
+        this.enabledCompositeTypes = [];
+        this.properties = {};
+        this.symbologies = {};
+    }
     get compositeTypeDescriptions() {
         return Cordova_1.Cordova.defaults.CompositeTypeDescriptions.reduce((descriptions, description) => {
             descriptions[description.types[0]] = description;
@@ -20,14 +28,6 @@ class BarcodeCaptureSettings extends Serializeable_1.DefaultSerializeable {
     get enabledSymbologies() {
         return Object.keys(this.symbologies)
             .filter(symbology => this.symbologies[symbology].isEnabled);
-    }
-    constructor() {
-        super();
-        this.codeDuplicateFilter = Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureSettings.codeDuplicateFilter;
-        this.locationSelection = null;
-        this.enabledCompositeTypes = [];
-        this.properties = {};
-        this.symbologies = {};
     }
     settingsForSymbology(symbology) {
         if (!this.symbologies[symbology]) {
@@ -56,6 +56,6 @@ class BarcodeCaptureSettings extends Serializeable_1.DefaultSerializeable {
     }
 }
 __decorate([
-    (0, Serializeable_1.serializationDefault)(LocationSelection_1.NoneLocationSelection)
+    Serializeable_1.serializationDefault(LocationSelection_1.NoneLocationSelection)
 ], BarcodeCaptureSettings.prototype, "locationSelection", void 0);
 exports.BarcodeCaptureSettings = BarcodeCaptureSettings;
