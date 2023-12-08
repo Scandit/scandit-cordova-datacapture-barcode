@@ -7,30 +7,16 @@
 package com.scandit.datacapture.cordova.barcode.actions
 
 import com.scandit.datacapture.cordova.core.actions.Action
-import com.scandit.datacapture.cordova.core.actions.ActionJsonParseErrorResultListener
+import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
-import org.json.JSONException
 
 class ActionResetBarcodeCaptureSession(
-    private val listener: ResultListener
+    private val barcodeCaptureModule: BarcodeCaptureModule
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
-        try {
-            listener.onResetBarcodeCaptureSession(callbackContext)
-        } catch (e: JSONException) {
-            println(e)
-            listener.onJsonParseError(e, callbackContext)
-        } catch (e: RuntimeException) {
-            println(e)
-            listener.onJsonParseError(e, callbackContext)
-        }
-    }
-
-    interface ResultListener : ActionJsonParseErrorResultListener {
-        fun onResetBarcodeCaptureSession(
-            callbackContext: CallbackContext
-        )
+        barcodeCaptureModule.resetSession(null)
+        callbackContext.success()
     }
 }

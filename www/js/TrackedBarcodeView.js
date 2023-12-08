@@ -6,14 +6,6 @@ exports.TrackedBarcodeView = void 0;
 const Common_1 = require("scandit-cordova-datacapture-core.Common");
 const Serializeable_1 = require("scandit-cordova-datacapture-core.Serializeable");
 class TrackedBarcodeView extends Serializeable_1.DefaultSerializeable {
-    constructor(encodedData, options) {
-        super();
-        if (options == null) {
-            options = { scale: 1 };
-        }
-        this.data = encodedData;
-        this.options = options;
-    }
     static withHTMLElement(element, options) {
         return this.getEncodedImageData(element).then(data => new TrackedBarcodeView(data, options));
     }
@@ -62,6 +54,14 @@ class TrackedBarcodeView extends Serializeable_1.DefaultSerializeable {
             image.onerror = reject;
             image.src = 'data:image/svg+xml,' + svgData.data;
         });
+    }
+    constructor(encodedData, options) {
+        super();
+        if (options == null) {
+            options = { scale: 1 };
+        }
+        this.data = encodedData;
+        this.options = options;
     }
 }
 exports.TrackedBarcodeView = TrackedBarcodeView;
