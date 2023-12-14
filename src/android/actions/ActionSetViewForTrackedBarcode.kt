@@ -15,15 +15,13 @@ import com.scandit.datacapture.cordova.barcode.data.SerializableAdvancedOverlayV
 import com.scandit.datacapture.cordova.core.actions.Action
 import com.scandit.datacapture.cordova.core.errors.JsonParseError
 import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
-import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
 import com.scandit.datacapture.frameworks.core.utils.MainThread
 import org.apache.cordova.CallbackContext
 import org.json.JSONArray
 import org.json.JSONException
 
 class ActionSetViewForTrackedBarcode(
-    private val barcodeTrackingModule: BarcodeTrackingModule,
-    private val mainThread: MainThread = DefaultMainThread.getInstance()
+    private val barcodeTrackingModule: BarcodeTrackingModule
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
@@ -34,7 +32,7 @@ class ActionSetViewForTrackedBarcode(
 
             val image = getBitmapFromBase64String(data.view?.data)
 
-            mainThread.runOnMainThread {
+            MainThread.runOnMainThread {
                 val view = barcodeTrackingModule.getTrackedBarcodeViewFromBitmap(
                     data.trackedBarcodeId,
                     image
