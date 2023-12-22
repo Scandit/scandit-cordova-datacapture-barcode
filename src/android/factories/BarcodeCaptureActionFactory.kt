@@ -7,12 +7,14 @@
 package com.scandit.datacapture.cordova.barcode.factories
 
 import com.scandit.datacapture.cordova.barcode.actions.*
+import com.scandit.datacapture.cordova.barcode.handlers.BarcodeFindViewHandler
 import com.scandit.datacapture.cordova.core.actions.Action
 import com.scandit.datacapture.cordova.core.errors.InvalidActionNameError
 import com.scandit.datacapture.cordova.core.factories.ActionFactory
 import com.scandit.datacapture.cordova.core.utils.CordovaEventEmitter
 import com.scandit.datacapture.frameworks.barcode.BarcodeModule
 import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
+import com.scandit.datacapture.frameworks.barcode.find.BarcodeFindModule
 import com.scandit.datacapture.frameworks.barcode.selection.BarcodeSelectionModule
 import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
 
@@ -21,6 +23,8 @@ class BarcodeCaptureActionFactory(
     private val barcodeCaptureModule: BarcodeCaptureModule,
     private val barcodeTrackingModule: BarcodeTrackingModule,
     private val barcodeSelectionModule: BarcodeSelectionModule,
+    private val barcodeFindModule: BarcodeFindModule,
+    private val barcodeFindViewHandler: BarcodeFindViewHandler,
     private val eventEmitter: CordovaEventEmitter
 ) : ActionFactory {
 
@@ -59,6 +63,24 @@ class BarcodeCaptureActionFactory(
                 ActionFinishBarcodeSelectionDidUpdateSession(barcodeSelectionModule),
             FINISH_BARCODE_TRACKING_DID_UPDATE_SESSION to
                 ActionFinishBarcodeTrackingDidUpdateSession(barcodeTrackingModule),
+            ACTION_CREATE_FIND_VIEW to createActionCreateFindView(),
+            ACTION_UPDATE_FIND_VIEW to createActionUpdateFindView(),
+            ACTION_UPDATE_FIND_MODE to createActionUpdateFindMode(),
+            ACTION_REGISTER_FIND_LISTENER to createActionRegisterBarcodeFindListener(),
+            ACTION_UNREGISTER_FIND_LISTENER to createActionUnregisterBarcodeFindListener(),
+            ACTION_REGISTER_FIND_VIEW_LISTENER to createActionRegisterBarcodeFindViewListener(),
+            ACTION_UNREGISTER_FIND_VIEW_LISTENER to createActionUnregisterBarcodeFindViewListener(),
+            ACTION_FIND_VIEW_ON_PAUSE to createActionFindViewOnPause(),
+            ACTION_FIND_VIEW_ON_RESUME to createActionFindViewOnResume(),
+            ACTION_FIND_SET_ITEM_LIST to createActionFindSetItemList(),
+            ACTION_FIND_VIEW_PAUSE_SEARCHING to createActionFindViewPauseSearching(),
+            ACTION_FIND_VIEW_START_SEARCHING to createActionFindViewStartSearching(),
+            ACTION_FIND_VIEW_STOP_SEARCHING to createActionFindViewStopSearching(),
+            ACTION_FIND_MODE_PAUSE to createActionFindModePause(),
+            ACTION_FIND_MODE_START to createActionFindModeStart(),
+            ACTION_FIND_MODE_STOP to createActionFindModeStop(),
+            ACTION_FIND_VIEW_SHOW to createActionFindViewShow(),
+            ACTION_FIND_VIEW_HIDE to createActionFindViewHide(),
         )
     }
 
@@ -69,7 +91,11 @@ class BarcodeCaptureActionFactory(
     override fun canBeRunWithoutCameraPermission(actionName: String): Boolean = true
 
     private fun createActionInjectDefaults(): Action = ActionInjectDefaults(
-        barcodeModule, barcodeCaptureModule, barcodeTrackingModule, barcodeSelectionModule
+        barcodeModule,
+        barcodeCaptureModule,
+        barcodeTrackingModule,
+        barcodeSelectionModule,
+        barcodeFindModule
     )
 
     private fun createActionSubscribeBarcodeCapture(): Action = ActionSubscribeBarcodeCapture(
@@ -144,6 +170,60 @@ class BarcodeCaptureActionFactory(
             barcodeSelectionModule
         )
 
+    private fun createActionCreateFindView(): Action =
+        ActionCreateFindView(barcodeFindModule, barcodeFindViewHandler)
+
+    private fun createActionUpdateFindView(): Action =
+        ActionUpdateFindView(barcodeFindModule)
+
+    private fun createActionUpdateFindMode(): Action =
+        ActionUpdateFindMode(barcodeFindModule)
+
+    private fun createActionRegisterBarcodeFindListener(): Action =
+        ActionRegisterBarcodeFindListener(barcodeFindModule, eventEmitter)
+
+    private fun createActionUnregisterBarcodeFindListener(): Action =
+        ActionUnregisterBarcodeFindListener(barcodeFindModule, eventEmitter)
+
+    private fun createActionRegisterBarcodeFindViewListener(): Action =
+        ActionRegisterBarcodeFindViewListener(barcodeFindModule, eventEmitter)
+
+    private fun createActionUnregisterBarcodeFindViewListener(): Action =
+        ActionUnregisterBarcodeFindViewListener(barcodeFindModule, eventEmitter)
+
+    private fun createActionFindViewOnPause(): Action =
+        ActionFindViewOnPause(barcodeFindModule)
+
+    private fun createActionFindViewOnResume(): Action =
+        ActionFindViewOnResume(barcodeFindModule)
+
+    private fun createActionFindSetItemList(): Action =
+        ActionFindSetItemList(barcodeFindModule)
+
+    private fun createActionFindViewPauseSearching(): Action =
+        ActionFindViewPauseSearching(barcodeFindModule)
+
+    private fun createActionFindViewStartSearching(): Action =
+        ActionFindViewStartSearching(barcodeFindModule)
+
+    private fun createActionFindViewStopSearching(): Action =
+        ActionFindViewStopSearching(barcodeFindModule)
+
+    private fun createActionFindModePause(): Action =
+        ActionFindModePause(barcodeFindModule)
+
+    private fun createActionFindModeStart(): Action =
+        ActionFindModeStart(barcodeFindModule)
+
+    private fun createActionFindModeStop(): Action =
+        ActionFindModeStop(barcodeFindModule)
+
+    private fun createActionFindViewShow(): Action =
+        ActionFindViewShow(barcodeFindViewHandler)
+
+    private fun createActionFindViewHide(): Action =
+        ActionFindViewHide(barcodeFindViewHandler)
+
     companion object {
         private const val INJECT_DEFAULTS = "getDefaults"
         private const val SUBSCRIBE_BARCODE_CAPTURE = "subscribeBarcodeCaptureListener"
@@ -181,5 +261,24 @@ class BarcodeCaptureActionFactory(
         const val ACTION_RESET_BARCODE_SELECTION_SESSION = "resetBarcodeSelectionSession"
         const val ACTION_RESET_BARCODE_SELECTION = "resetBarcodeSelection"
         const val ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION = "unfreezeCameraInBarcodeSelection"
+
+        const val ACTION_CREATE_FIND_VIEW = "createFindView"
+        const val ACTION_UPDATE_FIND_VIEW = "updateFindView"
+        const val ACTION_UPDATE_FIND_MODE = "updateFindMode"
+        const val ACTION_REGISTER_FIND_LISTENER = "registerBarcodeFindListener"
+        const val ACTION_UNREGISTER_FIND_LISTENER = "unregisterBarcodeFindListener"
+        const val ACTION_REGISTER_FIND_VIEW_LISTENER = "registerBarcodeFindViewListener"
+        const val ACTION_UNREGISTER_FIND_VIEW_LISTENER = "unregisterBarcodeFindViewListener"
+        const val ACTION_FIND_VIEW_ON_PAUSE = "barcodeFindViewOnPause"
+        const val ACTION_FIND_VIEW_ON_RESUME = "barcodeFindViewOnResume"
+        const val ACTION_FIND_SET_ITEM_LIST = "barcodeFindSetItemList"
+        const val ACTION_FIND_VIEW_STOP_SEARCHING = "barcodeFindViewStopSearching"
+        const val ACTION_FIND_VIEW_START_SEARCHING = "barcodeFindViewStartSearching"
+        const val ACTION_FIND_VIEW_PAUSE_SEARCHING = "barcodeFindViewPauseSearching"
+        const val ACTION_FIND_MODE_START = "barcodeFindModeStart"
+        const val ACTION_FIND_MODE_PAUSE = "barcodeFindModePause"
+        const val ACTION_FIND_MODE_STOP = "barcodeFindModeStop"
+        const val ACTION_FIND_VIEW_SHOW = "showFindView"
+        const val ACTION_FIND_VIEW_HIDE = "hideFindView"
     }
 }
