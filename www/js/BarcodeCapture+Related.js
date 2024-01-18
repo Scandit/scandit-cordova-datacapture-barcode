@@ -94,7 +94,7 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         const overlay = new BarcodeCaptureOverlay();
         overlay.barcodeCapture = barcodeCapture;
         overlay._style = style;
-        overlay._brush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].DefaultBrush.fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].DefaultBrush.strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].DefaultBrush.strokeWidth);
+        overlay._brush = new Viewfinder_1.Brush(Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].fillColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].strokeColor, Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.Brushes[overlay._style].strokeWidth);
         if (view) {
             view.addOverlay(overlay);
         }
@@ -105,7 +105,7 @@ class BarcodeCaptureOverlay extends Serializeable_1.DefaultSerializeable {
         this.type = 'barcodeCapture';
         this._shouldShowScanAreaGuides = false;
         this._viewfinder = null;
-        this._brush = Cordova_1.Cordova.defaults.BarcodeCapture.BarcodeCaptureOverlay.DefaultBrush;
+        this._brush = BarcodeCaptureOverlay.defaultBrush;
     }
 }
 __decorate([

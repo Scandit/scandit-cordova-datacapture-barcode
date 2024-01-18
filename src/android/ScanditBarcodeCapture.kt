@@ -8,7 +8,6 @@ package com.scandit.datacapture.cordova.barcode
 
 import android.Manifest
 import com.scandit.datacapture.cordova.barcode.factories.BarcodeCaptureActionFactory
-import com.scandit.datacapture.cordova.barcode.handlers.BarcodeFindViewHandler
 import com.scandit.datacapture.cordova.core.ScanditCaptureCore
 import com.scandit.datacapture.cordova.core.actions.ActionSend
 import com.scandit.datacapture.cordova.core.communication.CameraPermissionGrantedListener
@@ -22,9 +21,6 @@ import com.scandit.datacapture.cordova.core.utils.successAndKeepCallback
 import com.scandit.datacapture.frameworks.barcode.BarcodeModule
 import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
 import com.scandit.datacapture.frameworks.barcode.capture.listeners.FrameworksBarcodeCaptureListener
-import com.scandit.datacapture.frameworks.barcode.find.BarcodeFindModule
-import com.scandit.datacapture.frameworks.barcode.find.listeners.FrameworksBarcodeFindListener
-import com.scandit.datacapture.frameworks.barcode.find.listeners.FrameworksBarcodeFindViewUiListener
 import com.scandit.datacapture.frameworks.barcode.selection.BarcodeSelectionModule
 import com.scandit.datacapture.frameworks.barcode.selection.listeners.FrameworksBarcodeSelectionAimedBrushProvider
 import com.scandit.datacapture.frameworks.barcode.selection.listeners.FrameworksBarcodeSelectionListener
@@ -59,19 +55,11 @@ class ScanditBarcodeCapture :
         FrameworksBarcodeSelectionTrackedBrushProvider(eventEmitter)
     )
 
-    private val barcodeFindModule = BarcodeFindModule(
-        FrameworksBarcodeFindListener(eventEmitter),
-        FrameworksBarcodeFindViewUiListener(eventEmitter)
-    )
-    private val barcodeFindViewHandler: BarcodeFindViewHandler = BarcodeFindViewHandler()
-
     private val actionFactory: ActionFactory = BarcodeCaptureActionFactory(
         barcodeModule,
         barcodeCaptureModule,
         barcodeTrackingModule,
         barcodeSelectionModule,
-        barcodeFindModule,
-        barcodeFindViewHandler,
         eventEmitter
     )
     private val actionsHandler: ActionsHandler = ActionsHandler(
@@ -81,11 +69,8 @@ class ScanditBarcodeCapture :
     private var lastBarcodeCaptureEnabledState: Boolean = false
     private var lastBarcodeTrackingEnabledState: Boolean = false
     private var lastBarcodeSelectionEnabledState: Boolean = false
-    private var lastBarcodeFindEnabledState: Boolean = false
 
     override fun pluginInitialize() {
-        barcodeFindViewHandler.attachWebView(webView.view, cordova.activity)
-
         super.pluginInitialize()
         ScanditCaptureCore.addPlugin(serviceName)
         barcodeModule.onCreate(cordova.context)
@@ -100,23 +85,19 @@ class ScanditBarcodeCapture :
 
     override fun onStop() {
         lastBarcodeCaptureEnabledState = barcodeCaptureModule.isModeEnabled()
-        barcodeCaptureModule.setModeEnabled(false)
+        barcodeCaptureModule.setEnabledState(false)
 
         lastBarcodeTrackingEnabledState = barcodeTrackingModule.isModeEnabled()
-        barcodeTrackingModule.setModeEnabled(false)
+        barcodeTrackingModule.setEnabledState(false)
 
         lastBarcodeSelectionEnabledState = barcodeSelectionModule.isModeEnabled()
-        barcodeSelectionModule.setModeEnabled(false)
-
-        lastBarcodeFindEnabledState = barcodeFindModule.isModeEnabled()
-        barcodeFindModule.setModeEnabled(false)
+        barcodeSelectionModule.setEnabledState(false)
     }
 
     override fun onStart() {
-        barcodeCaptureModule.setModeEnabled(lastBarcodeCaptureEnabledState)
-        barcodeTrackingModule.setModeEnabled(lastBarcodeTrackingEnabledState)
-        barcodeSelectionModule.setModeEnabled(lastBarcodeSelectionEnabledState)
-        barcodeFindModule.setModeEnabled(lastBarcodeFindEnabledState)
+        barcodeCaptureModule.setEnabledState(lastBarcodeCaptureEnabledState)
+        barcodeTrackingModule.setEnabledState(lastBarcodeTrackingEnabledState)
+        barcodeSelectionModule.setEnabledState(lastBarcodeSelectionEnabledState)
     }
 
     override fun onReset() {

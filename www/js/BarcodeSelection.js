@@ -26,13 +26,18 @@ class BarcodeSelection extends Serializeable_1.DefaultSerializeable {
         this.listeners = [];
         this.listenerProxy = null;
         this.modeProxy = new BarcodeSelectionProxy_1.BarcodeSelectionProxy();
+        this.isInListenerCallback = false;
     }
     get isEnabled() {
         return this._isEnabled;
     }
     set isEnabled(isEnabled) {
         this._isEnabled = isEnabled;
-        this.didChange();
+        if (!this.isInListenerCallback) {
+            // If we're "in" a listener callback, we don't want to deserialize the context to update the enabled state,
+            // but rather pass that back to be applied in the native callback.
+            this.didChange();
+        }
     }
     get context() {
         return this._context;
@@ -115,4 +120,7 @@ __decorate([
 __decorate([
     Serializeable_1.ignoreFromSerialization
 ], BarcodeSelection.prototype, "modeProxy", void 0);
+__decorate([
+    Serializeable_1.ignoreFromSerialization
+], BarcodeSelection.prototype, "isInListenerCallback", void 0);
 exports.BarcodeSelection = BarcodeSelection;

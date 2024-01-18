@@ -9,7 +9,6 @@ package com.scandit.datacapture.cordova.barcode.actions
 import com.scandit.datacapture.cordova.core.actions.Action
 import com.scandit.datacapture.frameworks.barcode.BarcodeModule
 import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
-import com.scandit.datacapture.frameworks.barcode.find.BarcodeFindModule
 import com.scandit.datacapture.frameworks.barcode.selection.BarcodeSelectionModule
 import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
 import org.apache.cordova.CallbackContext
@@ -20,8 +19,7 @@ class ActionInjectDefaults(
     private val barcodeModule: BarcodeModule,
     private val barcodeCaptureModule: BarcodeCaptureModule,
     private val barcodeTrackingModule: BarcodeTrackingModule,
-    private val barcodeSelectionModule: BarcodeSelectionModule,
-    private val barcodeFindModule: BarcodeFindModule
+    private val barcodeSelectionModule: BarcodeSelectionModule
 ) : Action {
 
     override fun run(args: JSONArray, callbackContext: CallbackContext) {
@@ -29,8 +27,7 @@ class ActionInjectDefaults(
             barcodeModule.getDefaults() +
                 mapOf("BarcodeCapture" to barcodeCaptureModule.getDefaults()) +
                 mapOf("BarcodeTracking" to barcodeTrackingModule.getDefaults()) +
-                mapOf("BarcodeSelection" to barcodeSelectionModule.getDefaults()) +
-                mapOf("BarcodeFind" to barcodeFindModule.getDefaults())
+                mapOf("BarcodeSelection" to barcodeSelectionModule.getDefaults())
         )
 
         callbackContext.success(default)

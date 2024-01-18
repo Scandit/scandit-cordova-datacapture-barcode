@@ -31,8 +31,10 @@ class BarcodeCaptureListenerProxy {
     }
     notifyListeners(event) {
         const done = () => {
+            this.barcodeCapture.isInListenerCallback = false;
             return { enabled: this.barcodeCapture.isEnabled };
         };
+        this.barcodeCapture.isInListenerCallback = true;
         if (!event) {
             // The event could be undefined/null in case the plugin result did not pass a "message",
             // which could happen e.g. in case of "ok" results, which could signal e.g. successful
