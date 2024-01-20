@@ -18,7 +18,6 @@ export class BarcodeCapture implements DataCaptureMode {
     private _context;
     private listeners;
     private listenerProxy;
-    private isInListenerCallback;
     static forContext(context: DataCaptureContext | null, settings: BarcodeCaptureSettings): BarcodeCapture;
     applySettings(settings: BarcodeCaptureSettings): Promise<void>;
     addListener(listener: BarcodeCaptureListener): void;
@@ -336,7 +335,6 @@ export class BarcodeTracking implements DataCaptureMode {
     private _context;
     private listeners;
     private listenerProxy;
-    private isInListenerCallback;
     static forContext(context: DataCaptureContext | null, settings: BarcodeTrackingSettings): BarcodeTracking;
     applySettings(settings: BarcodeTrackingSettings): Promise<void>;
     addListener(listener: BarcodeTrackingListener): void;
@@ -507,7 +505,6 @@ export class BarcodeSelection implements DataCaptureMode {
     private listeners;
     private listenerProxy;
     private modeProxy;
-    private isInListenerCallback;
     static forContext(context: DataCaptureContext | null, settings: BarcodeSelectionSettings): BarcodeSelection;
     applySettings(settings: BarcodeSelectionSettings): Promise<void>;
     addListener(listener: BarcodeSelectionListener): void;

@@ -30,10 +30,8 @@ class BarcodeTrackingListenerProxy {
     }
     notifyListeners(event) {
         const done = () => {
-            this.barcodeTracking.isInListenerCallback = false;
             return { enabled: this.barcodeTracking.isEnabled };
         };
-        this.barcodeTracking.isInListenerCallback = true;
         if (!event) {
             // The event could be undefined/null in case the plugin result did not pass a "message",
             // which could happen e.g. in case of "ok" results, which could signal e.g. successful
