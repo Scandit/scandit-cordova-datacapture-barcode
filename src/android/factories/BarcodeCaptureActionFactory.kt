@@ -32,18 +32,28 @@ class BarcodeCaptureActionFactory(
         mapOf(
             INJECT_DEFAULTS to createActionInjectDefaults(),
             SUBSCRIBE_BARCODE_CAPTURE to createActionSubscribeBarcodeCapture(),
+            UNSUBSCRIBE_BARCODE_CAPTURE to createActionUnsubscribeBarcodeCapture(),
             SUBSCRIBE_BARCODE_TRACKING to createActionSubscribeBarcodeTracking(),
+            UNREGISTER_BARCODE_TRACKING to createActionUnregisterBarcodeTrackingListener(),
             SUBSCRIBE_BARCODE_SELECTION to createActionSubscribeBarcodeSelection(),
+            UNSUBSCRIBE_BARCODE_SELECTION to createActionUnsubscribeBarcodeSelection(),
             ACTION_GET_COUNT_FOR_BARCODE_IN_BARCODE_SELECTION_SESSION to
                 createActionGetCountForBarcodeInBarcodeSelectionSession(),
             ACTION_RESET_BARCODE_CAPTURE_SESSION to createActionResetBarcodeCaptureSession(),
             ACTION_RESET_BARCODE_TRACKING_SESSION to createActionResetBarcodeTrackingSession(),
             ACTION_RESET_BARCODE_SELECTION_SESSION to createActionResetBarcodeSelectionSession(),
             ACTION_RESET_BARCODE_SELECTION to createActionResetBarcodeSelection(),
-            ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION to
+            ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION to 
                 createActionUnfreezeCameraInBarcodeSelection(),
+            SELECT_AIMED_BARCODE to createActionSelectAimedBarcode(),
+            INCREASE_COUNT_FOR_BARCODES_IN_BARCODE_SELECTION to createActionIncreaseCountForBarcodesInBarcodeSelection(),
+            UNSELECT_BARCODES to createActionUnselectBarcodes(),
+            SET_SELECT_BARCODE_ENABLED to createSetSelectBarcodeEnabled(),
             SUBSCRIBE_BASIC_OVERLAY_LISTENER to createActionSubscribeBasicOverlay(),
+            UNREGISTER_BASIC_OVERLAY_LISTENER to createActionUnregisterBasicOverlayListener(),
             SUBSCRIBE_ADVANCED_OVERLAY_LISTENER to createActionSubscribeAdvancedOverlay(),
+            UNREGISTER_ADVANCED_OVERLAY_LISTENER to createActionUnregisterAdvancedOverlayListener(),
+            
             SET_BRUSH_FOR_TRACKED_BARCODE to createActionSetBrushForTrackedBarcode(),
             CLEAR_TRACKED_BARCODE_BRUSHES to createActionClearTrackedBarcodeBrushes(),
             SET_VIEW_FOR_TRACKED_BARCODE to createActionSetViewForTrackedBarcode(),
@@ -81,6 +91,39 @@ class BarcodeCaptureActionFactory(
             ACTION_FIND_MODE_STOP to createActionFindModeStop(),
             ACTION_FIND_VIEW_SHOW to createActionFindViewShow(),
             ACTION_FIND_VIEW_HIDE to createActionFindViewHide(),
+            ACTION_SET_BARCODE_CAPTURE_MODE_ENABLED_STATE to
+                createActionSetBarcodeCaptureModeEnabledState(),
+            ACTION_SET_BARCODE_SELECTION_MODE_ENABLED_STATE to
+                createActionSetBarcodeSelectionModeEnabledState(),
+            ACTION_SET_BARCODE_TRACKING_MODE_ENABLED_STATE to
+                createActionSetBarcodeTrackingModeEnabledState(),
+            ACTION_UPDATE_BC_MODE to createActionUpdateBCMode(),
+            ACTION_UPDATE_BC_OVERLAY to createActionUpdateBCOverlay(),
+            ACTION_APPLY_BC_MODE_SETTINGS to createActionApplyBCModeSettings(),
+
+            ACTION_UPDATE_BS_MODE to createActionUpdateBSMode(),
+            ACTION_UPDATE_BS_BASIC_OVERLAY to createActionUpdateBSBasicOverlay(),
+            ACTION_APPLY_BS_MODE_SETTINGS to createActionApplyBSModeSettings(),
+            ACTION_SET_TEXT_FOR_AIM_TO_SELECT_AUTO_HINT to
+                createActionSetTextForAimToSelectAutoHint(),
+            ACTION_REMOVE_AIMED_BARCODE_BRUSH_PROVIDER to
+                createActionRemoveAimedBarcodeBrushProvider(),
+            ACTION_SET_AIMED_BARCODE_RUSH_PROVIDER to createActionSetAimedBarcodeBrushProvider(),
+            ACTION_FINISH_BRUSH_FOR_AIMED_BARCODE_CALLBACK to
+                createActionFinishBrushForAimedBarcodeCallback(),
+            ACTION_REMOVE_TRACKED_BARCODE_BRUSH_PROVIDER to
+                createActionRemoveTrackedBarcodeBrushProvider(),
+            ACTION_SET_TRACKED_BARCODE_BRUSH_PROVIDER to
+                createActionSetTrackedBarcodeBrushProvider(),
+            ACTION_FINISH_BRUSH_FOR_TRACKED_BARCODE_CALLBACK to
+                createActionFinishBrushForTrackedBarcodeCallback(),
+
+            ACTION_UPDATE_BT_BASIC_OVERLAY to
+                createActionUpdateBarcodeTrackingBasicOverlay(),
+            ACTION_UPDATE_BT_ADVANCED_OVERLAY to
+                createActionUpdateBarcodeTrackingAdvancedOverlay(),
+            ACTION_UPDATE_BT_MODE to createActionUpdateBarcodeTrackingMode(),
+            ACTION_APPLY_BT_MODE_SETTINGS to createActionApplyBarcodeTrackingModeSettings(),
         )
     }
 
@@ -88,7 +131,8 @@ class BarcodeCaptureActionFactory(
     override fun provideAction(actionName: String): Action =
         availableActions[actionName] ?: throw InvalidActionNameError(actionName)
 
-    override fun canBeRunWithoutCameraPermission(actionName: String): Boolean = true
+    override fun canBeRunWithoutCameraPermission(actionName: String): Boolean =
+        actionName !in ACTIONS_REQUIRING_CAMERA
 
     private fun createActionInjectDefaults(): Action = ActionInjectDefaults(
         barcodeModule,
@@ -102,7 +146,15 @@ class BarcodeCaptureActionFactory(
         barcodeCaptureModule, eventEmitter
     )
 
+    private fun createActionUnsubscribeBarcodeCapture(): Action = ActionUnsubscribeBarcodeCapture(
+        barcodeCaptureModule, eventEmitter
+    )
+
     private fun createActionSubscribeBarcodeTracking(): Action = ActionSubscribeBarcodeTracking(
+        barcodeTrackingModule, eventEmitter
+    )
+
+    private fun createActionUnregisterBarcodeTrackingListener(): Action = ActionUnregisterBarcodeTrackingListener(
         barcodeTrackingModule, eventEmitter
     )
 
@@ -110,11 +162,23 @@ class BarcodeCaptureActionFactory(
         barcodeSelectionModule, eventEmitter
     )
 
+    private fun createActionUnsubscribeBarcodeSelection(): Action = ActionUnsubscribeBarcodeSelection(
+        barcodeSelectionModule, eventEmitter
+    )
+
     private fun createActionSubscribeBasicOverlay(): Action = ActionSubscribeBasicOverlay(
         barcodeTrackingModule, eventEmitter
     )
 
+    private fun createActionUnregisterBasicOverlayListener(): Action = ActionUnregisterBasicOverlayListener(
+        barcodeTrackingModule, eventEmitter
+    )
+
     private fun createActionSubscribeAdvancedOverlay(): Action = ActionSubscribeAdvancedOverlay(
+        barcodeTrackingModule, eventEmitter
+    )
+
+    private fun createActionUnregisterAdvancedOverlayListener(): Action = ActionUnregisterAdvancedOverlayListener(
         barcodeTrackingModule, eventEmitter
     )
 
@@ -170,6 +234,18 @@ class BarcodeCaptureActionFactory(
             barcodeSelectionModule
         )
 
+    private fun createActionSelectAimedBarcode(): Action = 
+        ActionSelectAimedBarcode(barcodeSelectionModule)
+
+    private fun createActionIncreaseCountForBarcodesInBarcodeSelection(): Action = 
+        ActionIncreaseCountForBarcodesInBarcodeSelection(barcodeSelectionModule)
+
+    private fun createActionUnselectBarcodes(): Action = 
+        ActionUnselectBarcodes(barcodeSelectionModule)
+
+    private fun createSetSelectBarcodeEnabled(): Action = 
+        ActionSetSelectBarcodeEnabled(barcodeSelectionModule)
+
     private fun createActionCreateFindView(): Action =
         ActionCreateFindView(barcodeFindModule, barcodeFindViewHandler)
 
@@ -224,11 +300,74 @@ class BarcodeCaptureActionFactory(
     private fun createActionFindViewHide(): Action =
         ActionFindViewHide(barcodeFindViewHandler)
 
+    private fun createActionSetBarcodeCaptureModeEnabledState(): Action =
+        ActionSetBarcodeCaptureModeEnabledState(barcodeCaptureModule)
+
+    private fun createActionSetBarcodeSelectionModeEnabledState(): Action =
+        ActionSetBarcodeSelectionModeEnabledState(barcodeSelectionModule)
+
+    private fun createActionSetBarcodeTrackingModeEnabledState(): Action =
+        ActionSetBarcodeTrackingModeEnabledState(barcodeTrackingModule)
+
+    private fun createActionUpdateBCOverlay(): Action =
+        ActionUpdateBarcodeCaptureOverlay(barcodeCaptureModule)
+
+    private fun createActionUpdateBCMode(): Action =
+        ActionUpdateBarcodeCaptureMode(barcodeCaptureModule)
+
+    private fun createActionApplyBCModeSettings(): Action =
+        ActionApplyBarcodeCaptureModeSettings(barcodeCaptureModule)
+
+    private fun createActionUpdateBSBasicOverlay(): Action =
+        ActionUpdateBarcodeSelectionBasicOverlay(barcodeSelectionModule)
+
+    private fun createActionUpdateBSMode(): Action =
+        ActionUpdateBarcodeSelectionMode(barcodeSelectionModule)
+
+    private fun createActionApplyBSModeSettings(): Action =
+        ActionApplyBarcodeSelectionModeSettings(barcodeSelectionModule)
+
+    private fun createActionSetTextForAimToSelectAutoHint(): Action =
+        ActionSetTextForAimToSelectAutoHint(barcodeSelectionModule)
+
+    private fun createActionRemoveAimedBarcodeBrushProvider(): Action =
+        ActionRemoveAimedBarcodeBrushProvider(barcodeSelectionModule, eventEmitter)
+
+    private fun createActionSetAimedBarcodeBrushProvider(): Action =
+        ActionSetAimedBarcodeBrushProvider(barcodeSelectionModule, eventEmitter)
+
+    private fun createActionFinishBrushForAimedBarcodeCallback(): Action =
+        ActionFinishBrushForAimedBarcodeCallback(barcodeSelectionModule)
+
+    private fun createActionRemoveTrackedBarcodeBrushProvider(): Action =
+        ActionRemoveTrackedBarcodeBrushProvider(barcodeSelectionModule, eventEmitter)
+
+    private fun createActionSetTrackedBarcodeBrushProvider(): Action =
+        ActionSetTrackedBarcodeBrushProvider(barcodeSelectionModule, eventEmitter)
+
+    private fun createActionFinishBrushForTrackedBarcodeCallback(): Action =
+        ActionFinishBrushForTrackedBarcodeCallback(barcodeSelectionModule)
+
+    private fun createActionUpdateBarcodeTrackingBasicOverlay(): Action =
+        ActionUpdateBarcodeTrackingBasicOverlay(barcodeTrackingModule)
+
+    private fun createActionUpdateBarcodeTrackingAdvancedOverlay(): Action =
+        ActionUpdateBarcodeTrackingAdvancedOverlay(barcodeTrackingModule)
+
+    private fun createActionUpdateBarcodeTrackingMode(): Action =
+        ActionUpdateBarcodeTrackingMode(barcodeTrackingModule)
+
+    private fun createActionApplyBarcodeTrackingModeSettings(): Action =
+        ActionApplyBarcodeTrackingModeSettings(barcodeTrackingModule)
+
     companion object {
         private const val INJECT_DEFAULTS = "getDefaults"
         private const val SUBSCRIBE_BARCODE_CAPTURE = "subscribeBarcodeCaptureListener"
+        private const val UNSUBSCRIBE_BARCODE_CAPTURE = "unsubscribeBarcodeCaptureListener"
         private const val SUBSCRIBE_BARCODE_TRACKING = "subscribeBarcodeTrackingListener"
+        private const val UNREGISTER_BARCODE_TRACKING = "unregisterBarcodeTrackingListener"
         private const val SUBSCRIBE_BARCODE_SELECTION = "subscribeBarcodeSelectionListener"
+        private const val UNSUBSCRIBE_BARCODE_SELECTION = "unsubscribeBarcodeSelectionListener"
 
         private const val FINISH_BARCODE_CAPTURE_DID_UPDATE_SESSION =
             "finishBarcodeCaptureDidUpdateSession"
@@ -244,11 +383,14 @@ class BarcodeCaptureActionFactory(
 
         private const val SUBSCRIBE_BASIC_OVERLAY_LISTENER =
             "subscribeBarcodeTrackingBasicOverlayListener"
+        private const val UNREGISTER_BASIC_OVERLAY_LISTENER = "unregisterBarcodeTrackingBasicOverlayListener"
         private const val SET_BRUSH_FOR_TRACKED_BARCODE = "setBrushForTrackedBarcode"
         private const val CLEAR_TRACKED_BARCODE_BRUSHES = "clearTrackedBarcodeBrushes"
 
         private const val SUBSCRIBE_ADVANCED_OVERLAY_LISTENER =
             "subscribeBarcodeTrackingAdvancedOverlayListener"
+        private const val UNREGISTER_ADVANCED_OVERLAY_LISTENER = 
+            "unregisterBarcodeTrackingAdvancedOverlayListener"
         const val SET_VIEW_FOR_TRACKED_BARCODE = "setViewForTrackedBarcode"
         const val SET_OFFSET_FOR_TRACKED_BARCODE = "setOffsetForTrackedBarcode"
         const val SET_ANCHOR_FOR_TRACKED_BARCODE = "setAnchorForTrackedBarcode"
@@ -261,6 +403,10 @@ class BarcodeCaptureActionFactory(
         const val ACTION_RESET_BARCODE_SELECTION_SESSION = "resetBarcodeSelectionSession"
         const val ACTION_RESET_BARCODE_SELECTION = "resetBarcodeSelection"
         const val ACTION_UNFREEZE_CAMERA_IN_BARCODE_SELECTION = "unfreezeCameraInBarcodeSelection"
+        const val SELECT_AIMED_BARCODE = "selectAimedBarcode"
+        const val INCREASE_COUNT_FOR_BARCODES_IN_BARCODE_SELECTION = "increaseCountForBarcodes"
+        const val UNSELECT_BARCODES = "unselectBarcodes"
+        const val SET_SELECT_BARCODE_ENABLED = "setSelectBarcodeEnabled"
 
         const val ACTION_CREATE_FIND_VIEW = "createFindView"
         const val ACTION_UPDATE_FIND_VIEW = "updateFindView"
@@ -280,5 +426,53 @@ class BarcodeCaptureActionFactory(
         const val ACTION_FIND_MODE_STOP = "barcodeFindModeStop"
         const val ACTION_FIND_VIEW_SHOW = "showFindView"
         const val ACTION_FIND_VIEW_HIDE = "hideFindView"
+
+        private const val ACTION_UPDATE_BC_OVERLAY = "updateBarcodeCaptureOverlay"
+        private const val ACTION_UPDATE_BC_MODE = "updateBarcodeCaptureMode"
+        private const val ACTION_APPLY_BC_MODE_SETTINGS = "applyBarcodeCaptureModeSettings"
+        private const val ACTION_UPDATE_BS_BASIC_OVERLAY = "updateBarcodeSelectionBasicOverlay"
+        private const val ACTION_UPDATE_BS_MODE = "updateBarcodeSelectionMode"
+        private const val ACTION_APPLY_BS_MODE_SETTINGS = "applyBarcodeSelectionModeSettings"
+
+        private const val ACTION_SET_TEXT_FOR_AIM_TO_SELECT_AUTO_HINT =
+            "setTextForAimToSelectAutoHint"
+        private const val ACTION_REMOVE_AIMED_BARCODE_BRUSH_PROVIDER =
+            "removeAimedBarcodeBrushProvider"
+        private const val ACTION_SET_AIMED_BARCODE_RUSH_PROVIDER =
+            "setAimedBarcodeBrushProvider"
+        private const val ACTION_FINISH_BRUSH_FOR_AIMED_BARCODE_CALLBACK =
+            "finishBrushForAimedBarcodeCallback"
+        private const val ACTION_REMOVE_TRACKED_BARCODE_BRUSH_PROVIDER =
+            "removeTrackedBarcodeBrushProvider"
+        private const val ACTION_SET_TRACKED_BARCODE_BRUSH_PROVIDER =
+            "setTrackedBarcodeBrushProvider"
+        private const val ACTION_FINISH_BRUSH_FOR_TRACKED_BARCODE_CALLBACK =
+            "finishBrushForTrackedBarcodeCallback"
+
+        const val ACTION_SET_BARCODE_CAPTURE_MODE_ENABLED_STATE =
+            "setBarcodeCaptureModeEnabledState"
+        const val ACTION_SET_BARCODE_SELECTION_MODE_ENABLED_STATE =
+            "setBarcodeSelectionModeEnabledState"
+        const val ACTION_SET_BARCODE_TRACKING_MODE_ENABLED_STATE =
+            "setBarcodeTrackingModeEnabledState"
+
+        private const val ACTION_UPDATE_BT_ADVANCED_OVERLAY = "updateBarcodeTrackingAdvancedOverlay"
+        private const val ACTION_UPDATE_BT_BASIC_OVERLAY = "updateBarcodeTrackingBasicOverlay"
+        private const val ACTION_UPDATE_BT_MODE = "updateBarcodeTrackingMode"
+        private const val ACTION_APPLY_BT_MODE_SETTINGS = "applyBarcodeTrackingModeSettings"
+
+        private val ACTIONS_REQUIRING_CAMERA =
+            setOf(
+                ACTION_APPLY_BC_MODE_SETTINGS,
+                ACTION_APPLY_BS_MODE_SETTINGS,
+                ACTION_APPLY_BT_MODE_SETTINGS,
+                ACTION_UPDATE_BC_MODE,
+                ACTION_UPDATE_BS_MODE,
+                ACTION_UPDATE_BT_MODE,
+                ACTION_UPDATE_BS_BASIC_OVERLAY,
+                ACTION_UPDATE_BC_OVERLAY,
+                ACTION_UPDATE_BT_ADVANCED_OVERLAY,
+                ACTION_UPDATE_BT_BASIC_OVERLAY
+            )
     }
 }
