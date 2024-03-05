@@ -1,10 +1,44 @@
-<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="scandit-cordova-datacapture-barcode" version="6.22.0">
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="scandit-cordova-datacapture-barcode" version="6.21.3">
     <name>ScanditBarcodeCapture</name>
-    <js-module name="Barcode" src="dist/barcode.js">
+    <js-module name="Cordova" src="www/js/Cordova/Cordova.js" />
+    <js-module name="Defaults" src="www/js/Cordova/Defaults.js" />
+    <js-module name="BarcodeCaptureListenerProxy" src="www/js/Cordova/BarcodeCaptureListenerProxy.js" />
+    <js-module name="BarcodeTrackingListenerProxy" src="www/js/Cordova/BarcodeTrackingListenerProxy.js" />
+    <js-module name="BarcodeSelectionProxy" src="www/js/Cordova/BarcodeSelectionProxy.js" />
+    <js-module name="BarcodeSelectionListenerProxy" src="www/js/Cordova/BarcodeSelectionListenerProxy.js" />
+    <js-module name="BarcodeTrackingBasicOverlayProxy" src="www/js/Cordova/BarcodeTrackingBasicOverlayProxy.js" />
+    <js-module name="BarcodeTrackingAdvancedOverlayProxy" src="www/js/Cordova/BarcodeTrackingAdvancedOverlayProxy.js" />
+    <js-module name="BarcodeCapture" src="www/js/BarcodeCapture.js">
         <merges target="Scandit" />
     </js-module>
-    <js-module name="Scandit" src="dist/index.js">
-        <runs />
+    <js-module name="BarcodeCapture+Related" src="www/js/BarcodeCapture+Related.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="Barcode" src="www/js/Barcode.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeCaptureSettings" src="www/js/BarcodeCaptureSettings.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeTracking" src="www/js/BarcodeTracking.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeTracking+Related" src="www/js/BarcodeTracking+Related.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeTrackingSettings" src="www/js/BarcodeTrackingSettings.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="TrackedBarcodeView" src="www/js/TrackedBarcodeView.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeSelection" src="www/js/BarcodeSelection.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeSelectionSettings" src="www/js/BarcodeSelectionSettings.js">
+        <merges target="Scandit" />
+    </js-module>
+    <js-module name="BarcodeSelection+Related" src="www/js/BarcodeSelection+Related.js">
         <merges target="Scandit" />
     </js-module>
     <engines>
@@ -19,15 +53,14 @@
             </feature>
         </config-file>
         <header-file src="src/ios/ScanditBarcodeCapture-Bridging-Header.h" type="BridgingHeader" />
-        <source-file src="src/ios/BarcodeFindViewHandler.swift" />
         <source-file src="src/ios/ScanditBarcodeCapture.swift" />
         <source-file src="src/ios/BlockingCallbackResults.swift" />
         <source-file src="src/ios/TappableBase64ImageView.swift" />
         <source-file src="src/ios/CommandJSONArgument+ScanditBarcodeCapture.swift" />
-        <dependency id="scandit-cordova-datacapture-core" version="6.22.0" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.21.3" />
         <podspec>
             <pods use-frameworks="true">
-                <pod name="scandit-datacapture-frameworks-barcode" spec="= 6.22.0" />
+                <pod name="scandit-datacapture-frameworks-barcode" spec="= 6.21.3" />
             </pods>
         </podspec>
     </platform>
@@ -41,7 +74,6 @@
         <source-file src="src/android/factories/BarcodeCaptureActionFactory.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/factories" />
         <source-file src="src/android/actions/ActionInjectDefaults.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSubscribeBarcodeCapture.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnsubscribeBarcodeCapture.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSubscribeBarcodeTracking.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSubscribeBasicOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSubscribeAdvancedOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
@@ -52,10 +84,7 @@
         <source-file src="src/android/actions/ActionSetOffsetForTrackedBarcode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSetAnchorForTrackedBarcode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionUnfreezeCameraInBarcodeSelection.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSelectAimedBarcode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionIncreaseCountForBarcodesInBarcodeSelection.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionSubscribeBarcodeSelection.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnsubscribeBarcodeSelection.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionGetCountForBarcodeInBarcodeSelectionSession.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionResetBarcodeSelection.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionResetBarcodeCaptureSession.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
@@ -84,34 +113,9 @@
         <source-file src="src/android/actions/ActionFindModeStop.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionFindViewHide.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/actions/ActionFindViewShow.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetBarcodeCaptureModeEnabledState.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetBarcodeSelectionModeEnabledState.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetBarcodeTrackingModeEnabledState.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionApplyBarcodeCaptureModeSettings.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeCaptureMode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeCaptureOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionApplyBarcodeSelectionModeSettings.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeSelectionBasicOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeSelectionMode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionFinishBrushForAimedBarcodeCallback.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionFinishBrushForTrackedBarcodeCallback.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionRemoveAimedBarcodeBrushProvider.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionRemoveTrackedBarcodeBrushProvider.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetAimedBarcodeBrushProvider.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetTextForAimToSelectAutoHint.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetTrackedBarcodeBrushProvider.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionSetSelectBarcodeEnabled.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnregisterBarcodeTrackingListener.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnregisterAdvancedOverlayListener.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnregisterBasicOverlayListener.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUnselectBarcodes.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionApplyBarcodeTrackingModeSettings.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeTrackingAdvancedOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeTrackingBasicOverlay.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
-        <source-file src="src/android/actions/ActionUpdateBarcodeTrackingMode.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/actions" />
         <source-file src="src/android/data/SerializableAdvancedOverlayData.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/data" />
         <source-file src="src/android/handlers/BarcodeFindViewHandler.kt" target-dir="kotlin/com/scandit/datacapture/cordova/barcode/handlers" />
-        <dependency id="scandit-cordova-datacapture-core" version="6.22.0" />
+        <dependency id="scandit-cordova-datacapture-core" version="6.21.3" />
         <framework custom="true" src="src/android/build.gradle" type="gradleReference" />
         <hook src="src/hooks/support-kotlin.js" type="after_plugin_install" />
     </platform>
