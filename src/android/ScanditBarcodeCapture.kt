@@ -162,13 +162,22 @@ class ScanditBarcodeCapture :
     }
 
     override fun onReset() {
+        destroy()
+        pluginInitialize()
+    }
+
+    override fun onDestroy() {
+        destroy()
+        super.onDestroy()
+    }
+
+    private fun destroy() {
         barcodeModule.onDestroy()
         barcodeCaptureModule.onDestroy()
         barcodeTrackingModule.onDestroy()
         barcodeSelectionModule.onDestroy()
         barcodeFindModule.onDestroy()
         barcodePickModule.onDestroy()
-        pluginInitialize()
     }
 
     override fun execute(
