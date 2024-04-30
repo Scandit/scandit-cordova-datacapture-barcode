@@ -6,14 +6,6 @@ export { BarcodeCaptureListener, BarcodeCaptureSession, BarcodeCaptureOverlay, B
 export { BarcodeSelectionFeedback, BarcodeSelectionListener, BarcodeSelectionBasicOverlay, BarcodeSelectionBasicOverlayStyle } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeSelectionSession, BarcodeSelectionSettings, BarcodeSelectionStrategy, BarcodeSelectionAutoSelectionStrategy, BarcodeSelectionManualSelectionStrategy } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeSelectionFreezeBehavior, BarcodeSelectionTapBehavior, BarcodeSelectionType, BarcodeSelectionAimerSelection, BarcodeSelectionTapSelection, BarcodeSelectionBrushProvider } from 'scandit-datacapture-frameworks-barcode';
-export { BarcodePick, BarcodePickActionListener, BarcodePickActionCallback, BarcodePickState, BarcodePickSettings, BarcodePickProduct, BarcodePickProductProvider, BarcodePickProductProviderCallback, BarcodePickProductProviderCallbackItem, BarcodePickAsyncMapperProductProvider, BarcodePickAsyncMapperProductProviderCallback, BarcodePickIconStyle, BarcodePickViewSettings, BarcodePickViewHighlightStyle, Rectangular, RectangularWithIcons } from 'scandit-datacapture-frameworks-barcode';
-export { SparkScan, SparkScanFeedback, SparkScanListener, SparkScanPreviewBehavior, SparkScanScanningBehavior, SparkScanScanningMode, SparkScanScanningModeDefault, SparkScanScanningModeTarget, SparkScanViewHandMode } from 'scandit-datacapture-frameworks-barcode';
-export { SparkScanSettings, SparkScanViewSettings, SparkScanViewUiListener, SparkScanViewFeedback, SparkScanViewErrorFeedback, SparkScanViewSuccessFeedback, SparkScanScanningPrecision, SparkScanSession, SparkScanToastSettings, BatterySavingMode } from 'scandit-datacapture-frameworks-barcode';
-export { SparkScanBarcodeFeedback, SparkScanBarcodeSuccessFeedback, SparkScanBarcodeErrorFeedback, SparkScanFeedbackDelegate } from 'scandit-datacapture-frameworks-barcode';
-export { BarcodePickViewListener, BarcodePickViewUiListener, BarcodePickScanningSession, BarcodePickScanningListener } from 'scandit-datacapture-frameworks-barcode';
-export { Dot, DotWithIcons } from 'scandit-datacapture-frameworks-barcode';
-export { BarcodePickView } from './BarcodePickView';
 export { TrackedBarcodeView } from './TrackedBarcodeView';
 export { BarcodeTrackingAdvancedOverlay } from './BarcodeTrackingAdvancedOverlay';
 export { BarcodeTrackingAdvancedOverlayListener } from './BarcodeTrackingAdvancedOverlayListener';
-export { SparkScanView } from './SparkScanView';
