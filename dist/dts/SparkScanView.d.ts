@@ -54,8 +54,6 @@ export declare class SparkScanView {
     set targetModeHintText(newValue: string | null);
     get shouldShowTargetModeHint(): boolean;
     set shouldShowTargetModeHint(newValue: boolean);
-    get cameraSwitchButtonVisible(): boolean;
-    set cameraSwitchButtonVisible(newValue: boolean);
     emitFeedback(feedback: SparkScanViewFeedback): void;
     prepareScanning(): void;
     startScanning(): void;

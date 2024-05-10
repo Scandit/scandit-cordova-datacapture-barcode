@@ -4,21 +4,22 @@ export declare class NativeSparkScanViewProxy extends BaseNativeProxy implements
     private static get cordovaExec();
     updateSparkScanView(viewJson: string): Promise<void>;
     createSparkScanView(viewJson: string): Promise<void>;
+    subscribeListeners(): void;
     prepareScanning(): Promise<void>;
     disposeSparkScanView(): Promise<void>;
     showSparkScanView(): Promise<void>;
     hideSparkScanView(): Promise<void>;
     emitSparkScanViewFeedback(feedbackJson: string): Promise<void>;
     registerSparkScanViewListenerEvents(): void;
-    unregisterSparkScanViewListenerEvents(): Promise<void>;
+    unregisterListenerForViewEvents(): Promise<void>;
     stopSparkScanViewScanning(): Promise<void>;
     startSparkScanViewScanning(): Promise<void>;
     pauseSparkScanViewScanning(): Promise<void>;
     prepareSparkScanViewScanning(): Promise<void>;
     private notifyListeners;
-    registerDelegateForEvents(): Promise<void>;
-    unregisterDelegateForEvents(): Promise<void>;
-    submitFeedbackForBarcode(feedbackJson: string): Promise<void>;
+    registerDelegateForEvents(): void;
+    unregisteDelegateForEvents(): void;
+    submitFeedbackForBarcode(feedbackJson: string): void;
     showToast(text: string): Promise<void>;
     private onFeedbackForBarcodeHandler;
 }
