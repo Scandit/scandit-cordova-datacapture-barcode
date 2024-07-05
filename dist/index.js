@@ -2490,6 +2490,13 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         this._textForMoveCloserAndRescanHint = newValue;
         this.updateNative();
     }
+    get shouldShowListProgressBar() {
+        return this._shouldShowListProgressBar;
+    }
+    set shouldShowListProgressBar(newValue) {
+        this._shouldShowListProgressBar = newValue;
+        this.updateNative();
+    }
     get textForMoveFurtherAndRescanHint() {
         return this._textForMoveFurtherAndRescanHint;
     }
@@ -2574,6 +2581,7 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         this._textForTapShutterToScanHint = BarcodeCountDefaults.BarcodeCountView.textForTapShutterToScanHint;
         this._textForScanningHint = BarcodeCountDefaults.BarcodeCountView.textForScanningHint;
         this._textForMoveCloserAndRescanHint = BarcodeCountDefaults.BarcodeCountView.textForMoveCloserAndRescanHint;
+        this._shouldShowListProgressBar = BarcodeCountDefaults.BarcodeCountView.shouldShowListProgressBar;
         this._textForMoveFurtherAndRescanHint = BarcodeCountDefaults.BarcodeCountView.textForMoveFurtherAndRescanHint;
         this._textForUnrecognizedBarcodesDetectedHint = BarcodeCountDefaults.BarcodeCountView.textForUnrecognizedBarcodesDetectedHint;
         this._toolbarSettings = null;
@@ -2806,6 +2814,9 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('textForMoveCloserAndRescanHint')
 ], BarcodeCountView.prototype, "_textForMoveCloserAndRescanHint", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowListProgressBar')
+], BarcodeCountView.prototype, "_shouldShowListProgressBar", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('textForMoveFurtherAndRescanHint')
 ], BarcodeCountView.prototype, "_textForMoveFurtherAndRescanHint", void 0);

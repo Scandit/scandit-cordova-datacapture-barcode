@@ -483,6 +483,7 @@ function parseBarcodeCountDefaults(jsonDefaults) {
             textForScanningHint: viewJsonDefaults.textForScanningHint,
             textForMoveCloserAndRescanHint: viewJsonDefaults.textForMoveCloserAndRescanHint,
             textForMoveFurtherAndRescanHint: viewJsonDefaults.textForMoveFurtherAndRescanHint,
+            shouldShowListProgressBar: viewJsonDefaults.shouldShowListProgressBar,
             toolbarSettings: parseBarcodeCountToolbarDefaults(toolbarJsonDefaults),
             listButtonAccessibilityHint: viewJsonDefaults.listButtonAccessibilityHint || null,
             listButtonAccessibilityLabel: viewJsonDefaults.listButtonAccessibilityLabel || null,
@@ -793,7 +794,7 @@ class StructuredAppendData {
     }
 }
 
-class Barcode {
+class Barcode extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
     get symbology() { return this._symbology; }
     get data() { return this._data; }
     get rawData() { return this._rawData; }
@@ -830,6 +831,48 @@ class Barcode {
         return barcode;
     }
 }
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('symbology')
+], Barcode.prototype, "_symbology", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('data')
+], Barcode.prototype, "_data", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('rawData')
+], Barcode.prototype, "_rawData", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('compositeData')
+], Barcode.prototype, "_compositeData", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('compositeRawData')
+], Barcode.prototype, "_compositeRawData", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('addOnData')
+], Barcode.prototype, "_addOnData", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('encodingRanges')
+], Barcode.prototype, "_encodingRanges", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('location')
+], Barcode.prototype, "_location", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('isGS1DataCarrier')
+], Barcode.prototype, "_isGS1DataCarrier", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('compositeFlag')
+], Barcode.prototype, "_compositeFlag", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('isColorInverted')
+], Barcode.prototype, "_isColorInverted", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('symbolCount')
+], Barcode.prototype, "_symbolCount", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('frameID')
+], Barcode.prototype, "_frameID", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('structuredAppendData')
+], Barcode.prototype, "_structuredAppendData", void 0);
 
 exports.BatterySavingMode = void 0;
 (function (BatterySavingMode) {
@@ -1067,9 +1110,9 @@ class BarcodeCaptureListenerController {
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForEvents();
-        this.eventEmitter.removeListener(exports.BarcodeCaptureListenerEvents.inCallback);
-        this.eventEmitter.removeListener(exports.BarcodeCaptureListenerEvents.didUpdateSession);
-        this.eventEmitter.removeListener(exports.BarcodeCaptureListenerEvents.didScan);
+        this.eventEmitter.removeAllListeners(exports.BarcodeCaptureListenerEvents.inCallback);
+        this.eventEmitter.removeAllListeners(exports.BarcodeCaptureListenerEvents.didUpdateSession);
+        this.eventEmitter.removeAllListeners(exports.BarcodeCaptureListenerEvents.didScan);
     }
     notifyListenersOfDidUpdateSession(session) {
         const mode = this.barcodeCapture;
@@ -1217,6 +1260,12 @@ class BarcodeCaptureOverlay extends scanditDatacaptureFrameworksCore.DefaultSeri
     }
     set viewfinder(newViewfinder) {
         this._viewfinder = newViewfinder;
+        if (newViewfinder) {
+            this.eventEmitter.on('viewfinder.update', this.handleViewFinderUpdate);
+        }
+        else {
+            this.eventEmitter.off('viewfinder.update');
+        }
         this.barcodeCapture.controller.updateBarcodeCaptureOverlay(this);
     }
     get shouldShowScanAreaGuides() {
@@ -1253,6 +1302,11 @@ class BarcodeCaptureOverlay extends scanditDatacaptureFrameworksCore.DefaultSeri
         this._shouldShowScanAreaGuides = false;
         this._viewfinder = null;
         this._brush = BarcodeCaptureOverlay.barcodeCaptureDefaults.BarcodeCaptureOverlay.DefaultBrush;
+        this.eventEmitter = scanditDatacaptureFrameworksCore.FactoryMaker.getInstance('EventEmitter');
+        this.handleViewFinderUpdate = this.handleViewFinderUpdate.bind(this);
+    }
+    handleViewFinderUpdate() {
+        this.barcodeCapture.controller.updateBarcodeCaptureOverlay(this);
     }
 }
 __decorate([
@@ -1271,6 +1325,9 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('style')
 ], BarcodeCaptureOverlay.prototype, "_style", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.ignoreFromSerialization
+], BarcodeCaptureOverlay.prototype, "eventEmitter", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('brush')
 ], BarcodeCaptureOverlay.prototype, "_brush", void 0);
@@ -1442,8 +1499,8 @@ class BarcodeSelectionListenerController {
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForEvents();
-        this.eventEmitter.removeListener(exports.BarcodeSelectionListenerEvents.didUpdateSelection);
-        this.eventEmitter.removeListener(exports.BarcodeSelectionListenerEvents.didUpdateSession);
+        this.eventEmitter.removeAllListeners(exports.BarcodeSelectionListenerEvents.didUpdateSelection);
+        this.eventEmitter.removeAllListeners(exports.BarcodeSelectionListenerEvents.didUpdateSession);
     }
     notifyListenersOfDidUpdateSelection(session) {
         const mode = this.barcodeSelection;
@@ -1705,7 +1762,7 @@ class BarcodeSelectionOverlayController {
     }
     setAimedBarcodeBrushProvider(brushProvider) {
         if (!brushProvider) {
-            this.eventEmitter.removeListener(exports.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode);
+            this.eventEmitter.removeAllListeners(exports.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode);
             return this._proxy.removeAimedBarcodeBrushProvider();
         }
         const subscriptionResult = this._proxy.setAimedBarcodeBrushProvider();
@@ -1724,7 +1781,7 @@ class BarcodeSelectionOverlayController {
     }
     setTrackedBarcodeBrushProvider(brushProvider) {
         if (!brushProvider) {
-            this.eventEmitter.removeListener(exports.BarcodeSelectionBrushProviderEvents.brushForTrackedBarcode);
+            this.eventEmitter.removeAllListeners(exports.BarcodeSelectionBrushProviderEvents.brushForTrackedBarcode);
             return this._proxy.removeTrackedBarcodeBrushProvider();
         }
         const subscriptionResult = this._proxy.setTrackedBarcodeBrushProvider();
@@ -1747,8 +1804,8 @@ class BarcodeSelectionOverlayController {
     // TODO: We need to unsubscribe from the providers when the overlay is removed. Need spec.
     // https://scandit.atlassian.net/browse/SDC-16608
     unsubscribeProviders() {
-        this.eventEmitter.removeListener(exports.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode);
-        this.eventEmitter.removeListener(exports.BarcodeSelectionBrushProviderEvents.brushForTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeSelectionBrushProviderEvents.brushForTrackedBarcode);
         this._proxy.removeAimedBarcodeBrushProvider();
         this._proxy.removeTrackedBarcodeBrushProvider();
     }
@@ -2226,8 +2283,8 @@ class BarcodeCountListenerController {
     }
     unsubscribeListener() {
         this._proxy.unregisterBarcodeCountListener();
-        this.eventEmitter.removeListener(exports.BarcodeCountListenerEvents.didScan);
-        this.eventEmitter.removeListener(exports.BarcodeCountListenerEvents.didListSessionUpdate);
+        this.eventEmitter.removeAllListeners(exports.BarcodeCountListenerEvents.didScan);
+        this.eventEmitter.removeAllListeners(exports.BarcodeCountListenerEvents.didListSessionUpdate);
     }
     startScanningPhase() {
         this._proxy.startScanningPhase();
@@ -2712,8 +2769,8 @@ class BarcodeTrackingListenerController {
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForEvents();
-        this.eventEmitter.removeListener(exports.BarcodeTrackingListenerEvents.inCallback);
-        this.eventEmitter.removeListener(exports.BarcodeTrackingListenerEvents.didUpdateSession);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingListenerEvents.inCallback);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingListenerEvents.didUpdateSession);
     }
     setModeEnabledState(enabled) {
         this._proxy.setModeEnabledState(enabled);
@@ -2909,9 +2966,9 @@ class BarcodeTrackingAdvancedOverlayController {
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForAdvancedOverlayEvents();
-        this.eventEmitter.removeListener(exports.BarcodeTrackingAdvancedOverlayListenerEvents.anchorForTrackedBarcode);
-        this.eventEmitter.removeListener(exports.BarcodeTrackingAdvancedOverlayListenerEvents.offsetForTrackedBarcode);
-        this.eventEmitter.removeListener(exports.BarcodeTrackingAdvancedOverlayListenerEvents.viewForTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingAdvancedOverlayListenerEvents.anchorForTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingAdvancedOverlayListenerEvents.offsetForTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingAdvancedOverlayListenerEvents.viewForTrackedBarcode);
     }
 }
 
@@ -2967,8 +3024,8 @@ class BarcodeTrackingBasicOverlayController {
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForBasicOverlayEvents();
-        this.eventEmitter.removeListener(exports.BarcodeTrackingBasicOverlayListenerEvents.brushForTrackedBarcode);
-        this.eventEmitter.removeListener(exports.BarcodeTrackingBasicOverlayListenerEvents.didTapTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingBasicOverlayListenerEvents.brushForTrackedBarcode);
+        this.eventEmitter.removeAllListeners(exports.BarcodeTrackingBasicOverlayListenerEvents.didTapTrackedBarcode);
     }
 }
 
@@ -3267,8 +3324,8 @@ class SparkScanListenerController extends scanditDatacaptureFrameworksCore.BaseC
     }
     unsubscribeListener() {
         this._proxy.unregisterListenerForEvents();
-        this.eventEmitter.removeListener(exports.SparkScanListenerEvents.didUpdateSession);
-        this.eventEmitter.removeListener(exports.SparkScanListenerEvents.didScan);
+        this.eventEmitter.removeAllListeners(exports.SparkScanListenerEvents.didUpdateSession);
+        this.eventEmitter.removeAllListeners(exports.SparkScanListenerEvents.didScan);
     }
     setModeEnabledState(enabled) {
         this._proxy.setModeEnabledState(enabled);
@@ -4594,13 +4651,13 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseCon
     }
     unsubscribeListeners() {
         this._proxy.unregisterFrameworkEvents();
-        this.eventEmitter.removeListener(exports.BarcodePickEvents.DidPick);
-        this.eventEmitter.removeListener(exports.BarcodePickEvents.DidUnpick);
-        this.eventEmitter.removeListener(exports.BarcodePickViewListenerEvents.DidFreezeScanning);
-        this.eventEmitter.removeListener(exports.BarcodePickViewListenerEvents.DidPauseScanning);
-        this.eventEmitter.removeListener(exports.BarcodePickViewListenerEvents.DidStartScanning);
-        this.eventEmitter.removeListener(exports.BarcodePickViewListenerEvents.DidStopScanning);
-        this.eventEmitter.removeListener(exports.BarcodePickViewUiListenerEvents.DidTapFinishButton);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickEvents.DidPick);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickEvents.DidUnpick);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickViewListenerEvents.DidFreezeScanning);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickViewListenerEvents.DidPauseScanning);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickViewListenerEvents.DidStartScanning);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickViewListenerEvents.DidStopScanning);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickViewUiListenerEvents.DidTapFinishButton);
     }
 }
 
@@ -4632,7 +4689,7 @@ class BarcodePickProductController extends scanditDatacaptureFrameworksCore.Base
         });
     }
     unsubscribeListeners() {
-        this.eventEmitter.removeListener(exports.BarcodePickEvents.OnProductIdentifierForItems);
+        this.eventEmitter.removeAllListeners(exports.BarcodePickEvents.OnProductIdentifierForItems);
         this._proxy.unsubscribeListeners();
     }
 }
