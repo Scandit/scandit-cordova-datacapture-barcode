@@ -27,8 +27,8 @@ export declare class BarcodePickView extends DefaultSerializeable {
     private elementDidChange;
     private updatePositionAndSize;
     start(): void;
+    pause(): void;
     freeze(): void;
-    stop(): void;
     addListener(listener: BarcodePickViewListener): void;
     removeListener(listener: BarcodePickViewListener): void;
     addActionListener(listener: BarcodePickActionListener): void;
