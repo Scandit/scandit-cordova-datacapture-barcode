@@ -11,6 +11,8 @@ export declare class NativeBarcodePickViewProxy extends BaseNativeProxy implemen
     viewStart(): Promise<void>;
     viewPause(): Promise<void>;
     viewFreeze(): Promise<void>;
+    viewStop(): Promise<void>;
+    viewResume(): Promise<void>;
     updateView(json: string): Promise<void>;
     setPositionAndSize(top: number, left: number, width: number, height: number, shouldBeUnderWebView: boolean): Promise<void>;
     subscribeDidPickItemListener(): Promise<void>;

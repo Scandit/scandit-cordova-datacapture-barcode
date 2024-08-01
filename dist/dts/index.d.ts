@@ -12,8 +12,15 @@ export { SparkScanSettings, SparkScanViewSettings, SparkScanViewUiListener, Spar
 export { SparkScanBarcodeFeedback, SparkScanBarcodeSuccessFeedback, SparkScanBarcodeErrorFeedback, SparkScanFeedbackDelegate } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodePickViewListener, BarcodePickViewUiListener, BarcodePickScanningSession, BarcodePickScanningListener } from 'scandit-datacapture-frameworks-barcode';
 export { Dot, DotWithIcons } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeFind, BarcodeFindFeedback, BarcodeFindItem, BarcodeFindItemContent, BarcodeFindItemSearchOptions } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeFindListener, BarcodeFindSettings, BarcodeFindViewSettings, BarcodeFindViewUiListener, BarcodeFindTransformer } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeFindView } from './BarcodeFindView';
+export { BarcodeCount, BarcodeCountViewListener, BarcodeCountViewUiListener, BarcodeCountFeedback, BarcodeCountSession, BarcodeCountSettings, BarcodeCountViewStyle, BarcodeCountToolbarSettings } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeCountCaptureList, BarcodeCountCaptureListSession, BarcodeFilterSettings, BarcodeFilterHighlightType, BarcodeCountListener, BarcodeFilterHighlightSettingsBrush, BarcodeFilterHighlightSettings } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeCountCaptureListListener, BarcodeSpatialGrid, TargetBarcode } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodePickView } from './BarcodePickView';
 export { TrackedBarcodeView } from './TrackedBarcodeView';
 export { BarcodeTrackingAdvancedOverlay } from './BarcodeTrackingAdvancedOverlay';
 export { BarcodeTrackingAdvancedOverlayListener } from './BarcodeTrackingAdvancedOverlayListener';
 export { SparkScanView } from './SparkScanView';
+export { BarcodeCountView } from './BarcodeCountView';

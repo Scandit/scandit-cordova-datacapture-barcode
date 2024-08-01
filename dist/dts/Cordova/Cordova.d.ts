@@ -4,7 +4,9 @@ export interface BlockingModeListenerResult {
 export declare const Cordova: {
     pluginName: string;
     defaults: {};
-    exec: (success: Function | null, error: Function | null, functionName: string, args: [any] | null) => void;
+    exec: (success: Function | null, error: Function | null, functionName: string, args: [
+        any
+    ] | null) => void;
 };
 export declare function initializeBarcodeCordova(): void;
 export declare enum CordovaFunction {
@@ -62,7 +64,7 @@ export declare enum CordovaFunction {
     UnregisterBarcodeTrackingBasicOverlayListener = "unregisterBarcodeTrackingBasicOverlayListener",
     CreatePickView = "createPickView",
     PickViewStart = "viewStart",
-    PickViewPause = "viewPause",
+    PickViewStop = "viewStop",
     PickViewFreeze = "viewFreeze",
     SetPositionAndSize = "setPickViewPositionAndSize",
     UpdatePickView = "updatePickView",
@@ -108,5 +110,50 @@ export declare enum CordovaFunction {
     AddSparkScanFeedbackDelegate = "addSparkScanFeedbackDelegate",
     RemoveSparkScanFeedbackDelegate = "removeSparkScanFeedbackDelegate",
     SubmitSparkScanFeedbackForBarcode = "submitSparkScanFeedbackForBarcode",
-    ShowToast = "showToast"
+    ShowToast = "showToast",
+    BarcodeFindSetItemList = "barcodeFindSetItemList",
+    UpdateFindMode = "updateFindMode",
+    BarcodeFindModeStart = "barcodeFindModeStart",
+    BarcodeFindModePause = "barcodeFindModePause",
+    BarcodeFindModeStop = "barcodeFindModeStop",
+    SetBarcodeFindModeEnabledState = "setBarcodeFindModeEnabledState",
+    setBarcodeFindTransformer = "setBarcodeFindTransformer",
+    SubmitBarcodeFindTransformerResult = "submitBarcodeFindTransformerResult",
+    RegisterBarcodeFindListener = "registerBarcodeFindListener",
+    UnregisterBarcodeFindListener = "unregisterBarcodeFindListener",
+    ShowFindView = "showFindView",
+    HideFindView = "hideFindView",
+    BarcodeFindViewOnResume = "barcodeFindViewOnResume",
+    BarcodeFindViewStartSearching = "barcodeFindViewStartSearching",
+    BarcodeFindViewPauseSearching = "barcodeFindViewPauseSearching",
+    BarcodeFindViewStopSearching = "barcodeFindViewStopSearching",
+    CreateFindView = "createFindView",
+    UpdateFindView = "updateFindView",
+    RegisterBarcodeFindViewListener = "registerBarcodeFindViewListener",
+    UnregisterBarcodeFindViewListener = "unregisterBarcodeFindViewListener",
+    BarcodeCountUpdateMode = "updateMode",
+    ResetBarcodeCount = "resetBarcodeCount",
+    RegisterBarcodeCountListener = "registerBarcodeCountListener",
+    SetBarcodeCountModeEnabledState = "setBarcodeCountModeEnabledState",
+    UnregisterBarcodeCountListener = "unregisterBarcodeCountListener",
+    FinishBarcodeCountListenerOnScan = "finishBarcodeCountListenerOnScan",
+    StartScanningPhase = "startScanningPhase",
+    EndScanningPhase = "endScanningPhase",
+    SetBarcodeCountCaptureList = "setBarcodeCountCaptureList",
+    GetSpatialMap = "getSpatialMap",
+    GetSpatialMapWithHints = "getSpatialMapWithHints",
+    ResetBarcodeCountSession = "resetBarcodeCountSession",
+    UpdateBarcodeCountView = "updateBarcodeCountView",
+    CreateBarcodeCountView = "createBarcodeCountView",
+    RegisterBarcodeCountViewUiListener = "registerBarcodeCountViewUiListener",
+    UnregisterBarcodeCountViewUiListener = "unregisterBarcodeCountViewUiListener",
+    RegisterBarcodeCountViewListener = "registerBarcodeCountViewListener",
+    UnregisterBarcodeCountViewListener = "unregisterBarcodeCountViewListener",
+    ClearBarcodeCountViewHighlights = "clearBarcodeCountViewHighlights",
+    SetBarcodeCountViewPositionAndSize = "setBarcodeCountViewPositionAndSize",
+    ShowBarcodeCountView = "showBarcodeCountView",
+    HideBarcodeCountView = "hideBarcodeCountView",
+    FinishBarcodeCountViewListenerBrushForRecognizedBarcode = "finishBarcodeCountViewListenerBrushForRecognizedBarcode",
+    FinishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList = "finishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList",
+    FinishBarcodeCountViewListenerOnBrushForUnrecognizedBarcode = "finishBarcodeCountViewListenerOnBrushForUnrecognizedBarcode"
 }
