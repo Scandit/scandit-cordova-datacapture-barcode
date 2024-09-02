@@ -23,7 +23,6 @@ import com.scandit.datacapture.cordova.core.errors.JsonParseError
 import com.scandit.datacapture.cordova.core.utils.CordovaEventEmitter
 import com.scandit.datacapture.cordova.core.utils.CordovaResult
 import com.scandit.datacapture.cordova.core.utils.CordovaResultKeepCallback
-import com.scandit.datacapture.cordova.core.utils.PermissionRequest
 import com.scandit.datacapture.cordova.core.utils.PluginMethod
 import com.scandit.datacapture.cordova.core.utils.defaultArgumentAsString
 import com.scandit.datacapture.cordova.core.utils.optBoolean
@@ -76,8 +75,6 @@ class ScanditBarcodeCapture :
     private val eventEmitter = CordovaEventEmitter()
 
     private val mainThread: MainThread = DefaultMainThread.getInstance()
-
-    private val permissionRequest = PermissionRequest.getInstance()
 
     private val barcodeModule = BarcodeModule()
     private val barcodeCaptureModule = BarcodeCaptureModule(
@@ -1338,9 +1335,6 @@ class ScanditBarcodeCapture :
             sparkScanModule.addViewToContainer(container, viewJson, CordovaResult(callbackContext))
             sparkScanModule.sparkScanView?.bringToFront()
         }
-
-        // check camera permissions because sparkScanView handles the camera internally
-        permissionRequest.checkOrRequestCameraPermission(this)
     }
 
     @PluginMethod
@@ -1400,11 +1394,6 @@ class ScanditBarcodeCapture :
             callbackContext
         )
 
-        eventEmitter.registerCallback(
-            FrameworksSparkScanViewUiListener.EVENT_BARCODE_FIND_BUTTON_TAP,
-            callbackContext
-        )
-
         callbackContext.successAndKeepCallback()
     }
 
@@ -1421,10 +1410,6 @@ class ScanditBarcodeCapture :
 
         eventEmitter.unregisterCallback(
             FrameworksSparkScanViewUiListener.EVENT_FAST_FIND_BUTTON_TAP
-        )
-
-        eventEmitter.unregisterCallback(
-            FrameworksSparkScanViewUiListener.EVENT_BARCODE_FIND_BUTTON_TAP
         )
         callbackContext.success()
     }

@@ -790,9 +790,6 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
             case barcode.SparkScanViewEvents.fastFindButtonTapped:
                 this.eventEmitter.emit(barcode.SparkScanViewEvents.fastFindButtonTapped);
                 break;
-            case barcode.SparkScanViewEvents.barcodeFindButtonTapped:
-                this.eventEmitter.emit(barcode.SparkScanViewEvents.barcodeFindButtonTapped);
-                break;
         }
         return done();
     }
@@ -1779,15 +1776,9 @@ class SparkScanView {
     constructor({ context, sparkScan, settings }) {
         this.baseSparkScanView = barcode.BaseSparkScanView.forContext(context, sparkScan, settings);
     }
-    /**
-     * @deprecated This property is deprecated as it's no longer needed.
-     */
     get shouldShowScanAreaGuides() {
         return this.baseSparkScanView.shouldShowScanAreaGuides;
     }
-    /**
-     * @deprecated This property is deprecated as it's no longer needed.
-     */
     set shouldShowScanAreaGuides(newValue) {
         this.baseSparkScanView.shouldShowScanAreaGuides = newValue;
     }
@@ -1827,23 +1818,11 @@ class SparkScanView {
     set barcodeCountButtonVisible(newValue) {
         this.baseSparkScanView.barcodeCountButtonVisible = newValue;
     }
-    /**
-     * @deprecated This property was renamed. Use the property `barcodeFindButtonVisible` instead.
-     */
     get fastFindButtonVisible() {
         return this.baseSparkScanView.fastFindButtonVisible;
     }
-    /**
-     * @deprecated This property was renamed. Use the property `barcodeFindButtonVisible` instead.
-     */
     set fastFindButtonVisible(newValue) {
         this.baseSparkScanView.fastFindButtonVisible = newValue;
-    }
-    get barcodeFindButtonVisible() {
-        return this.baseSparkScanView.barcodeFindButtonVisible;
-    }
-    set barcodeFindButtonVisible(newValue) {
-        this.baseSparkScanView.barcodeFindButtonVisible = newValue;
     }
     get targetModeButtonVisible() {
         return this.baseSparkScanView.targetModeButtonVisible;
@@ -1851,27 +1830,15 @@ class SparkScanView {
     set targetModeButtonVisible(newValue) {
         this.baseSparkScanView.targetModeButtonVisible = newValue;
     }
-    /**
-     * @deprecated This property is deprecated as sound mode button will be removed in the future.
-     */
     get soundModeButtonVisible() {
         return this.baseSparkScanView.soundModeButtonVisible;
     }
-    /**
-     * @deprecated This property is deprecated as sound mode button will be removed in the future.
-     */
     set soundModeButtonVisible(newValue) {
         this.baseSparkScanView.soundModeButtonVisible = newValue;
     }
-    /**
-     * @deprecated This property is deprecated as haptic mode button will be removed in the future.
-     */
     get hapticModeButtonVisible() {
         return this.baseSparkScanView.hapticModeButtonVisible;
     }
-    /**
-     * @deprecated This property is deprecated as haptic mode button will be removed in the future.
-     */
     set hapticModeButtonVisible(newValue) {
         this.baseSparkScanView.hapticModeButtonVisible = newValue;
     }
@@ -2035,7 +2002,7 @@ class BarcodeCountViewProxy {
         const barcodeCountView = this.view.toJSON();
         const json = {
             BarcodeCount: this.view._barcodeCount.toJSON(),
-            View: barcodeCountView
+            View: JSON.stringify(barcodeCountView)
         };
         return new Promise((resolve, reject) => {
             BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.CreateBarcodeCountView, [json]);
@@ -2544,20 +2511,6 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         this._textForUnrecognizedBarcodesDetectedHint = newValue;
         this.updateNative();
     }
-    get shouldShowTorchControl() {
-        return this._shouldShowTorchControl;
-    }
-    set shouldShowTorchControl(newValue) {
-        this._shouldShowTorchControl = newValue;
-        this.updateNative();
-    }
-    get torchControlPosition() {
-        return this._torchControlPosition;
-    }
-    set torchControlPosition(newValue) {
-        this._torchControlPosition = newValue;
-        this.updateNative();
-    }
     set htmlElementState(newState) {
         const didChangeShown = this._htmlElementState.isShown !== newState.isShown;
         const didChangePositionOrSize = this._htmlElementState.didChangeComparedTo(newState);
@@ -2631,8 +2584,6 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         this._shouldShowListProgressBar = BarcodeCountDefaults.BarcodeCountView.shouldShowListProgressBar;
         this._textForMoveFurtherAndRescanHint = BarcodeCountDefaults.BarcodeCountView.textForMoveFurtherAndRescanHint;
         this._textForUnrecognizedBarcodesDetectedHint = BarcodeCountDefaults.BarcodeCountView.textForUnrecognizedBarcodesDetectedHint;
-        this._shouldShowTorchControl = BarcodeCountDefaults.BarcodeCountView.shouldShowTorchControl;
-        this._torchControlPosition = BarcodeCountDefaults.BarcodeCountView.torchControlPosition;
         this._toolbarSettings = null;
         this.htmlElement = null;
         this._htmlElementState = new scanditCordovaDatacaptureCore.HTMLElementState();
@@ -2872,12 +2823,6 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('textForUnrecognizedBarcodesDetectedHint')
 ], BarcodeCountView.prototype, "_textForUnrecognizedBarcodesDetectedHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowTorchControl')
-], BarcodeCountView.prototype, "_shouldShowTorchControl", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('torchControlPosition')
-], BarcodeCountView.prototype, "_torchControlPosition", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('toolbarSettings')
 ], BarcodeCountView.prototype, "_toolbarSettings", void 0);
