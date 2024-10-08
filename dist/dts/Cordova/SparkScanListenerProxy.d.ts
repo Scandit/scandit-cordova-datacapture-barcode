@@ -1,5 +1,5 @@
-import { SparkScanListenerProxy } from "scandit-datacapture-frameworks-barcode";
-import { BaseNativeProxy } from "scandit-datacapture-frameworks-core";
+import { SparkScanListenerProxy } from 'scandit-datacapture-frameworks-barcode';
+import { BaseNativeProxy } from 'scandit-datacapture-frameworks-core';
 export declare class NativeSparkScanListenerProxy extends BaseNativeProxy implements SparkScanListenerProxy {
     private static get cordovaExec();
     resetSession(): Promise<void>;

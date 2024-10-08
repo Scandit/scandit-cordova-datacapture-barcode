@@ -646,6 +646,15 @@ class ScanditBarcodeCapture: CDVPlugin {
         )
     }
 
+    @objc(updateBarcodeFindFeedback:)
+    func updateBarcodeFindFeedback(command: CDVInvokedUrlCommand) {
+        let feedbackJson = command.defaultArgumentAsString!
+        barcodeFindModule.updateFeedback(
+            feedbackJson: feedbackJson,
+            result: CordovaResult(commandDelegate, command.callbackId)
+        )
+    }
+
     @objc(showFindView:)
     func showFindView(command: CDVInvokedUrlCommand) {
         dispatchMainSync {
@@ -1321,6 +1330,16 @@ class ScanditBarcodeCapture: CDVPlugin {
         
         barcodeCountModule.setModeEnabled(enabled: enabled)
         commandDelegate.send(.success, callbackId: command.callbackId)
+    }
+    
+    @objc(updateBarcodeCountFeedback:)
+    func updateBarcodeCountFeedback(command: CDVInvokedUrlCommand) {
+        if let feedbackJson = command.defaultArgumentAsString {
+            barcodeCountModule.updateFeedback(feedbackJson: feedbackJson, result: CordovaResult(commandDelegate, command.callbackId))
+            return
+        }
+        
+        commandDelegate.send(.failure(with: .noFeedbackJsonPassed), callbackId: command.callbackId)
     }
     
     @objc(finishBarcodeCountListenerOnScan:)

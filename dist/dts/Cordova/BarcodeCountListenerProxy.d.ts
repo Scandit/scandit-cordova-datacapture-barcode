@@ -7,6 +7,7 @@ export declare class NativeBarcodeCountListenerProxy extends BaseNativeProxy imp
     resetBarcodeCount(): Promise<void>;
     registerBarcodeCountListener(): Promise<void>;
     setModeEnabledState(enabled: boolean): void;
+    updateFeedback(feedbackJson: string): void;
     unregisterBarcodeCountListener(): Promise<void>;
     subscribeDidScan(): Promise<void>;
     subscribeDidListSessionUpdate(): Promise<void>;

@@ -1,6 +1,6 @@
-import { BarcodeFindViewProxy } from "scandit-datacapture-frameworks-barcode";
-import { BaseNativeProxy } from "scandit-datacapture-frameworks-core";
-import { BarcodeFindView } from "../BarcodeFindView";
+import { BarcodeFindViewProxy } from 'scandit-datacapture-frameworks-barcode';
+import { BaseNativeProxy } from 'scandit-datacapture-frameworks-core';
+import { BarcodeFindView } from '../BarcodeFindView';
 export declare class NativeBarcodeFindViewProxy extends BaseNativeProxy implements BarcodeFindViewProxy {
     private static get cordovaExec();
     showView(): Promise<void>;

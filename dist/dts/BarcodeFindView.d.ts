@@ -1,5 +1,5 @@
-import { BarcodeFind, BarcodeFindViewSettings, BarcodeFindViewUiListener } from "scandit-datacapture-frameworks-barcode";
-import { Anchor, CameraSettings, DataCaptureContext } from "scandit-datacapture-frameworks-core";
+import { BarcodeFind, BarcodeFindViewSettings, BarcodeFindViewUiListener } from 'scandit-datacapture-frameworks-barcode';
+import { Anchor, CameraSettings, DataCaptureContext } from 'scandit-datacapture-frameworks-core';
 export declare class BarcodeFindView {
     private baseBarcodeFindView;
     private htmlElement;

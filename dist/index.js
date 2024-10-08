@@ -688,8 +688,8 @@ class NativeSparkScanListenerProxy extends scanditDatacaptureFrameworksCore.Base
             return {};
         };
         if (!event) {
-            // The event could be undefined/null in case the plugin result did not pass a "message",
-            // which could happen e.g. in case of "ok" results, which could signal e.g. successful
+            // The event could be undefined/null in case the plugin result did not pass a 'message',
+            // which could happen e.g. in case of 'ok' results, which could signal e.g. successful
             // listener subscriptions.
             return done();
         }
@@ -777,8 +777,8 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
             return {};
         };
         if (!event) {
-            // The event could be undefined/null in case the plugin result did not pass a "message",
-            // which could happen e.g. in case of "ok" results, which could signal e.g. successful
+            // The event could be undefined/null in case the plugin result did not pass a 'message',
+            // which could happen e.g. in case of 'ok' results, which could signal e.g. successful
             // listener subscriptions.
             return done();
         }
@@ -921,6 +921,11 @@ class NativeBarcodeFindListenerProxy extends scanditDatacaptureFrameworksCore.Ba
             });
         });
     }
+    updateFeedback(feedbackJson) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeFindListenerProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeFindFeedback, [feedbackJson]);
+        });
+    }
     notifyListeners(event) {
         const done = () => {
             this.eventEmitter.emit(barcode.BarcodeFindListenerEvents.inCallback, false);
@@ -1021,8 +1026,8 @@ class NativeBarcodeFindViewProxy extends scanditDatacaptureFrameworksCore.BaseNa
             return {};
         };
         if (!event) {
-            // The event could be undefined/null in case the plugin result did not pass a "message",
-            // which could happen e.g. in case of "ok" results, which could signal e.g. successful
+            // The event could be undefined/null in case the plugin result did not pass a 'message',
+            // which could happen e.g. in case of 'ok' results, which could signal e.g. successful
             // listener subscriptions.
             return done();
         }
@@ -1056,6 +1061,9 @@ class NativeBarcodeCountListenerProxy extends scanditDatacaptureFrameworksCore.B
     }
     setModeEnabledState(enabled) {
         NativeBarcodeCountListenerProxy.cordovaExec(null, null, CordovaFunction.SetBarcodeCountModeEnabledState, [enabled]);
+    }
+    updateFeedback(feedbackJson) {
+        NativeBarcodeCountListenerProxy.cordovaExec(null, null, CordovaFunction.UpdateBarcodeCountFeedback, [feedbackJson]);
     }
     unregisterBarcodeCountListener() {
         return new Promise((resolve, reject) => {
@@ -1299,10 +1307,12 @@ var CordovaFunction;
     CordovaFunction["UpdateFindView"] = "updateFindView";
     CordovaFunction["RegisterBarcodeFindViewListener"] = "registerBarcodeFindViewListener";
     CordovaFunction["UnregisterBarcodeFindViewListener"] = "unregisterBarcodeFindViewListener";
+    CordovaFunction["UpdateBarcodeFindFeedback"] = "updateBarcodeFindFeedback";
     CordovaFunction["BarcodeCountUpdateMode"] = "updateMode";
     CordovaFunction["ResetBarcodeCount"] = "resetBarcodeCount";
     CordovaFunction["RegisterBarcodeCountListener"] = "registerBarcodeCountListener";
     CordovaFunction["SetBarcodeCountModeEnabledState"] = "setBarcodeCountModeEnabledState";
+    CordovaFunction["UpdateBarcodeCountFeedback"] = "updateBarcodeCountFeedback";
     CordovaFunction["UnregisterBarcodeCountListener"] = "unregisterBarcodeCountListener";
     CordovaFunction["FinishBarcodeCountListenerOnScan"] = "finishBarcodeCountListenerOnScan";
     CordovaFunction["StartScanningPhase"] = "startScanningPhase";
@@ -2955,6 +2965,7 @@ Object.defineProperty(exports, "BarcodePickState", {
     enumerable: true,
     get: function () { return barcode.BarcodePickState; }
 });
+exports.BarcodePickStatusIconSettings = barcode.BarcodePickStatusIconSettings;
 exports.BarcodePickViewSettings = barcode.BarcodePickViewSettings;
 exports.BarcodeSelection = barcode.BarcodeSelection;
 exports.BarcodeSelectionAimerSelection = barcode.BarcodeSelectionAimerSelection;

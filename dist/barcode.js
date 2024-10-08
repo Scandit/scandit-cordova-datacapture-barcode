@@ -420,6 +420,24 @@ class BarcodeCountFeedback extends scanditDatacaptureFrameworksCore.DefaultSeria
     static get default() {
         return new BarcodeCountFeedback(BarcodeCountFeedback.barcodeCountDefaults.Feedback.success, BarcodeCountFeedback.barcodeCountDefaults.Feedback.failure);
     }
+    get success() {
+        return this._success;
+    }
+    set success(success) {
+        this._success = success;
+        this.updateFeedback();
+    }
+    get failure() {
+        return this._failure;
+    }
+    set failure(failure) {
+        this._failure = failure;
+        this.updateFeedback();
+    }
+    updateFeedback() {
+        var _a;
+        (_a = this.listenerController) === null || _a === void 0 ? void 0 : _a.updateFeedback(JSON.stringify(this.toJSON()));
+    }
     static fromJSON(json) {
         const success = scanditDatacaptureFrameworksCore.Feedback.fromJSON(json.success);
         const failure = scanditDatacaptureFrameworksCore.Feedback.fromJSON(json.failure);
@@ -430,12 +448,22 @@ class BarcodeCountFeedback extends scanditDatacaptureFrameworksCore.DefaultSeria
     }
     constructor(success, error) {
         super();
-        this.success = BarcodeCountFeedback.barcodeCountDefaults.Feedback.success;
-        this.failure = BarcodeCountFeedback.barcodeCountDefaults.Feedback.success;
+        this.listenerController = null;
+        this._success = BarcodeCountFeedback.barcodeCountDefaults.Feedback.success;
+        this._failure = BarcodeCountFeedback.barcodeCountDefaults.Feedback.failure;
         this.success = success;
         this.failure = error;
     }
 }
+__decorate([
+    scanditDatacaptureFrameworksCore.ignoreFromSerialization
+], BarcodeCountFeedback.prototype, "listenerController", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('success')
+], BarcodeCountFeedback.prototype, "_success", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('failure')
+], BarcodeCountFeedback.prototype, "_failure", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.ignoreFromSerialization
 ], BarcodeCountFeedback, "barcodeCountDefaults", null);
@@ -893,6 +921,9 @@ class BarcodeCountListenerController {
     endScanningPhase() {
         this._proxy.endScanningPhase();
     }
+    updateFeedback(feedbackJson) {
+        this._proxy.updateFeedback(feedbackJson);
+    }
     setBarcodeCountCaptureList(barcodeCountCaptureList) {
         this._barcodeCountCaptureList = barcodeCountCaptureList;
         this._proxy.setBarcodeCountCaptureList(JSON.stringify(barcodeCountCaptureList.targetBarcodes));
@@ -935,7 +966,8 @@ class BarcodeCount extends scanditDatacaptureFrameworksCore.DefaultSerializeable
     }
     set feedback(feedback) {
         this._feedback = feedback;
-        this.didChange();
+        this._feedback.listenerController = this.listenerController;
+        this.listenerController.updateFeedback(JSON.stringify(feedback.toJSON()));
     }
     get _context() {
         return this.privateContext;
@@ -961,6 +993,7 @@ class BarcodeCount extends scanditDatacaptureFrameworksCore.DefaultSerializeable
         this.isInListenerCallback = false;
         this.privateContext = null;
         this.listenerController = BarcodeCountListenerController.forBarcodeCount(this);
+        this._feedback.listenerController = this.listenerController;
     }
     applySettings(settings) {
         this.settings = settings;
@@ -1122,10 +1155,10 @@ class BarcodeCountSettings extends scanditDatacaptureFrameworksCore.DefaultSeria
     }
 }
 __decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('filterSettings')
+    scanditDatacaptureFrameworksCore.nameForSerialization('barcodeFilterSettings')
 ], BarcodeCountSettings.prototype, "_filterSettings", void 0);
 __decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('expectsOnlyUniqueBarcodes')
+    scanditDatacaptureFrameworksCore.nameForSerialization('expectOnlyUniqueBarcodes')
 ], BarcodeCountSettings.prototype, "_expectsOnlyUniqueBarcodes", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('mappingEnabled')
@@ -1319,7 +1352,7 @@ function parseBarcodeCountDefaults(jsonDefaults) {
             expectOnlyUniqueBarcodes: jsonDefaults.BarcodeCountSettings.expectOnlyUniqueBarcodes,
             disableModeWhenCaptureListCompleted: jsonDefaults.BarcodeCountSettings.disableModeWhenCaptureListCompleted,
             barcodeFilterSettings: BarcodeFilterSettings
-                .fromJSON(jsonDefaults.BarcodeCountSettings.BarcodeFilterSettings),
+                .fromJSON(jsonDefaults.BarcodeCountSettings.barcodeFilterSettings),
             mappingEnabled: jsonDefaults.BarcodeCountSettings.mappingEnabled
         },
         BarcodeCountView: {
@@ -1449,6 +1482,11 @@ function parseBarcodePickDefaults(jsonDefaults) {
                 .fromJSON(identifier, JSON.parse(jsonDefaults.SymbologySettings[identifier]));
             return settings;
         }, {}),
+        BarcodePickStatusIconSettings: {
+            maxSize: jsonDefaults.maxSize,
+            minSize: jsonDefaults.minSize,
+            ratioToHighlightSize: jsonDefaults.ratioToHighlightSize,
+        }
     };
     return barcodePickDefaults;
 }
@@ -2690,6 +2728,9 @@ class BarcodeSelectionSettings extends scanditDatacaptureFrameworksCore.DefaultS
         this.settingsForSymbology(symbology).isEnabled = enabled;
     }
 }
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('singleBarcodeAutoDetectionEnabled')
+], BarcodeSelectionSettings.prototype, "singleBarcodeAutoDetection", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.ignoreFromSerialization
 ], BarcodeSelectionSettings, "barcodeSelectionDefaults", null);
@@ -5206,6 +5247,9 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('onFirstItemUnpickCompletedHintText')
 ], BarcodePickViewSettings.prototype, "_onFirstItemUnpickCompletedHintText", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.ignoreFromSerialization
+], BarcodePickViewSettings, "barcodePickDefaults", null);
 
 class BrushForStateObject extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
 }
@@ -5215,6 +5259,58 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('brush')
 ], BrushForStateObject.prototype, "brush", void 0);
+
+class BarcodePickStatusIconSettings extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
+    constructor() {
+        super(...arguments);
+        this._ratioToHighlightSize = BarcodePickStatusIconSettings.barcodePickDefaults.BarcodePickStatusIconSettings.ratioToHighlightSize;
+        this._minSize = BarcodePickStatusIconSettings.barcodePickDefaults.BarcodePickStatusIconSettings.minSize;
+        this._maxSize = BarcodePickStatusIconSettings.barcodePickDefaults.BarcodePickStatusIconSettings.maxSize;
+    }
+    get ratioToHighlightSize() {
+        return this._ratioToHighlightSize;
+    }
+    set ratioToHighlightSize(value) {
+        this._ratioToHighlightSize = value;
+    }
+    get minSize() {
+        return this._minSize;
+    }
+    set minSize(value) {
+        this._minSize = value;
+    }
+    get maxSize() {
+        return this._maxSize;
+    }
+    set maxSize(value) {
+        this._maxSize = value;
+    }
+    static get barcodePickDefaults() {
+        return getBarcodePickDefaults();
+    }
+    static fromJSON(json) {
+        if (json == undefined) {
+            return null;
+        }
+        const barcodePickStatusIconSettings = new BarcodePickStatusIconSettings();
+        barcodePickStatusIconSettings._ratioToHighlightSize = json === null || json === void 0 ? void 0 : json.ratioToHighlightSize;
+        barcodePickStatusIconSettings._minSize = json === null || json === void 0 ? void 0 : json.minSize;
+        barcodePickStatusIconSettings._maxSize = json === null || json === void 0 ? void 0 : json.maxSize;
+        return barcodePickStatusIconSettings;
+    }
+}
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('ratioToHighlightSize')
+], BarcodePickStatusIconSettings.prototype, "_ratioToHighlightSize", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('minSize')
+], BarcodePickStatusIconSettings.prototype, "_minSize", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('maxSize')
+], BarcodePickStatusIconSettings.prototype, "_maxSize", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.ignoreFromSerialization
+], BarcodePickStatusIconSettings, "barcodePickDefaults", null);
 
 class Dot extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
     static get barcodePickDefaults() {
@@ -5271,7 +5367,7 @@ class DotWithIcons extends scanditDatacaptureFrameworksCore.DefaultSerializeable
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     constructor() {
         super();
-        this._type = 'DotWithIcons';
+        this._type = 'dotWithIcons';
         this._brushesForState = DotWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.DotWithIcons.brushesForState;
         this._iconsForState = [];
         this._iconStyle = DotWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.DotWithIcons.iconStyle;
@@ -5322,6 +5418,8 @@ class Rectangular extends scanditDatacaptureFrameworksCore.DefaultSerializeable 
         super();
         this._type = 'rectangular';
         this._brushesForState = Rectangular.barcodePickDefaults.BarcodePickViewHighlightStyle.Rectangular.brushesForState;
+        this._minimumHighlightWidth = Rectangular.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.minimumHighlightWidth;
+        this._minimumHighlightHeight = Rectangular.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.minimumHighlightHeight;
     }
     getBrushForState(state) {
         return (this._brushesForState.filter(item => item.barcodePickState === state)[0] || {}).brush;
@@ -5330,6 +5428,18 @@ class Rectangular extends scanditDatacaptureFrameworksCore.DefaultSerializeable 
         const indexToUpdate = this._brushesForState.findIndex(item => item.barcodePickState === state);
         this._brushesForState[indexToUpdate].brush = brush;
     }
+    get minimumHighlightHeight() {
+        return this._minimumHighlightHeight;
+    }
+    set minimumHighlightHeight(value) {
+        this._minimumHighlightHeight = value;
+    }
+    get minimumHighlightWidth() {
+        return this._minimumHighlightWidth;
+    }
+    set minimumHighlightWidth(value) {
+        this._minimumHighlightWidth = value;
+    }
 }
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('type')
@@ -5337,6 +5447,12 @@ __decorate([
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('brushesForState')
 ], Rectangular.prototype, "_brushesForState", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('minimumHighlightWidth')
+], Rectangular.prototype, "_minimumHighlightWidth", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('minimumHighlightHeight')
+], Rectangular.prototype, "_minimumHighlightHeight", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.ignoreFromSerialization
 ], Rectangular, "barcodePickDefaults", null);
@@ -5352,6 +5468,8 @@ class RectangularWithIcons extends scanditDatacaptureFrameworksCore.DefaultSeria
         this._brushesForState = RectangularWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.brushesForState;
         this._iconsForState = [];
         this._iconStyle = RectangularWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.iconStyle;
+        this._minimumHighlightWidth = RectangularWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.minimumHighlightWidth;
+        this._minimumHighlightHeight = RectangularWithIcons.barcodePickDefaults.BarcodePickViewHighlightStyle.RectangularWithIcons.minimumHighlightHeight;
     }
     getBrushForState(state) {
         return (this._brushesForState.filter(item => item.barcodePickState === state)[0] || {}).brush;
@@ -5373,6 +5491,24 @@ class RectangularWithIcons extends scanditDatacaptureFrameworksCore.DefaultSeria
     set iconStyle(style) {
         this._iconStyle = style;
     }
+    get statusIconSettings() {
+        return this._statusIconSettings;
+    }
+    set statusIconSettings(value) {
+        this._statusIconSettings = value;
+    }
+    get minimumHighlightHeight() {
+        return this._minimumHighlightHeight;
+    }
+    set minimumHighlightHeight(value) {
+        this._minimumHighlightHeight = value;
+    }
+    get minimumHighlightWidth() {
+        return this._minimumHighlightWidth;
+    }
+    set minimumHighlightWidth(value) {
+        this._minimumHighlightWidth = value;
+    }
 }
 __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('type')
@@ -5387,14 +5523,42 @@ __decorate([
     scanditDatacaptureFrameworksCore.nameForSerialization('iconStyle')
 ], RectangularWithIcons.prototype, "_iconStyle", void 0);
 __decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('statusIconSettings')
+], RectangularWithIcons.prototype, "_statusIconSettings", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('minimumHighlightWidth')
+], RectangularWithIcons.prototype, "_minimumHighlightWidth", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('minimumHighlightHeight')
+], RectangularWithIcons.prototype, "_minimumHighlightHeight", void 0);
+__decorate([
     scanditDatacaptureFrameworksCore.ignoreFromSerialization
 ], RectangularWithIcons, "barcodePickDefaults", null);
 
 class BarcodeFindFeedback extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
     constructor() {
         super(...arguments);
-        this.found = BarcodeFindFeedback.barcodeFindDefaults.Feedback.found;
-        this.itemListUpdated = BarcodeFindFeedback.barcodeFindDefaults.Feedback.itemListUpdated;
+        this.controller = null;
+        this._found = BarcodeFindFeedback.barcodeFindDefaults.Feedback.found;
+        this._itemListUpdated = BarcodeFindFeedback.barcodeFindDefaults.Feedback.itemListUpdated;
+    }
+    get found() {
+        return this._found;
+    }
+    set found(success) {
+        this._found = success;
+        this.updateFeedback();
+    }
+    get itemListUpdated() {
+        return this._itemListUpdated;
+    }
+    set itemListUpdated(failure) {
+        this._itemListUpdated = failure;
+        this.updateFeedback();
+    }
+    updateFeedback() {
+        var _a;
+        (_a = this.controller) === null || _a === void 0 ? void 0 : _a.updateFeedback(JSON.stringify(this.toJSON()));
     }
     static get barcodeFindDefaults() {
         return getBarcodeFindDefaults();
@@ -5403,6 +5567,15 @@ class BarcodeFindFeedback extends scanditDatacaptureFrameworksCore.DefaultSerial
         return new BarcodeFindFeedback();
     }
 }
+__decorate([
+    scanditDatacaptureFrameworksCore.ignoreFromSerialization
+], BarcodeFindFeedback.prototype, "controller", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('found')
+], BarcodeFindFeedback.prototype, "_found", void 0);
+__decorate([
+    scanditDatacaptureFrameworksCore.nameForSerialization('itemListUpdated')
+], BarcodeFindFeedback.prototype, "_itemListUpdated", void 0);
 
 exports.BarcodeFindListenerEvents = void 0;
 (function (BarcodeFindListenerEvents) {
@@ -5493,6 +5666,9 @@ class BarcodeFindController extends scanditDatacaptureFrameworksCore.BaseControl
     dispose() {
         this.unsubscribeListeners();
     }
+    updateFeedback(feedbackJson) {
+        return this._proxy.updateFeedback(feedbackJson);
+    }
 }
 
 class BarcodeFind extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
@@ -5509,6 +5685,7 @@ class BarcodeFind extends scanditDatacaptureFrameworksCore.DefaultSerializeable 
         this._settings = settings;
         this._controller = BarcodeFindController.forBarcodeFind(this);
         this._dataCaptureContext = dataCaptureContext;
+        this._feedback.controller = this._controller;
         // No need to add the mode to the context
     }
     static forContext(dataCaptureContext, settings) {
@@ -5535,7 +5712,8 @@ class BarcodeFind extends scanditDatacaptureFrameworksCore.DefaultSerializeable 
     }
     set feedback(value) {
         this._feedback = value;
-        this.update();
+        this._feedback.controller = this._controller;
+        this._controller.updateFeedback(JSON.stringify(value.toJSON()));
     }
     applySettings(settings) {
         this._settings = settings;
@@ -5762,7 +5940,7 @@ __decorate([
 
 exports.BarcodeFindViewEvents = void 0;
 (function (BarcodeFindViewEvents) {
-    BarcodeFindViewEvents["onFinishButtonTappedEventName"] = "FrameworksBarcodeFindViewUiListener.onFinishButtonTapped";
+    BarcodeFindViewEvents["onFinishButtonTappedEventName"] = "BarcodeFindViewUiListener.onFinishButtonTapped";
 })(exports.BarcodeFindViewEvents || (exports.BarcodeFindViewEvents = {}));
 class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseController {
     constructor() {
@@ -6282,6 +6460,7 @@ exports.BarcodePickProductProviderCallback = BarcodePickProductProviderCallback;
 exports.BarcodePickProductProviderCallbackItem = BarcodePickProductProviderCallbackItem;
 exports.BarcodePickScanningSession = BarcodePickScanningSession;
 exports.BarcodePickSettings = BarcodePickSettings;
+exports.BarcodePickStatusIconSettings = BarcodePickStatusIconSettings;
 exports.BarcodePickViewController = BarcodePickViewController;
 exports.BarcodePickViewSettings = BarcodePickViewSettings;
 exports.BarcodeSelection = BarcodeSelection;
