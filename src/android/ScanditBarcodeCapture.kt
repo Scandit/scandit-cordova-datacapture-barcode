@@ -36,14 +36,12 @@ import com.scandit.datacapture.frameworks.barcode.capture.listeners.FrameworksBa
 import com.scandit.datacapture.frameworks.barcode.count.BarcodeCountModule
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountCaptureListListener
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountListener
-import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountStatusProvider
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountViewListener
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountViewUiListener
 import com.scandit.datacapture.frameworks.barcode.find.BarcodeFindModule
 import com.scandit.datacapture.frameworks.barcode.find.listeners.FrameworksBarcodeFindListener
 import com.scandit.datacapture.frameworks.barcode.find.listeners.FrameworksBarcodeFindViewUiListener
 import com.scandit.datacapture.frameworks.barcode.find.transformer.FrameworksBarcodeFindTransformer
-import com.scandit.datacapture.frameworks.barcode.generator.BarcodeGeneratorModule
 import com.scandit.datacapture.frameworks.barcode.pick.BarcodePickModule
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickActionListener
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickAsyncMapperProductProviderCallback
@@ -58,12 +56,11 @@ import com.scandit.datacapture.frameworks.barcode.spark.SparkScanModule
 import com.scandit.datacapture.frameworks.barcode.spark.delegates.FrameworksSparkScanFeedbackDelegate
 import com.scandit.datacapture.frameworks.barcode.spark.listeners.FrameworksSparkScanListener
 import com.scandit.datacapture.frameworks.barcode.spark.listeners.FrameworksSparkScanViewUiListener
-import com.scandit.datacapture.frameworks.barcode.batch.BarcodeBatchModule
-import com.scandit.datacapture.frameworks.barcode.batch.listeners.FrameworksBarcodeBatchAdvancedOverlayListener
-import com.scandit.datacapture.frameworks.barcode.batch.listeners.FrameworksBarcodeBatchBasicOverlayListener
-import com.scandit.datacapture.frameworks.barcode.batch.listeners.FrameworksBarcodeBatchListener
+import com.scandit.datacapture.frameworks.barcode.tracking.BarcodeTrackingModule
+import com.scandit.datacapture.frameworks.barcode.tracking.listeners.FrameworksBarcodeTrackingAdvancedOverlayListener
+import com.scandit.datacapture.frameworks.barcode.tracking.listeners.FrameworksBarcodeTrackingBasicOverlayListener
+import com.scandit.datacapture.frameworks.barcode.tracking.listeners.FrameworksBarcodeTrackingListener
 import com.scandit.datacapture.frameworks.core.extensions.getOrNull
-import com.scandit.datacapture.frameworks.core.result.NoopFrameworksResult
 import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
 import com.scandit.datacapture.frameworks.core.utils.MainThread
 import org.apache.cordova.CallbackContext
@@ -86,10 +83,10 @@ class ScanditBarcodeCapture :
     private val barcodeCaptureModule = BarcodeCaptureModule(
         FrameworksBarcodeCaptureListener(eventEmitter)
     )
-    private val barcodeBatchModule = BarcodeBatchModule(
-        FrameworksBarcodeBatchListener(eventEmitter),
-        FrameworksBarcodeBatchBasicOverlayListener(eventEmitter),
-        FrameworksBarcodeBatchAdvancedOverlayListener(eventEmitter)
+    private val barcodeTrackingModule = BarcodeTrackingModule(
+        FrameworksBarcodeTrackingListener(eventEmitter),
+        FrameworksBarcodeTrackingBasicOverlayListener(eventEmitter),
+        FrameworksBarcodeTrackingAdvancedOverlayListener(eventEmitter)
     )
     private val barcodeSelectionModule = BarcodeSelectionModule(
         FrameworksBarcodeSelectionListener(eventEmitter),
@@ -125,18 +122,14 @@ class ScanditBarcodeCapture :
         FrameworksBarcodeCountListener(eventEmitter),
         FrameworksBarcodeCountCaptureListListener(eventEmitter),
         FrameworksBarcodeCountViewListener(eventEmitter),
-        FrameworksBarcodeCountViewUiListener(eventEmitter),
-        FrameworksBarcodeCountStatusProvider(eventEmitter)
+        FrameworksBarcodeCountViewUiListener(eventEmitter)
     )
-
-    private val barcodeGeneratorModule = BarcodeGeneratorModule()
-
     private val barcodeCountViewHandler: BarcodeCountViewHandler = BarcodeCountViewHandler()
 
     private lateinit var exposedFunctionsToJs: Map<String, Method>
 
     private var lastBarcodeCaptureEnabledState: Boolean = false
-    private var lastBarcodeBatchEnabledState: Boolean = false
+    private var lastBarcodeTrackingEnabledState: Boolean = false
     private var lastBarcodeSelectionEnabledState: Boolean = false
     private var lastBarcodeFindEnabledState: Boolean = false
     private var lastSparkScanEnabledState: Boolean = false
@@ -150,13 +143,12 @@ class ScanditBarcodeCapture :
         ScanditCaptureCore.addPlugin(serviceName)
         barcodeModule.onCreate(cordova.context)
         barcodeCaptureModule.onCreate(cordova.context)
-        barcodeBatchModule.onCreate(cordova.context)
+        barcodeTrackingModule.onCreate(cordova.context)
         barcodeSelectionModule.onCreate(cordova.context)
         barcodeFindModule.onCreate(cordova.context)
         barcodePickModule.onCreate(cordova.context)
         sparkScanModule.onCreate(cordova.context)
         barcodeCountModule.onCreate(cordova.context)
-        barcodeGeneratorModule.onCreate(cordova.context)
 
         // Init functions exposed to JS
         exposedFunctionsToJs =
@@ -168,8 +160,8 @@ class ScanditBarcodeCapture :
         lastBarcodeCaptureEnabledState = barcodeCaptureModule.isModeEnabled()
         barcodeCaptureModule.setModeEnabled(false)
 
-        lastBarcodeBatchEnabledState = barcodeBatchModule.isModeEnabled()
-        barcodeBatchModule.setModeEnabled(false)
+        lastBarcodeTrackingEnabledState = barcodeTrackingModule.isModeEnabled()
+        barcodeTrackingModule.setModeEnabled(false)
 
         lastBarcodeSelectionEnabledState = barcodeSelectionModule.isModeEnabled()
         barcodeSelectionModule.setModeEnabled(false)
@@ -186,7 +178,7 @@ class ScanditBarcodeCapture :
 
     override fun onStart() {
         barcodeCaptureModule.setModeEnabled(lastBarcodeCaptureEnabledState)
-        barcodeBatchModule.setModeEnabled(lastBarcodeBatchEnabledState)
+        barcodeTrackingModule.setModeEnabled(lastBarcodeTrackingEnabledState)
         barcodeSelectionModule.setModeEnabled(lastBarcodeSelectionEnabledState)
         barcodeFindModule.setModeEnabled(lastBarcodeFindEnabledState)
         barcodeCountModule.setModeEnabled(lastBarcodeCountEnabledState)
@@ -195,15 +187,11 @@ class ScanditBarcodeCapture :
     override fun onPause(multitasking: Boolean) {
         super.onPause(multitasking)
         barcodePickModule.viewOnPause()
-        sparkScanModule.onPause()
-        barcodeFindModule.viewOnPause(NoopFrameworksResult())
     }
 
     override fun onResume(multitasking: Boolean) {
         super.onResume(multitasking)
         barcodePickModule.viewOnResume()
-        sparkScanModule.onResume(NoopFrameworksResult())
-        barcodeFindModule.viewOnResume(NoopFrameworksResult())
     }
 
     override fun onReset() {
@@ -219,12 +207,11 @@ class ScanditBarcodeCapture :
     private fun destroy() {
         barcodeModule.onDestroy()
         barcodeCaptureModule.onDestroy()
-        barcodeBatchModule.onDestroy()
+        barcodeTrackingModule.onDestroy()
         barcodeSelectionModule.onDestroy()
         barcodeFindModule.onDestroy()
         barcodePickModule.onDestroy()
         barcodeCountModule.onDestroy()
-        barcodeGeneratorModule.onDestroy()
     }
 
     override fun execute(
@@ -247,13 +234,13 @@ class ScanditBarcodeCapture :
     ) {
         val default = JSONObject(
             barcodeModule.getDefaults() +
-                    mapOf("BarcodeCapture" to barcodeCaptureModule.getDefaults()) +
-                    mapOf("BarcodeBatch" to barcodeBatchModule.getDefaults()) +
-                    mapOf("BarcodeSelection" to barcodeSelectionModule.getDefaults()) +
-                    mapOf("BarcodeFind" to barcodeFindModule.getDefaults()) +
-                    mapOf("BarcodePick" to barcodePickModule.getDefaults()) +
-                    mapOf("SparkScan" to sparkScanModule.getDefaults()) +
-                    mapOf("BarcodeCount" to barcodeCountModule.getDefaults())
+                mapOf("BarcodeCapture" to barcodeCaptureModule.getDefaults()) +
+                mapOf("BarcodeTracking" to barcodeTrackingModule.getDefaults()) +
+                mapOf("BarcodeSelection" to barcodeSelectionModule.getDefaults()) +
+                mapOf("BarcodeFind" to barcodeFindModule.getDefaults()) +
+                mapOf("BarcodePick" to barcodePickModule.getDefaults()) +
+                mapOf("SparkScan" to sparkScanModule.getDefaults()) +
+                mapOf("BarcodeCount" to barcodeCountModule.getDefaults())
         )
 
         callbackContext.success(default)
@@ -292,28 +279,28 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun subscribeBarcodeBatchListener(
+    fun subscribeBarcodeTrackingListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchListener.ON_SESSION_UPDATED_EVENT_NAME,
+            FrameworksBarcodeTrackingListener.ON_SESSION_UPDATED_EVENT_NAME,
             callbackContext
         )
-        barcodeBatchModule.addBarcodeBatchListener()
+        barcodeTrackingModule.addBarcodeTrackingListener()
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchListener(
+    fun unregisterBarcodeTrackingListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchListener.ON_SESSION_UPDATED_EVENT_NAME
+            FrameworksBarcodeTrackingListener.ON_SESSION_UPDATED_EVENT_NAME
         )
 
-        barcodeBatchModule.removeBarcodeBatchListener()
+        barcodeTrackingModule.removeBarcodeTrackingListener()
         callbackContext.success()
     }
 
@@ -377,40 +364,40 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun finishBarcodeBatchDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.finishDidUpdateSession(args.optBoolean("enabled", true))
+    fun finishBarcodeTrackingDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.finishDidUpdateSession(args.optBoolean("enabled", true))
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun subscribeBarcodeBatchBasicOverlayListener(
+    fun subscribeBarcodeTrackingBasicOverlayListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED,
+            FrameworksBarcodeTrackingBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED,
             callbackContext
         )
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE,
+            FrameworksBarcodeTrackingBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE,
             callbackContext
         )
-        barcodeBatchModule.addBasicOverlayListener()
+        barcodeTrackingModule.addBasicOverlayListener()
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchBasicOverlayListener(
+    fun unregisterBarcodeTrackingBasicOverlayListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED
+            FrameworksBarcodeTrackingBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED
         )
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE
+            FrameworksBarcodeTrackingBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE
         )
-        barcodeBatchModule.removeBasicOverlayListener()
+        barcodeTrackingModule.removeBasicOverlayListener()
         callbackContext.success()
     }
 
@@ -418,7 +405,7 @@ class ScanditBarcodeCapture :
     fun setBrushForTrackedBarcode(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val payload = args.getJSONObject(0)
-            barcodeBatchModule.setBasicOverlayBrushForTrackedBarcode(
+            barcodeTrackingModule.setBasicOverlayBrushForTrackedBarcode(
                 payload.toString()
             )
 
@@ -435,53 +422,53 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeBatchModule.clearBasicOverlayTrackedBarcodeBrushes()
+        barcodeTrackingModule.clearBasicOverlayTrackedBarcodeBrushes()
         callbackContext.success()
     }
 
     @PluginMethod
-    fun subscribeBarcodeBatchAdvancedOverlayListener(
+    fun subscribeBarcodeTrackingAdvancedOverlayListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE,
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE,
             callbackContext
         )
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_OFFSET_FOR_TRACKED_BARCODE,
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_OFFSET_FOR_TRACKED_BARCODE,
             callbackContext
         )
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_WIDGET_FOR_TRACKED_BARCODE,
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_WIDGET_FOR_TRACKED_BARCODE,
             callbackContext
         )
         eventEmitter.registerCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE,
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE,
             callbackContext
         )
-        barcodeBatchModule.addAdvancedOverlayListener()
+        barcodeTrackingModule.addAdvancedOverlayListener()
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchAdvancedOverlayListener(
+    fun unregisterBarcodeTrackingAdvancedOverlayListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE
         )
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_OFFSET_FOR_TRACKED_BARCODE
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_OFFSET_FOR_TRACKED_BARCODE
         )
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_WIDGET_FOR_TRACKED_BARCODE
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_WIDGET_FOR_TRACKED_BARCODE
         )
         eventEmitter.unregisterCallback(
-            FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE
+            FrameworksBarcodeTrackingAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE
         )
-        barcodeBatchModule.removeAdvancedOverlayListener()
+        barcodeTrackingModule.removeAdvancedOverlayListener()
         callbackContext.success()
     }
 
@@ -495,7 +482,7 @@ class ScanditBarcodeCapture :
             val image = getBitmapFromBase64String(data.view?.data)
 
             mainThread.runOnMainThread {
-                val view = barcodeBatchModule.getTrackedBarcodeViewFromBitmap(
+                val view = barcodeTrackingModule.getTrackedBarcodeViewFromBitmap(
                     data.trackedBarcodeId,
                     image
                 ) ?: return@runOnMainThread
@@ -505,7 +492,7 @@ class ScanditBarcodeCapture :
                     data.view?.options?.height ?: ViewGroup.LayoutParams.WRAP_CONTENT
                 )
 
-                barcodeBatchModule.setViewForTrackedBarcode(
+                barcodeTrackingModule.setViewForTrackedBarcode(
                     view,
                     data.trackedBarcodeId,
                     data.sessionFrameSequenceId
@@ -539,7 +526,7 @@ class ScanditBarcodeCapture :
     fun setOffsetForTrackedBarcode(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val payload = args.getJSONObject(0)
-            barcodeBatchModule.setOffsetForTrackedBarcode(
+            barcodeTrackingModule.setOffsetForTrackedBarcode(
                 hashMapOf(
                     "offset" to payload.getString("offset"),
                     "identifier" to payload.getInt("trackedBarcodeID"),
@@ -568,7 +555,7 @@ class ScanditBarcodeCapture :
                     argument.getLong("sessionFrameSequenceID")
                 } else null
             )
-            barcodeBatchModule.setAnchorForTrackedBarcode(payload)
+            barcodeTrackingModule.setAnchorForTrackedBarcode(payload)
 
             callbackContext.success()
         } catch (e: JSONException) {
@@ -583,7 +570,7 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeBatchModule.clearAdvancedOverlayTrackedBarcodeViews()
+        barcodeTrackingModule.clearAdvancedOverlayTrackedBarcodeViews()
         callbackContext.success()
     }
 
@@ -606,11 +593,11 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun resetBarcodeBatchSession(
+    fun resetBarcodeTrackingSession(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeBatchModule.resetSession(null)
+        barcodeTrackingModule.resetSession(null)
         callbackContext.success()
     }
 
@@ -1222,14 +1209,6 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun updateBarcodeSelectionFeedback(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeSelectionModule.updateFeedback(
-            args.defaultArgumentAsString,
-            CordovaResult(callbackContext)
-        )
-    }
-
-    @PluginMethod
     fun setTextForAimToSelectAutoHint(args: JSONArray, callbackContext: CallbackContext) {
         barcodeSelectionModule.setTextForAimToSelectAutoHint(
             args.defaultArgumentAsString,
@@ -1318,8 +1297,8 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun setBarcodeBatchModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.setModeEnabled(args.optBoolean("enabled", false))
+    fun setBarcodeTrackingModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.setModeEnabled(args.optBoolean("enabled", false))
         callbackContext.success()
     }
 
@@ -1330,29 +1309,29 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun updateBarcodeBatchAdvancedOverlay(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.updateAdvancedOverlay(
+    fun updateBarcodeTrackingAdvancedOverlay(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.updateAdvancedOverlay(
             args.defaultArgumentAsString, CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
-    fun updateBarcodeBatchBasicOverlay(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.updateBasicOverlay(
+    fun updateBarcodeTrackingBasicOverlay(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.updateBasicOverlay(
             args.defaultArgumentAsString, CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
-    fun updateBarcodeBatchMode(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.updateModeFromJson(
+    fun updateBarcodeTrackingMode(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.updateModeFromJson(
             args.defaultArgumentAsString, CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
-    fun applyBarcodeBatchModeSettings(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.applyModeSettings(
+    fun applyBarcodeTrackingModeSettings(args: JSONArray, callbackContext: CallbackContext) {
+        barcodeTrackingModule.applyModeSettings(
             args.defaultArgumentAsString, CordovaResult(callbackContext)
         )
     }
@@ -1412,6 +1391,14 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
+    fun emitSparkScanViewFeedback(args: JSONArray, callbackContext: CallbackContext) {
+        sparkScanModule.emitFeedback(
+            args.defaultArgumentAsString,
+            CordovaResult(callbackContext)
+        )
+    }
+
+    @PluginMethod
     fun registerSparkScanViewListenerEvents(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
@@ -1423,7 +1410,7 @@ class ScanditBarcodeCapture :
         )
 
         eventEmitter.registerCallback(
-            FrameworksSparkScanViewUiListener.EVENT_VIEW_STATE_CHANGED,
+            FrameworksSparkScanViewUiListener.EVENT_FAST_FIND_BUTTON_TAP,
             callbackContext
         )
 
@@ -1447,7 +1434,7 @@ class ScanditBarcodeCapture :
         )
 
         eventEmitter.unregisterCallback(
-            FrameworksSparkScanViewUiListener.EVENT_VIEW_STATE_CHANGED
+            FrameworksSparkScanViewUiListener.EVENT_FAST_FIND_BUTTON_TAP
         )
 
         eventEmitter.unregisterCallback(
@@ -1938,75 +1925,4 @@ class ScanditBarcodeCapture :
     }
 
     // Barcode Count - End
-
-    // Barcode Generator - Start
-
-    @PluginMethod
-    fun createBarcodeGenerator(args: JSONArray, callbackContext: CallbackContext) {
-        val barcodeGeneratorJson = args.optString(0)
-
-        if (barcodeGeneratorJson.isNullOrBlank()) {
-            callbackContext.error("No barcodeGeneratorJson was provided for the function.")
-            return
-        }
-        barcodeGeneratorModule.createGenerator(barcodeGeneratorJson, CordovaResult(callbackContext))
-    }
-
-    @PluginMethod
-    fun generateFromBase64EncodedData(args: JSONArray, callbackContext: CallbackContext) {
-        val dataJson = args.getJSONObject(0)
-
-        val generatorId = dataJson.getString("generatorId") ?: run {
-            callbackContext.error("No generatorId was provided for the function.")
-            return
-        }
-        val data = dataJson.getString("data") ?: run {
-            callbackContext.error("No data was provided for the function.")
-            return
-        }
-        val imageWidth = dataJson.optInt("imageWidth", -1)
-
-        barcodeGeneratorModule.generateFromBase64EncodedData(
-            generatorId,
-            data,
-            imageWidth,
-            CordovaResult(callbackContext)
-        )
-    }
-
-    @PluginMethod
-    fun generateFromString(args: JSONArray, callbackContext: CallbackContext) {
-        val dataJson = args.getJSONObject(0)
-
-        val generatorId = dataJson.getString("generatorId") ?: run {
-            callbackContext.error("No generatorId was provided for the function.")
-            return
-        }
-        val text = dataJson.getString("text") ?: run {
-            callbackContext.error("No text was provided for the function.")
-            return
-        }
-        val imageWidth = dataJson.optInt("imageWidth", -1)
-
-        barcodeGeneratorModule.generate(
-            generatorId,
-            text,
-            imageWidth,
-            CordovaResult(callbackContext)
-        )
-    }
-
-    @PluginMethod
-    fun disposeBarcodeGenerator(args: JSONArray, callbackContext: CallbackContext) {
-        val generatorId = args.optString(0)
-
-        if (generatorId.isNullOrBlank()) {
-            callbackContext.error("No generatorId was provided for the function.")
-            return
-        }
-
-        barcodeGeneratorModule.disposeGenerator(generatorId, CordovaResult(callbackContext))
-    }
-
-    // Barcode Generator - End
 }
