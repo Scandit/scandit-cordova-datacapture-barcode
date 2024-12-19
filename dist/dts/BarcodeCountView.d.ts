@@ -98,6 +98,10 @@ export declare class BarcodeCountView extends DefaultSerializeable {
     set shouldShowTorchControl(newValue: boolean);
     get torchControlPosition(): Anchor;
     set torchControlPosition(newValue: Anchor);
+    get tapToUncountEnabled(): boolean;
+    set tapToUncountEnabled(newValue: boolean);
+    get textForTapToUncountHint(): string;
+    set textForTapToUncountHint(newValue: string);
     private _barcodeCount;
     private _context;
     private viewProxy;
@@ -147,6 +151,8 @@ export declare class BarcodeCountView extends DefaultSerializeable {
     private _shouldShowTorchControl;
     private _torchControlPosition;
     private _toolbarSettings;
+    private _tapToUncountEnabled;
+    private _textForTapToUncountHint;
     private htmlElement;
     private _htmlElementState;
     private set htmlElementState(value);
