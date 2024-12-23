@@ -88,7 +88,7 @@ class BarcodeFindViewHandler(
         }
     }
 
-    fun disposeCurrentView() {
+    private fun disposeCurrentView() {
         val view = barcodeFindViewContainer ?: return
         removeBarcodeFindViewContainer(view)
     }
