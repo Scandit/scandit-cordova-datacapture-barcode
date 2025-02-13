@@ -11,5 +11,4 @@ export declare class NativeBarcodeSelectionProxy extends BaseNativeProxy impleme
     setModeEnabledState(enabled: boolean): void;
     updateBarcodeSelectionMode(modeJson: string): Promise<void>;
     applyBarcodeSelectionModeSettings(newSettingsJson: string): Promise<void>;
-    updateFeedback(feedbackJson: string): Promise<void>;
 }
