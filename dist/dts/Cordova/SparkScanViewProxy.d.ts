@@ -8,7 +8,6 @@ export declare class NativeSparkScanViewProxy extends BaseNativeProxy implements
     disposeSparkScanView(): Promise<void>;
     showSparkScanView(): Promise<void>;
     hideSparkScanView(): Promise<void>;
-    emitSparkScanViewFeedback(feedbackJson: string): Promise<void>;
     registerSparkScanViewListenerEvents(): void;
     unregisterSparkScanViewListenerEvents(): Promise<void>;
     stopSparkScanViewScanning(): Promise<void>;

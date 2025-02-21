@@ -1,9 +1,9 @@
 import { BarcodeSelectionListenerProxy } from 'scandit-datacapture-frameworks-barcode';
-import { BaseNativeProxy } from 'scandit-datacapture-frameworks-core';
+import { BaseNativeProxy, NativeCallResult } from 'scandit-datacapture-frameworks-core';
 export declare class NativeBarcodeSelectionListenerProxy extends BaseNativeProxy implements BarcodeSelectionListenerProxy {
     private static get cordovaExec();
     isModeEnabled: () => boolean;
-    getCount(selectionIdentifier: string): Promise<number>;
+    getCount(selectionIdentifier: string): Promise<NativeCallResult>;
     resetSession(): Promise<void>;
     registerListenerForEvents(): void;
     finishDidUpdateSelectionCallback(isEnabled: boolean): void;

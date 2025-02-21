@@ -12,6 +12,7 @@ export declare class NativeBarcodeFindViewProxy extends BaseNativeProxy implemen
     pauseSearching(): Promise<void>;
     findNodeHandle(_view?: BarcodeFindView | undefined): number | null;
     createView(_id: number | null, barcodeFindViewJson: string): Promise<void>;
+    removeView(): Promise<void>;
     updateView(barcodeFindViewJson: string): Promise<void>;
     subscribeBarcodeFindViewListener(): Promise<void>;
     unsubscribeBarcodeFindViewListener(): Promise<void>;

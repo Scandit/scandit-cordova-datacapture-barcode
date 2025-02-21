@@ -1,6 +1,6 @@
-var barcode = require('scandit-cordova-datacapture-barcode.Barcode');
-var scanditCordovaDatacaptureCore = require('scandit-cordova-datacapture-core.Core');
-var scanditDatacaptureFrameworksCore = require('scandit-cordova-datacapture-core.Core');
+var barcode = cordova.require('scandit-cordova-datacapture-barcode.Barcode');
+var scanditCordovaDatacaptureCore = cordova.require('scandit-cordova-datacapture-core.Core');
+var scanditDatacaptureFrameworksCore = cordova.require('scandit-cordova-datacapture-core.Core');
 
 class NativeBarcodeCaptureListenerProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
     constructor() {
@@ -60,14 +60,7 @@ class NativeBarcodeCaptureListenerProxy extends scanditDatacaptureFrameworksCore
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.BarcodeCaptureListenerEvents.didScan:
-                this.eventEmitter.emit(barcode.BarcodeCaptureListenerEvents.didScan, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeCaptureListenerEvents.didUpdateSession:
-                this.eventEmitter.emit(barcode.BarcodeCaptureListenerEvents.didUpdateSession, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
@@ -110,14 +103,7 @@ class NativeBarcodeSelectionListenerProxy extends scanditDatacaptureFrameworksCo
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.BarcodeSelectionListenerEvents.didUpdateSelection:
-                this.eventEmitter.emit(barcode.BarcodeSelectionListenerEvents.didUpdateSelection, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeSelectionListenerEvents.didUpdateSession:
-                this.eventEmitter.emit(barcode.BarcodeSelectionListenerEvents.didUpdateSession, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
@@ -167,6 +153,11 @@ class NativeBarcodeSelectionProxy extends scanditDatacaptureFrameworksCore.BaseN
     applyBarcodeSelectionModeSettings(newSettingsJson) {
         return new Promise((resolve, reject) => {
             NativeBarcodeSelectionProxy.cordovaExec(resolve, reject, CordovaFunction.ApplyBarcodeSelectionModeSettings, [newSettingsJson]);
+        });
+    }
+    updateFeedback(feedbackJson) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeSelectionProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeSelectionFeedback, [feedbackJson]);
         });
     }
 }
@@ -229,19 +220,12 @@ class NativeBarcodeSelectionOverlayProxy extends scanditDatacaptureFrameworksCor
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeSelectionBrushProviderEvents.brushForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeSelectionBrushProviderEvents.brushForAimedBarcode, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
 
-class NativeBarcodeTrackingListenerProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
+class NativeBarcodeBatchListenerProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
     constructor() {
         super(...arguments);
         this.isModeEnabled = () => false;
@@ -251,59 +235,55 @@ class NativeBarcodeTrackingListenerProxy extends scanditDatacaptureFrameworksCor
     }
     resetSession() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingListenerProxy.cordovaExec(resolve, reject, CordovaFunction.ResetBarcodeTrackingSession, null);
+            NativeBarcodeBatchListenerProxy.cordovaExec(resolve, reject, CordovaFunction.ResetBarcodeBatchSession, null);
         });
     }
     registerListenerForEvents() {
-        NativeBarcodeTrackingListenerProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeTrackingListener, null);
+        NativeBarcodeBatchListenerProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeBatchListener, null);
     }
     unregisterListenerForEvents() {
-        NativeBarcodeTrackingListenerProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.UnregisterBarcodeTrackingListener, null);
+        NativeBarcodeBatchListenerProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.UnregisterBarcodeBatchListener, null);
     }
     setModeEnabledState(enabled) {
-        NativeBarcodeTrackingListenerProxy.cordovaExec(null, null, CordovaFunction.SetBarcodeTrackingModeEnabledState, [{ 'enabled': enabled }]);
+        NativeBarcodeBatchListenerProxy.cordovaExec(null, null, CordovaFunction.SetBarcodeBatchModeEnabledState, [{ 'enabled': enabled }]);
     }
-    updateBarcodeTrackingMode(modeJson) {
+    updateBarcodeBatchMode(modeJson) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingListenerProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeTrackingMode, [modeJson]);
+            NativeBarcodeBatchListenerProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeBatchMode, [modeJson]);
         });
     }
-    applyBarcodeTrackingModeSettings(newSettingsJson) {
+    applyBarcodeBatchModeSettings(newSettingsJson) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingListenerProxy.cordovaExec(resolve, reject, CordovaFunction.ApplyBarcodeTrackingModeSettings, [newSettingsJson]);
+            NativeBarcodeBatchListenerProxy.cordovaExec(resolve, reject, CordovaFunction.ApplyBarcodeBatchModeSettings, [newSettingsJson]);
         });
     }
     finishDidUpdateSessionCallback(enabled) {
-        NativeBarcodeTrackingListenerProxy.cordovaExec(null, null, CordovaFunction.FinishBarcodeTrackingDidUpdateSession, [{ 'enabled': enabled }]);
+        NativeBarcodeBatchListenerProxy.cordovaExec(null, null, CordovaFunction.FinishBarcodeBatchDidUpdateSession, [{ 'enabled': enabled }]);
     }
     notifyListeners(event) {
         const done = () => {
-            this.eventEmitter.emit(barcode.BarcodeTrackingListenerEvents.inCallback, false);
+            this.eventEmitter.emit(barcode.BarcodeBatchListenerEvents.inCallback, false);
             return { enabled: this.isModeEnabled() };
         };
-        this.eventEmitter.emit(barcode.BarcodeTrackingListenerEvents.inCallback, true);
+        this.eventEmitter.emit(barcode.BarcodeBatchListenerEvents.inCallback, true);
         if (!event) {
             // The event could be undefined/null in case the plugin result did not pass a "message",
             // which could happen e.g. in case of "ok" results, which could signal e.g. successful
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.BarcodeTrackingListenerEvents.didUpdateSession:
-                this.eventEmitter.emit(barcode.BarcodeTrackingListenerEvents.didUpdateSession, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
 
-class NativeBarcodeTrackingBasicOverlayProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
+class NativeBarcodeBatchBasicOverlayProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
     static get cordovaExec() {
         return Cordova.exec;
     }
     setBrushForTrackedBarcode(brushJson, trackedBarcodeIdentifier, sessionFrameSequenceID) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetBrushForTrackedBarcode, [{
+            NativeBarcodeBatchBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetBrushForTrackedBarcode, [{
                     brush: brushJson,
                     sessionFrameSequenceID: sessionFrameSequenceID,
                     trackedBarcodeID: trackedBarcodeIdentifier,
@@ -312,20 +292,20 @@ class NativeBarcodeTrackingBasicOverlayProxy extends scanditDatacaptureFramework
     }
     clearTrackedBarcodeBrushes() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.ClearTrackedBarcodeBrushes, null);
+            NativeBarcodeBatchBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.ClearTrackedBarcodeBrushes, null);
         });
     }
     registerListenerForBasicOverlayEvents() {
-        NativeBarcodeTrackingBasicOverlayProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeTrackingBasicOverlayListener, null);
+        NativeBarcodeBatchBasicOverlayProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeBatchBasicOverlayListener, null);
     }
-    updateBarcodeTrackingBasicOverlay(overlayJson) {
+    updateBarcodeBatchBasicOverlay(overlayJson) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeTrackingBasicOverlay, [overlayJson]);
+            NativeBarcodeBatchBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeBatchBasicOverlay, [overlayJson]);
         });
     }
     unregisterListenerForBasicOverlayEvents() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UnregisterBarcodeTrackingBasicOverlayListener, null);
+            NativeBarcodeBatchBasicOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UnregisterBarcodeBatchBasicOverlayListener, null);
         });
     }
     notifyListeners(event) {
@@ -335,19 +315,12 @@ class NativeBarcodeTrackingBasicOverlayProxy extends scanditDatacaptureFramework
             // listener subscriptions.
             return null;
         }
-        switch (event.name) {
-            case barcode.BarcodeTrackingBasicOverlayListenerEvents.brushForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingBasicOverlayListenerEvents.brushForTrackedBarcode, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeTrackingBasicOverlayListenerEvents.didTapTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingBasicOverlayListenerEvents.didTapTrackedBarcode, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return null;
     }
 }
 
-class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
+class NativeBarcodeBatchAdvancedOverlayProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
     static get cordovaExec() {
         return Cordova.exec;
     }
@@ -356,7 +329,7 @@ class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFramew
     }
     setViewForTrackedBarcode(viewJson, trackedBarcodeIdentifier, sessionFrameSequenceID) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetViewForTrackedBarcode, [{
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetViewForTrackedBarcode, [{
                     view: viewJson,
                     sessionFrameSequenceID: sessionFrameSequenceID === null || sessionFrameSequenceID === void 0 ? void 0 : sessionFrameSequenceID.toString(),
                     trackedBarcodeID: trackedBarcodeIdentifier.toString(),
@@ -365,7 +338,7 @@ class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFramew
     }
     setAnchorForTrackedBarcode(anchor, trackedBarcodeIdentifier, sessionFrameSequenceID) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetAnchorForTrackedBarcode, [{
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetAnchorForTrackedBarcode, [{
                     anchor,
                     sessionFrameSequenceID: sessionFrameSequenceID === null || sessionFrameSequenceID === void 0 ? void 0 : sessionFrameSequenceID.toString(),
                     trackedBarcodeID: trackedBarcodeIdentifier.toString(),
@@ -374,7 +347,7 @@ class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFramew
     }
     setOffsetForTrackedBarcode(offsetJson, trackedBarcodeIdentifier, sessionFrameSequenceID) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetOffsetForTrackedBarcode, [{
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.SetOffsetForTrackedBarcode, [{
                     offset: offsetJson,
                     sessionFrameSequenceID: sessionFrameSequenceID === null || sessionFrameSequenceID === void 0 ? void 0 : sessionFrameSequenceID.toString(),
                     trackedBarcodeID: trackedBarcodeIdentifier.toString(),
@@ -383,20 +356,20 @@ class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFramew
     }
     clearTrackedBarcodeViews() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.ClearTrackedBarcodeViews, null);
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.ClearTrackedBarcodeViews, null);
         });
     }
     registerListenerForAdvancedOverlayEvents() {
-        NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeTrackingAdvancedOverlayListener, null);
+        NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.SubscribeBarcodeBatchAdvancedOverlayListener, null);
     }
-    updateBarcodeTrackingAdvancedOverlay(overlayJson) {
+    updateBarcodeBatchAdvancedOverlay(overlayJson) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeTrackingAdvancedOverlay, [overlayJson]);
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeBatchAdvancedOverlay, [overlayJson]);
         });
     }
     unregisterListenerForAdvancedOverlayEvents() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeTrackingAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UnregisterBarcodeTrackingAdvancedOverlayListener, null);
+            NativeBarcodeBatchAdvancedOverlayProxy.cordovaExec(resolve, reject, CordovaFunction.UnregisterBarcodeBatchAdvancedOverlayListener, null);
         });
     }
     getJSONStringForView(view) {
@@ -409,20 +382,7 @@ class NativeBarcodeTrackingAdvancedOverlayProxy extends scanditDatacaptureFramew
             // listener subscriptions.
             return null;
         }
-        switch (event.name) {
-            case barcode.BarcodeTrackingAdvancedOverlayListenerEvents.viewForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingAdvancedOverlayListenerEvents.viewForTrackedBarcode, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeTrackingAdvancedOverlayListenerEvents.anchorForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingAdvancedOverlayListenerEvents.anchorForTrackedBarcode, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeTrackingAdvancedOverlayListenerEvents.offsetForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingAdvancedOverlayListenerEvents.offsetForTrackedBarcode, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeTrackingAdvancedOverlayListenerEvents.didTapViewForTrackedBarcode:
-                this.eventEmitter.emit(barcode.BarcodeTrackingAdvancedOverlayListenerEvents.didTapViewForTrackedBarcode, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return null;
     }
 }
@@ -488,7 +448,7 @@ class NativeBarcodePickProductProxy extends scanditDatacaptureFrameworksCore.Bas
         });
     }
     productIdentifierForItemsListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickEvents.OnProductIdentifierForItems, JSON.stringify(event));
+        this.eventEmitter.emit(barcode.BarcodePickEvents.OnProductIdentifierForItems, event.data);
     }
 }
 
@@ -523,6 +483,11 @@ class NativeBarcodePickViewProxy extends scanditDatacaptureFrameworksCore.BaseNa
     createView(_, json) {
         return new Promise((resolve, reject) => {
             NativeBarcodePickViewProxy.cordovaExec(resolve, reject, CordovaFunction.CreatePickView, [json]);
+        });
+    }
+    removeView() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodePickViewProxy.cordovaExec(resolve, reject, CordovaFunction.RemovePickView, null);
         });
     }
     viewStart() {
@@ -620,25 +585,25 @@ class NativeBarcodePickViewProxy extends scanditDatacaptureFrameworksCore.BaseNa
         });
     }
     didPickItemListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickEvents.DidPick, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickEvents.DidPick, event.data);
     }
     didUnpickItemListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickEvents.DidUnpick, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickEvents.DidUnpick, event.data);
     }
     viewUiListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickViewUiListenerEvents.DidTapFinishButton, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickViewUiListenerEvents.DidTapFinishButton, event.data);
     }
     didStartScanningListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidStartScanning, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidStartScanning, event.data);
     }
     didFreezeScanningListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidFreezeScanning, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidFreezeScanning, event.data);
     }
     didPauseScanningListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidPauseScanning, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidPauseScanning, event.data);
     }
     didStopScanningListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidStopScanning, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickViewListenerEvents.DidStopScanning, event.data);
     }
 }
 
@@ -693,14 +658,7 @@ class NativeSparkScanListenerProxy extends scanditDatacaptureFrameworksCore.Base
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.SparkScanListenerEvents.didScan:
-                this.eventEmitter.emit(barcode.SparkScanListenerEvents.didScan, JSON.stringify(event.argument));
-                break;
-            case barcode.SparkScanListenerEvents.didUpdateSession:
-                this.eventEmitter.emit(barcode.SparkScanListenerEvents.didUpdateSession, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
@@ -737,11 +695,6 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
     hideSparkScanView() {
         return new Promise((resolve, reject) => {
             NativeSparkScanViewProxy.cordovaExec(resolve, reject, CordovaFunction.HideSparkScanView, null);
-        });
-    }
-    emitSparkScanViewFeedback(feedbackJson) {
-        return new Promise((resolve, reject) => {
-            NativeSparkScanViewProxy.cordovaExec(resolve, reject, CordovaFunction.EmitSparkScanViewFeedback, [feedbackJson]);
         });
     }
     registerSparkScanViewListenerEvents() {
@@ -787,11 +740,11 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
             case barcode.SparkScanViewEvents.barcodeCountButtonTapped:
                 this.eventEmitter.emit(barcode.SparkScanViewEvents.barcodeCountButtonTapped);
                 break;
-            case barcode.SparkScanViewEvents.fastFindButtonTapped:
-                this.eventEmitter.emit(barcode.SparkScanViewEvents.fastFindButtonTapped);
-                break;
             case barcode.SparkScanViewEvents.barcodeFindButtonTapped:
                 this.eventEmitter.emit(barcode.SparkScanViewEvents.barcodeFindButtonTapped);
+                break;
+            case barcode.SparkScanViewEvents.didChangeViewState:
+                this.eventEmitter.emit(barcode.SparkScanViewEvents.didChangeViewState, event.state);
                 break;
         }
         return done();
@@ -822,7 +775,7 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
         if (event.name !== barcode.SparkScanFeedbackDelegateEvents.feedbackForBarcode) {
             return done();
         }
-        this.eventEmitter.emit(barcode.SparkScanFeedbackDelegateEvents.feedbackForBarcode, event.argument.barcode);
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
 }
@@ -854,10 +807,10 @@ class NativeBarcodePickListenerProxy extends scanditDatacaptureFrameworksCore.Ba
         });
     }
     didCompleteScanningSessionListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickListenerEvents.DidCompleteScanningSession, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickListenerEvents.DidCompleteScanningSession, event.data);
     }
     didUpdateScanningSessionListenerHandler(event) {
-        this.eventEmitter.emit(barcode.BarcodePickListenerEvents.DidUpdateScanningSession, JSON.stringify(event.argument));
+        this.eventEmitter.emit(barcode.BarcodePickListenerEvents.DidUpdateScanningSession, event.data);
     }
 }
 
@@ -938,21 +891,7 @@ class NativeBarcodeFindListenerProxy extends scanditDatacaptureFrameworksCore.Ba
             // listener subscriptions.
             return done();
         }
-        event = Object.assign(Object.assign(Object.assign({}, event), event.argument), { argument: undefined });
-        switch (event.name) {
-            case barcode.BarcodeFindListenerEvents.onSearchStartedEvent:
-                this.eventEmitter.emit(barcode.BarcodeFindListenerEvents.onSearchStartedEvent, JSON.stringify(event));
-                break;
-            case barcode.BarcodeFindListenerEvents.onSearchPausedEvent:
-                this.eventEmitter.emit(barcode.BarcodeFindListenerEvents.onSearchPausedEvent, JSON.stringify(event));
-                break;
-            case barcode.BarcodeFindListenerEvents.onSearchStoppedEvent:
-                this.eventEmitter.emit(barcode.BarcodeFindListenerEvents.onSearchStoppedEvent, JSON.stringify(event));
-                break;
-            case barcode.BarcodeFindListenerEvents.onTransformBarcodeData:
-                this.eventEmitter.emit(barcode.BarcodeFindListenerEvents.onTransformBarcodeData, JSON.stringify(event));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
     }
 }
 
@@ -1004,6 +943,11 @@ class NativeBarcodeFindViewProxy extends scanditDatacaptureFrameworksCore.BaseNa
             NativeBarcodeFindViewProxy.cordovaExec(resolve, reject, CordovaFunction.CreateFindView, [barcodeFindViewJson]);
         });
     }
+    removeView() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeFindViewProxy.cordovaExec(resolve, reject, CordovaFunction.RemoveFindView, [null]);
+        });
+    }
     updateView(barcodeFindViewJson) {
         return new Promise((resolve, reject) => {
             NativeBarcodeFindViewProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateFindView, [barcodeFindViewJson]);
@@ -1031,12 +975,7 @@ class NativeBarcodeFindViewProxy extends scanditDatacaptureFrameworksCore.BaseNa
             // listener subscriptions.
             return done();
         }
-        event = Object.assign(Object.assign(Object.assign({}, event), event.argument), { argument: undefined });
-        switch (event.name) {
-            case barcode.BarcodeFindViewEvents.onFinishButtonTappedEventName:
-                this.eventEmitter.emit(barcode.BarcodeFindViewEvents.onFinishButtonTappedEventName, JSON.stringify(event));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
     }
 }
 
@@ -1104,14 +1043,7 @@ class NativeBarcodeCountListenerProxy extends scanditDatacaptureFrameworksCore.B
             // listener subscriptions.
             return done();
         }
-        switch (event.name) {
-            case barcode.BarcodeCountListenerEvents.didScan:
-                this.eventEmitter.emit(barcode.BarcodeCountListenerEvents.didScan, JSON.stringify(event.argument));
-                break;
-            case barcode.BarcodeCountListenerEvents.didListSessionUpdate:
-                this.eventEmitter.emit(barcode.BarcodeCountListenerEvents.didListSessionUpdate, JSON.stringify(event.argument));
-                break;
-        }
+        this.eventEmitter.emit(event.name, event.data);
         return done();
     }
     emitInCallback(enabled) {
@@ -1125,12 +1057,12 @@ class NativeBarcodeCountSessionProxy {
     }
     getSpatialMap() {
         return new Promise((resolve, reject) => {
-            NativeBarcodeCountSessionProxy.cordovaExec((result) => resolve(result.data), reject, CordovaFunction.GetSpatialMap, null);
+            NativeBarcodeCountSessionProxy.cordovaExec(resolve, reject, CordovaFunction.GetSpatialMap, null);
         });
     }
     getSpatialMapWithHints(expectedNumberOfRows, expectedNumberOfColumns) {
         return new Promise((resolve, reject) => {
-            NativeBarcodeCountSessionProxy.cordovaExec((result) => resolve(result.data), reject, CordovaFunction.GetSpatialMapWithHints, [{ expectedNumberOfRows: expectedNumberOfRows, expectedNumberOfColumns: expectedNumberOfColumns }]);
+            NativeBarcodeCountSessionProxy.cordovaExec(resolve, reject, CordovaFunction.GetSpatialMapWithHints, [{ expectedNumberOfRows: expectedNumberOfRows, expectedNumberOfColumns: expectedNumberOfColumns }]);
         });
     }
     resetSession() {
@@ -1140,14 +1072,164 @@ class NativeBarcodeCountSessionProxy {
     }
 }
 
+class NativeBarcodeGeneratorProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
+    static get cordovaExec() {
+        return Cordova.exec;
+    }
+    create(barcodeGeneratorJson) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeGeneratorProxy.cordovaExec(resolve, reject, CordovaFunction.CreateBarcodeGenerator, [barcodeGeneratorJson]);
+        });
+    }
+    dispose(generatorId) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeGeneratorProxy.cordovaExec(resolve, reject, CordovaFunction.DisposeBarcodeGenerator, [generatorId]);
+        });
+    }
+    generateFromBase64EncodedData(generatorId, data, imageWidth) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeGeneratorProxy.cordovaExec(resolve, reject, CordovaFunction.GenerateFromBase64EncodedData, [{ 'generatorId': generatorId, 'data': data, 'imageWidth': imageWidth }]);
+        });
+    }
+    generate(generatorId, text, imageWidth) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeGeneratorProxy.cordovaExec(resolve, reject, CordovaFunction.GenerateFromString, [{ 'generatorId': generatorId, 'text': text, 'imageWidth': imageWidth }]);
+        });
+    }
+}
+
+class NativeBarcodeCountViewProxy extends scanditDatacaptureFrameworksCore.BaseNativeProxy {
+    static get cordovaExec() {
+        return Cordova.exec;
+    }
+    createView(_nativeView, viewJson) {
+        const json = JSON.parse(viewJson);
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.CreateBarcodeCountView, [json]);
+        });
+    }
+    removeView() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.RemoveBarcodeCountView, null);
+        });
+    }
+    updateView(viewJson) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeCountView, [viewJson]);
+        });
+    }
+    clearHighlights() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.ClearBarcodeCountViewHighlights, null);
+        });
+    }
+    finishBrushForRecognizedBarcodeCallback(_nativeView, brushJson, trackedBarcodeIdentifier) {
+        const payload = {
+            brush: brushJson,
+            trackedBarcodeId: trackedBarcodeIdentifier
+        };
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.FinishBarcodeCountViewListenerBrushForRecognizedBarcode, [payload]);
+        });
+    }
+    finishBrushForRecognizedBarcodeNotInListCallback(_nativeView, brushJson, trackedBarcodeIdentifier) {
+        const payload = {
+            brush: brushJson,
+            trackedBarcodeId: trackedBarcodeIdentifier
+        };
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.FinishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList, [payload]);
+        });
+    }
+    finishBrushForAcceptedBarcodeCallback(_nativeView, brushJson, trackedBarcodeIdentifier) {
+        const payload = {
+            brush: brushJson,
+            trackedBarcodeId: trackedBarcodeIdentifier
+        };
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.FinishBarcodeCountViewListenerOnBrushAcceptedBarcode, [payload]);
+        });
+    }
+    finishBrushForRejectedBarcodeCallback(_nativeView, brushJson, trackedBarcodeIdentifier) {
+        const payload = {
+            brush: brushJson,
+            trackedBarcodeId: trackedBarcodeIdentifier
+        };
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.FinishBarcodeCountViewListenerOnBrushRejectedBarcode, [payload]);
+        });
+    }
+    show() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.ShowBarcodeCountView, null);
+        });
+    }
+    hide() {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.HideBarcodeCountView, null);
+        });
+    }
+    registerBarcodeCountViewListener() {
+        NativeBarcodeCountViewProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.RegisterBarcodeCountViewListener, null);
+        return Promise.resolve();
+    }
+    registerBarcodeCountViewUiListener() {
+        NativeBarcodeCountViewProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.RegisterBarcodeCountViewUiListener, null);
+        return Promise.resolve();
+    }
+    unregisterBarcodeCountViewListener() {
+        NativeBarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.UnregisterBarcodeCountViewListener, null);
+        return Promise.resolve();
+    }
+    unregisterBarcodeCountViewUiListener() {
+        NativeBarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.UnregisterBarcodeCountViewUiListener, null);
+        return Promise.resolve();
+    }
+    setPositionAndSize(top, left, width, height, shouldBeUnderWebView) {
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.SetBarcodeCountViewPositionAndSize, [{ top: top, left: left, width: width, height: height, shouldBeUnderWebView: shouldBeUnderWebView }]);
+        });
+    }
+    // This is being performed on the registerBarcodeCountViewUiListener and registerBarcodeCountViewListener
+    subscribeListeners() {
+        return Promise.resolve(undefined);
+    }
+    // This is being performed on the unregisterBarcodeCountViewUiListener and unregisterBarcodeCountViewListener
+    unsubscribeListeners() {
+        return Promise.resolve(undefined);
+    }
+    enableHardwareTrigger(hardwareTriggerKeyCode) {
+        // Hardware trigger is only supported on iOS
+        if (window.cordova.platformId === 'ios') {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            NativeBarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.BarcodeCountViewEnableHardwareTrigger, [hardwareTriggerKeyCode]);
+        });
+    }
+    notifyListeners(event) {
+        const done = () => {
+            return {};
+        };
+        if (!event) {
+            // The event could be undefined/null in case the plugin result did not pass a "message",
+            // which could happen e.g. in case of "ok" results, which could signal e.g. successful
+            // listener subscriptions.
+            return done();
+        }
+        this.eventEmitter.emit(event.name, event.data);
+        return done();
+    }
+}
+
 function initBarcodeProxies() {
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeCaptureListenerProxy', () => new NativeBarcodeCaptureListenerProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeSelectionListenerProxy', () => new NativeBarcodeSelectionListenerProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeSelectionProxy', () => new NativeBarcodeSelectionProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeSelectionOverlayProxy', () => new NativeBarcodeSelectionOverlayProxy());
-    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeTrackingListenerProxy', () => new NativeBarcodeTrackingListenerProxy());
-    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeTrackingBasicOverlayProxy', () => new NativeBarcodeTrackingBasicOverlayProxy());
-    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeTrackingAdvancedOverlayProxy', () => new NativeBarcodeTrackingAdvancedOverlayProxy());
+    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeBatchListenerProxy', () => new NativeBarcodeBatchListenerProxy());
+    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeBatchBasicOverlayProxy', () => new NativeBarcodeBatchBasicOverlayProxy());
+    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeBatchAdvancedOverlayProxy', () => new NativeBarcodeBatchAdvancedOverlayProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodePickProductProxy', () => new NativeBarcodePickProductProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodePickViewProxy', () => new NativeBarcodePickViewProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('SparkScanListenerProxy', () => new NativeSparkScanListenerProxy());
@@ -1156,7 +1238,9 @@ function initBarcodeProxies() {
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeFindProxy', () => new NativeBarcodeFindListenerProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeFindViewProxy', () => new NativeBarcodeFindViewProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeCountListenerProxy', () => new NativeBarcodeCountListenerProxy());
+    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeCountViewProxy', () => new NativeBarcodeCountViewProxy());
     scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeCountSessionProxy', () => new NativeBarcodeCountSessionProxy());
+    scanditDatacaptureFrameworksCore.FactoryMaker.bindLazyInstance('BarcodeGeneratorProxy', () => new NativeBarcodeGeneratorProxy());
 }
 
 // tslint:disable-next-line:variable-name
@@ -1171,7 +1255,7 @@ function getDefaults() {
             barcode.loadBarcodeDefaults(defaultsJSON);
             barcode.loadBarcodeCaptureDefaults(defaultsJSON.BarcodeCapture);
             barcode.loadBarcodeSelectionDefaults(defaultsJSON.BarcodeSelection);
-            barcode.loadBarcodeTrackingDefaults(defaultsJSON.BarcodeTracking);
+            barcode.loadBarcodeBatchDefaults(defaultsJSON.BarcodeBatch);
             barcode.loadBarcodePickDefaults(defaultsJSON.BarcodePick);
             barcode.loadSparkScanDefaults(defaultsJSON.SparkScan);
             barcode.loadBarcodeFindDefaults(defaultsJSON.BarcodeFind);
@@ -1208,6 +1292,7 @@ var CordovaFunction;
     CordovaFunction["UpdateBarcodeSelectionBasicOverlay"] = "updateBarcodeSelectionBasicOverlay";
     CordovaFunction["UpdateBarcodeSelectionMode"] = "updateBarcodeSelectionMode";
     CordovaFunction["ApplyBarcodeSelectionModeSettings"] = "applyBarcodeSelectionModeSettings";
+    CordovaFunction["UpdateBarcodeSelectionFeedback"] = "updateBarcodeSelectionFeedback";
     CordovaFunction["UpdateBarcodeCaptureOverlay"] = "updateBarcodeCaptureOverlay";
     CordovaFunction["UpdateBarcodeCaptureMode"] = "updateBarcodeCaptureMode";
     CordovaFunction["ApplyBarcodeCaptureModeSettings"] = "applyBarcodeCaptureModeSettings";
@@ -1224,21 +1309,22 @@ var CordovaFunction;
     CordovaFunction["ClearTrackedBarcodeViews"] = "clearTrackedBarcodeViews";
     CordovaFunction["SetBrushForTrackedBarcode"] = "setBrushForTrackedBarcode";
     CordovaFunction["ClearTrackedBarcodeBrushes"] = "clearTrackedBarcodeBrushes";
-    CordovaFunction["SetBarcodeTrackingModeEnabledState"] = "setBarcodeTrackingModeEnabledState";
-    CordovaFunction["SubscribeBarcodeTrackingListener"] = "subscribeBarcodeTrackingListener";
-    CordovaFunction["UnregisterBarcodeTrackingListener"] = "unregisterBarcodeTrackingListener";
-    CordovaFunction["SubscribeBarcodeTrackingAdvancedOverlayListener"] = "subscribeBarcodeTrackingAdvancedOverlayListener";
-    CordovaFunction["SubscribeBarcodeTrackingBasicOverlayListener"] = "subscribeBarcodeTrackingBasicOverlayListener";
-    CordovaFunction["ResetBarcodeTrackingSession"] = "resetBarcodeTrackingSession";
-    CordovaFunction["UpdateBarcodeTrackingAdvancedOverlay"] = "updateBarcodeTrackingAdvancedOverlay";
-    CordovaFunction["UpdateBarcodeTrackingBasicOverlay"] = "updateBarcodeTrackingBasicOverlay";
-    CordovaFunction["UpdateBarcodeTrackingMode"] = "updateBarcodeTrackingMode";
-    CordovaFunction["ApplyBarcodeTrackingModeSettings"] = "applyBarcodeTrackingModeSettings";
-    CordovaFunction["FinishBarcodeTrackingDidUpdateSession"] = "finishBarcodeTrackingDidUpdateSession";
-    CordovaFunction["FinishBarcodeTrackingBrushForTrackedBarcode"] = "finishBarcodeTrackingBrushForTrackedBarcode";
-    CordovaFunction["UnregisterBarcodeTrackingAdvancedOverlayListener"] = "unregisterBarcodeTrackingAdvancedOverlayListener";
-    CordovaFunction["UnregisterBarcodeTrackingBasicOverlayListener"] = "unregisterBarcodeTrackingBasicOverlayListener";
+    CordovaFunction["SetBarcodeBatchModeEnabledState"] = "setBarcodeBatchModeEnabledState";
+    CordovaFunction["SubscribeBarcodeBatchListener"] = "subscribeBarcodeBatchListener";
+    CordovaFunction["UnregisterBarcodeBatchListener"] = "unregisterBarcodeBatchListener";
+    CordovaFunction["SubscribeBarcodeBatchAdvancedOverlayListener"] = "subscribeBarcodeBatchAdvancedOverlayListener";
+    CordovaFunction["SubscribeBarcodeBatchBasicOverlayListener"] = "subscribeBarcodeBatchBasicOverlayListener";
+    CordovaFunction["ResetBarcodeBatchSession"] = "resetBarcodeBatchSession";
+    CordovaFunction["UpdateBarcodeBatchAdvancedOverlay"] = "updateBarcodeBatchAdvancedOverlay";
+    CordovaFunction["UpdateBarcodeBatchBasicOverlay"] = "updateBarcodeBatchBasicOverlay";
+    CordovaFunction["UpdateBarcodeBatchMode"] = "updateBarcodeBatchMode";
+    CordovaFunction["ApplyBarcodeBatchModeSettings"] = "applyBarcodeBatchModeSettings";
+    CordovaFunction["FinishBarcodeBatchDidUpdateSession"] = "finishBarcodeBatchDidUpdateSession";
+    CordovaFunction["FinishBarcodeBatchBrushForTrackedBarcode"] = "finishBarcodeBatchBrushForTrackedBarcode";
+    CordovaFunction["UnregisterBarcodeBatchAdvancedOverlayListener"] = "unregisterBarcodeBatchAdvancedOverlayListener";
+    CordovaFunction["UnregisterBarcodeBatchBasicOverlayListener"] = "unregisterBarcodeBatchBasicOverlayListener";
     CordovaFunction["CreatePickView"] = "createPickView";
+    CordovaFunction["RemovePickView"] = "removePickView";
     CordovaFunction["PickViewStart"] = "viewStart";
     CordovaFunction["PickViewStop"] = "viewStop";
     CordovaFunction["PickViewFreeze"] = "viewFreeze";
@@ -1304,6 +1390,7 @@ var CordovaFunction;
     CordovaFunction["BarcodeFindViewPauseSearching"] = "barcodeFindViewPauseSearching";
     CordovaFunction["BarcodeFindViewStopSearching"] = "barcodeFindViewStopSearching";
     CordovaFunction["CreateFindView"] = "createFindView";
+    CordovaFunction["RemoveFindView"] = "removeFindView";
     CordovaFunction["UpdateFindView"] = "updateFindView";
     CordovaFunction["RegisterBarcodeFindViewListener"] = "registerBarcodeFindViewListener";
     CordovaFunction["UnregisterBarcodeFindViewListener"] = "unregisterBarcodeFindViewListener";
@@ -1323,6 +1410,7 @@ var CordovaFunction;
     CordovaFunction["ResetBarcodeCountSession"] = "resetBarcodeCountSession";
     CordovaFunction["UpdateBarcodeCountView"] = "updateBarcodeCountView";
     CordovaFunction["CreateBarcodeCountView"] = "createBarcodeCountView";
+    CordovaFunction["RemoveBarcodeCountView"] = "removeBarcodeCountView";
     CordovaFunction["RegisterBarcodeCountViewUiListener"] = "registerBarcodeCountViewUiListener";
     CordovaFunction["UnregisterBarcodeCountViewUiListener"] = "unregisterBarcodeCountViewUiListener";
     CordovaFunction["RegisterBarcodeCountViewListener"] = "registerBarcodeCountViewListener";
@@ -1334,6 +1422,13 @@ var CordovaFunction;
     CordovaFunction["FinishBarcodeCountViewListenerBrushForRecognizedBarcode"] = "finishBarcodeCountViewListenerBrushForRecognizedBarcode";
     CordovaFunction["FinishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList"] = "finishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList";
     CordovaFunction["FinishBarcodeCountViewListenerOnBrushForUnrecognizedBarcode"] = "finishBarcodeCountViewListenerOnBrushForUnrecognizedBarcode";
+    CordovaFunction["FinishBarcodeCountViewListenerOnBrushAcceptedBarcode"] = "finishBarcodeCountViewListenerOnBrushAcceptedBarcode";
+    CordovaFunction["FinishBarcodeCountViewListenerOnBrushRejectedBarcode"] = "finishBarcodeCountViewListenerOnBrushRejectedBarcode";
+    CordovaFunction["CreateBarcodeGenerator"] = "createBarcodeGenerator";
+    CordovaFunction["DisposeBarcodeGenerator"] = "disposeBarcodeGenerator";
+    CordovaFunction["GenerateFromBase64EncodedData"] = "generateFromBase64EncodedData";
+    CordovaFunction["GenerateFromString"] = "generateFromString";
+    CordovaFunction["BarcodeCountViewEnableHardwareTrigger"] = "barcodeCountViewEnableHardwareTrigger";
 })(CordovaFunction || (CordovaFunction = {}));
 
 class BarcodeFindView {
@@ -1358,7 +1453,7 @@ class BarcodeFindView {
             setTimeout(this.elementDidChange.bind(this), 300);
             setTimeout(this.elementDidChange.bind(this), 1000);
         });
-        this.baseBarcodeFindView = new barcode.BaseBarcodeFindView(dataCaptureContext, barcodeFind, barcodeFindViewSettings, cameraSettings);
+        this.baseBarcodeFindView = new barcode.BaseBarcodeFindView(dataCaptureContext, barcodeFind, barcodeFindViewSettings, cameraSettings, false);
         this.baseBarcodeFindView.initialize(this);
     }
     get barcodeFindViewUiListener() {
@@ -1366,6 +1461,9 @@ class BarcodeFindView {
     }
     set barcodeFindViewUiListener(value) {
         this.baseBarcodeFindView.barcodeFindViewUiListener = value;
+    }
+    static get hardwareTriggerSupported() {
+        return barcode.BaseBarcodeFindView.hardwareTriggerSupported;
     }
     get shouldShowUserGuidanceView() {
         return this.baseBarcodeFindView.shouldShowUserGuidanceView;
@@ -1408,6 +1506,12 @@ class BarcodeFindView {
     }
     set shouldShowTorchControl(value) {
         this.baseBarcodeFindView.shouldShowTorchControl = value;
+    }
+    get shouldShowZoomControl() {
+        return this.baseBarcodeFindView.shouldShowZoomControl;
+    }
+    set shouldShowZoomControl(value) {
+        this.baseBarcodeFindView.shouldShowZoomControl = value;
     }
     get torchControlPosition() {
         return this.baseBarcodeFindView.torchControlPosition;
@@ -1473,16 +1577,20 @@ class BarcodeFindView {
         return this.baseBarcodeFindView.pauseSearching();
     }
     connectToElement(element) {
-        this.htmlElement = element;
-        this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
-        // Initial update
-        this.elementDidChange();
-        this.subscribeToChangesOnHTMLElement();
+        this.baseBarcodeFindView.createNativeView().then(() => {
+            this.htmlElement = element;
+            this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
+            // Initial update
+            this.elementDidChange();
+            this.subscribeToChangesOnHTMLElement();
+        });
     }
     detachFromElement() {
-        this.unsubscribeFromChangesOnHTMLElement();
-        this.htmlElement = null;
-        this.elementDidChange();
+        this.baseBarcodeFindView.removeNativeView().then(() => {
+            this.unsubscribeFromChangesOnHTMLElement();
+            this.htmlElement = null;
+            this.elementDidChange();
+        });
     }
     show() {
         if (this.htmlElement) {
@@ -1552,7 +1660,8 @@ class BarcodePickView extends scanditDatacaptureFrameworksCore.DefaultSerializea
             context: props.context,
             barcodePick: props.barcodePick,
             settings: props.settings,
-            cameraSettings: props.cameraSettings
+            cameraSettings: props.cameraSettings,
+            autoCreateNativeView: false
         });
         this.viewProxy = scanditDatacaptureFrameworksCore.FactoryMaker.getInstance('BarcodePickViewProxy');
         this.baseBarcodePickView.initialize(this);
@@ -1580,16 +1689,20 @@ class BarcodePickView extends scanditDatacaptureFrameworksCore.DefaultSerializea
         return this._htmlElementState;
     }
     connectToElement(element) {
-        this.htmlElement = element;
-        this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
-        // Initial update
-        this.elementDidChange();
-        this.subscribeToChangesOnHTMLElement();
+        this.baseBarcodePickView.createNativeView().then(() => {
+            this.htmlElement = element;
+            this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
+            // Initial update
+            this.elementDidChange();
+            this.subscribeToChangesOnHTMLElement();
+        });
     }
     detachFromElement() {
-        this.unsubscribeFromChangesOnHTMLElement();
-        this.htmlElement = null;
-        this.elementDidChange();
+        this.baseBarcodePickView.removeNativeView().then(() => {
+            this.unsubscribeFromChangesOnHTMLElement();
+            this.htmlElement = null;
+            this.elementDidChange();
+        });
     }
     subscribeToChangesOnHTMLElement() {
         this.domObserver.observe(document, { attributes: true, childList: true, subtree: true });
@@ -1731,44 +1844,44 @@ class TrackedBarcodeView extends scanditDatacaptureFrameworksCore.DefaultSeriali
     }
 }
 
-class BarcodeTrackingAdvancedOverlay {
+class BarcodeBatchAdvancedOverlay {
     get type() {
-        return this.baseBarcodeTrackingOverlay.type;
+        return this.baseBarcodeBatchOverlay.type;
     }
     get shouldShowScanAreaGuides() {
-        return this.baseBarcodeTrackingOverlay.shouldShowScanAreaGuides;
+        return this.baseBarcodeBatchOverlay.shouldShowScanAreaGuides;
     }
     set shouldShowScanAreaGuides(shouldShow) {
-        this.baseBarcodeTrackingOverlay.shouldShowScanAreaGuides = shouldShow;
+        this.baseBarcodeBatchOverlay.shouldShowScanAreaGuides = shouldShow;
     }
     get listener() {
-        return this.baseBarcodeTrackingOverlay.listener;
+        return this.baseBarcodeBatchOverlay.listener;
     }
     set listener(listener) {
-        this.baseBarcodeTrackingOverlay.listener = listener;
+        this.baseBarcodeBatchOverlay.listener = listener;
     }
-    static withBarcodeTrackingForView(barcodeTracking, view) {
-        const overlay = new BarcodeTrackingAdvancedOverlay();
-        overlay.baseBarcodeTrackingOverlay.initialize(barcodeTracking, view);
+    static withBarcodeBatchForView(barcodeBatch, view) {
+        const overlay = new BarcodeBatchAdvancedOverlay();
+        overlay.baseBarcodeBatchOverlay.initialize(barcodeBatch, view);
         return overlay;
     }
     constructor() {
-        this.baseBarcodeTrackingOverlay = new barcode.BaseBarcodeTrackingAdvancedOverlay();
+        this.baseBarcodeBatchOverlay = new barcode.BaseBarcodeBatchAdvancedOverlay();
     }
     setViewForTrackedBarcode(view, trackedBarcode) {
-        return this.baseBarcodeTrackingOverlay.setViewForTrackedBarcode(view, trackedBarcode);
+        return this.baseBarcodeBatchOverlay.setViewForTrackedBarcode(view, trackedBarcode);
     }
     setAnchorForTrackedBarcode(anchor, trackedBarcode) {
-        return this.baseBarcodeTrackingOverlay.setAnchorForTrackedBarcode(anchor, trackedBarcode);
+        return this.baseBarcodeBatchOverlay.setAnchorForTrackedBarcode(anchor, trackedBarcode);
     }
     setOffsetForTrackedBarcode(offset, trackedBarcode) {
-        return this.baseBarcodeTrackingOverlay.setOffsetForTrackedBarcode(offset, trackedBarcode);
+        return this.baseBarcodeBatchOverlay.setOffsetForTrackedBarcode(offset, trackedBarcode);
     }
     clearTrackedBarcodeViews() {
-        return this.baseBarcodeTrackingOverlay.clearTrackedBarcodeViews();
+        return this.baseBarcodeBatchOverlay.clearTrackedBarcodeViews();
     }
     toJSON() {
-        return this.baseBarcodeTrackingOverlay.toJSON();
+        return this.baseBarcodeBatchOverlay.toJSON();
     }
 }
 
@@ -1789,24 +1902,6 @@ class SparkScanView {
     constructor({ context, sparkScan, settings }) {
         this.baseSparkScanView = barcode.BaseSparkScanView.forContext(context, sparkScan, settings);
     }
-    /**
-     * @deprecated This property is deprecated as it's no longer needed.
-     */
-    get shouldShowScanAreaGuides() {
-        return this.baseSparkScanView.shouldShowScanAreaGuides;
-    }
-    /**
-     * @deprecated This property is deprecated as it's no longer needed.
-     */
-    set shouldShowScanAreaGuides(newValue) {
-        this.baseSparkScanView.shouldShowScanAreaGuides = newValue;
-    }
-    get brush() {
-        return this.baseSparkScanView.brush;
-    }
-    set brush(newValue) {
-        this.baseSparkScanView.brush = newValue;
-    }
     get previewSizeControlVisible() {
         return this.baseSparkScanView.previewSizeControlVisible;
     }
@@ -1825,29 +1920,11 @@ class SparkScanView {
     set scanningBehaviorButtonVisible(newValue) {
         this.baseSparkScanView.scanningBehaviorButtonVisible = newValue;
     }
-    get handModeButtonVisible() {
-        return this.baseSparkScanView.handModeButtonVisible;
-    }
-    set handModeButtonVisible(newValue) {
-        this.baseSparkScanView.handModeButtonVisible = newValue;
-    }
     get barcodeCountButtonVisible() {
         return this.baseSparkScanView.barcodeCountButtonVisible;
     }
     set barcodeCountButtonVisible(newValue) {
         this.baseSparkScanView.barcodeCountButtonVisible = newValue;
-    }
-    /**
-     * @deprecated This property was renamed. Use the property `barcodeFindButtonVisible` instead.
-     */
-    get fastFindButtonVisible() {
-        return this.baseSparkScanView.fastFindButtonVisible;
-    }
-    /**
-     * @deprecated This property was renamed. Use the property `barcodeFindButtonVisible` instead.
-     */
-    set fastFindButtonVisible(newValue) {
-        this.baseSparkScanView.fastFindButtonVisible = newValue;
     }
     get barcodeFindButtonVisible() {
         return this.baseSparkScanView.barcodeFindButtonVisible;
@@ -1862,68 +1939,86 @@ class SparkScanView {
         this.baseSparkScanView.targetModeButtonVisible = newValue;
     }
     /**
-     * @deprecated This property is deprecated as sound mode button will be removed in the future.
+     * @deprecated The trigger button no longer displays text.
      */
-    get soundModeButtonVisible() {
-        return this.baseSparkScanView.soundModeButtonVisible;
-    }
-    /**
-     * @deprecated This property is deprecated as sound mode button will be removed in the future.
-     */
-    set soundModeButtonVisible(newValue) {
-        this.baseSparkScanView.soundModeButtonVisible = newValue;
-    }
-    /**
-     * @deprecated This property is deprecated as haptic mode button will be removed in the future.
-     */
-    get hapticModeButtonVisible() {
-        return this.baseSparkScanView.hapticModeButtonVisible;
-    }
-    /**
-     * @deprecated This property is deprecated as haptic mode button will be removed in the future.
-     */
-    set hapticModeButtonVisible(newValue) {
-        this.baseSparkScanView.hapticModeButtonVisible = newValue;
-    }
     get stopCapturingText() {
         return this.baseSparkScanView.stopCapturingText;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     set stopCapturingText(newValue) {
         this.baseSparkScanView.stopCapturingText = newValue;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     get startCapturingText() {
         return this.baseSparkScanView.startCapturingText;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     set startCapturingText(newValue) {
         this.baseSparkScanView.startCapturingText = newValue;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     get resumeCapturingText() {
         return this.baseSparkScanView.resumeCapturingText;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     set resumeCapturingText(newValue) {
         this.baseSparkScanView.resumeCapturingText = newValue;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     get scanningCapturingText() {
         return this.baseSparkScanView.scanningCapturingText;
     }
+    /**
+     * @deprecated The trigger button no longer displays text.
+     */
     set scanningCapturingText(newValue) {
         this.baseSparkScanView.scanningCapturingText = newValue;
     }
+    /**
+     * @deprecated This property is not relevant anymore.
+     */
     get captureButtonActiveBackgroundColor() {
         return this.baseSparkScanView.captureButtonActiveBackgroundColor;
     }
+    /**
+     * @deprecated This property is not relevant anymore.
+     */
     set captureButtonActiveBackgroundColor(newValue) {
         this.baseSparkScanView.captureButtonActiveBackgroundColor = newValue;
     }
+    /**
+     * @deprecated use triggerButtonCollapsedColor and triggerButtonExpandedColor instead.
+     */
     get captureButtonBackgroundColor() {
         return this.baseSparkScanView.captureButtonBackgroundColor;
     }
+    /**
+     * @deprecated use triggerButtonCollapsedColor and triggerButtonExpandedColor instead.
+     */
     set captureButtonBackgroundColor(newValue) {
         this.baseSparkScanView.captureButtonBackgroundColor = newValue;
     }
+    /**
+     * @deprecated use triggerButtonTintColor instead.
+     */
     get captureButtonTintColor() {
         return this.baseSparkScanView.captureButtonTintColor;
     }
+    /**
+     * @deprecated use triggerButtonTintColor instead.
+     */
     set captureButtonTintColor(newValue) {
         this.baseSparkScanView.captureButtonTintColor = newValue;
     }
@@ -1945,26 +2040,59 @@ class SparkScanView {
     set toolbarIconInactiveTintColor(newValue) {
         this.baseSparkScanView.toolbarIconInactiveTintColor = newValue;
     }
-    get targetModeHintText() {
-        return this.baseSparkScanView.targetModeHintText;
-    }
-    set targetModeHintText(newValue) {
-        this.baseSparkScanView.targetModeHintText = newValue;
-    }
-    get shouldShowTargetModeHint() {
-        return this.baseSparkScanView.shouldShowTargetModeHint;
-    }
-    set shouldShowTargetModeHint(newValue) {
-        this.baseSparkScanView.shouldShowTargetModeHint = newValue;
-    }
     get cameraSwitchButtonVisible() {
         return this.baseSparkScanView.cameraSwitchButtonVisible;
     }
     set cameraSwitchButtonVisible(newValue) {
         this.baseSparkScanView.cameraSwitchButtonVisible = newValue;
     }
-    emitFeedback(feedback) {
-        this.baseSparkScanView.emitFeedback(feedback);
+    get torchControlVisible() {
+        return this.baseSparkScanView.torchControlVisible;
+    }
+    set torchControlVisible(newValue) {
+        this.baseSparkScanView.torchControlVisible = newValue;
+    }
+    get previewCloseControlVisible() {
+        return this.baseSparkScanView.previewCloseControlVisible;
+    }
+    set previewCloseControlVisible(newValue) {
+        this.baseSparkScanView.previewCloseControlVisible = newValue;
+    }
+    get triggerButtonAnimationColor() {
+        return this.baseSparkScanView.triggerButtonAnimationColor;
+    }
+    set triggerButtonAnimationColor(newValue) {
+        this.baseSparkScanView.triggerButtonAnimationColor = newValue;
+    }
+    get triggerButtonExpandedColor() {
+        return this.baseSparkScanView.triggerButtonExpandedColor;
+    }
+    set triggerButtonExpandedColor(newValue) {
+        this.baseSparkScanView.triggerButtonExpandedColor = newValue;
+    }
+    get triggerButtonCollapsedColor() {
+        return this.baseSparkScanView.triggerButtonCollapsedColor;
+    }
+    set triggerButtonCollapsedColor(newValue) {
+        this.baseSparkScanView.triggerButtonCollapsedColor = newValue;
+    }
+    get triggerButtonTintColor() {
+        return this.baseSparkScanView.triggerButtonTintColor;
+    }
+    set triggerButtonTintColor(newValue) {
+        this.baseSparkScanView.triggerButtonTintColor = newValue;
+    }
+    get triggerButtonVisible() {
+        return this.baseSparkScanView.triggerButtonVisible;
+    }
+    set triggerButtonVisible(newValue) {
+        this.baseSparkScanView.triggerButtonVisible = newValue;
+    }
+    get triggerButtonImage() {
+        return this.baseSparkScanView.triggerButtonImage;
+    }
+    set triggerButtonImage(newValue) {
+        this.baseSparkScanView.triggerButtonImage = newValue;
     }
     prepareScanning() {
         this.baseSparkScanView.prepareScanning();
@@ -2001,572 +2129,324 @@ class SparkScanView {
     }
 }
 
-var BarcodeCountViewEventName;
-(function (BarcodeCountViewEventName) {
-    BarcodeCountViewEventName["singleScanButtonTapped"] = "BarcodeCountViewUiListener.onSingleScanButtonTapped";
-    BarcodeCountViewEventName["listButtonTapped"] = "BarcodeCountViewUiListener.onListButtonTapped";
-    BarcodeCountViewEventName["exitButtonTapped"] = "BarcodeCountViewUiListener.onExitButtonTapped";
-    BarcodeCountViewEventName["brushForRecognizedBarcode"] = "BarcodeCountViewListener.brushForRecognizedBarcode";
-    BarcodeCountViewEventName["brushForRecognizedBarcodeNotInList"] = "BarcodeCountViewListener.brushForRecognizedBarcodeNotInList";
-    BarcodeCountViewEventName["brushForUnrecognizedBarcode"] = "BarcodeCountViewListener.brushForUnrecognizedBarcode";
-    BarcodeCountViewEventName["filteredBarcodeTapped"] = "BarcodeCountViewListener.didTapFilteredBarcode";
-    BarcodeCountViewEventName["recognizedBarcodeNotInListTapped"] = "BarcodeCountViewListener.didTapRecognizedBarcodeNotInList";
-    BarcodeCountViewEventName["recognizedBarcodeTapped"] = "BarcodeCountViewListener.didTapRecognizedBarcode";
-    BarcodeCountViewEventName["unrecognizedBarcodeTapped"] = "BarcodeCountViewListener.didTapUnrecognizedBarcode";
-    BarcodeCountViewEventName["captureListCompleted"] = "BarcodeCountViewListener.didCompleteCaptureList";
-})(BarcodeCountViewEventName || (BarcodeCountViewEventName = {}));
-class BarcodeCountViewProxy {
-    static get cordovaExec() {
-        return Cordova.exec;
-    }
-    static forBarcodeCount(view) {
-        const viewProxy = new BarcodeCountViewProxy();
-        viewProxy.barcodeCount = view._barcodeCount;
-        viewProxy.view = view;
-        // // First we need to initialize the context, so it will set up the DataCaptureContextProxy.
-        view._context.initialize();
-        // // We call update because it returns a promise, this guarantees, that by the time
-        // // we need the deserialized context, it will be set in the native layer.
-        // (view.context as any as PrivateDataCaptureContext).update().then(() => {
-        //   viewProxy.create();
-        // });
-        view._context.update();
-        viewProxy.create();
-        return viewProxy;
-    }
-    update() {
-        const barcodeCountView = this.view.toJSON();
-        const json = JSON.stringify(barcodeCountView);
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateBarcodeCountView, [json]);
-        });
-    }
-    create() {
-        const barcodeCountView = this.view.toJSON();
-        const json = {
-            BarcodeCount: this.view._barcodeCount.toJSON(),
-            View: barcodeCountView
-        };
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.CreateBarcodeCountView, [json]);
-        });
-    }
-    dispose() {
-        this.unsubscribeListeners();
-        this.unsubscribeUiListeners();
-    }
-    setUiListener(listener) {
-        if (!!listener) {
-            this.subscribeUiListeners();
-        }
-        else {
-            this.unsubscribeUiListeners();
-        }
-    }
-    setListener(listener) {
-        if (!!listener) {
-            this.subscribeListeners();
-        }
-        else {
-            this.unsubscribeListeners();
-        }
-    }
-    clearHighlights() {
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.ClearBarcodeCountViewHighlights, null);
-        });
-    }
-    setPositionAndSize(top, left, width, height, shouldBeUnderWebView) {
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.SetBarcodeCountViewPositionAndSize, [{ top: top, left: left, width: width, height: height, shouldBeUnderWebView: shouldBeUnderWebView }]);
-        });
-    }
-    show() {
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.ShowBarcodeCountView, null);
-        });
-    }
-    hide() {
-        return new Promise((resolve, reject) => {
-            BarcodeCountViewProxy.cordovaExec(resolve, reject, CordovaFunction.HideBarcodeCountView, null);
-        });
-    }
-    subscribeListeners() {
-        BarcodeCountViewProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.RegisterBarcodeCountViewListener, null);
-    }
-    unsubscribeListeners() {
-        BarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.UnregisterBarcodeCountViewListener, null);
-    }
-    subscribeUiListeners() {
-        BarcodeCountViewProxy.cordovaExec(this.notifyListeners.bind(this), null, CordovaFunction.RegisterBarcodeCountViewUiListener, null);
-    }
-    unsubscribeUiListeners() {
-        BarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.UnregisterBarcodeCountViewUiListener, null);
-    }
-    singleScanButtonTappedHandler() {
-        var _a, _b;
-        (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapSingleScanButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
-    }
-    listButtonTappedHandler() {
-        var _a, _b;
-        (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapListButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
-    }
-    exitButtonTappedHandler() {
-        var _a, _b;
-        (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapExitButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
-    }
-    filteredBarcodeTappedHandler(trackedBarcode) {
-        if (this.view.listener && this.view.listener.didTapFilteredBarcode) {
-            this.view.listener.didTapFilteredBarcode(this.view, trackedBarcode);
-        }
-    }
-    recognizedBarcodeNotInListTappedHandler(trackedBarcode) {
-        if (this.view.listener && this.view.listener.didTapRecognizedBarcodeNotInList) {
-            this.view.listener.didTapRecognizedBarcodeNotInList(this.view, trackedBarcode);
-        }
-    }
-    recognizedBarcodeTappedHandler(trackedBarcode) {
-        if (this.view.listener && this.view.listener.didTapRecognizedBarcode) {
-            this.view.listener.didTapRecognizedBarcode(this.view, trackedBarcode);
-        }
-    }
-    unrecognizedBarcodeTappedHandler(trackedBarcode) {
-        if (this.view.listener && this.view.listener.didTapUnrecognizedBarcode) {
-            this.view.listener.didTapUnrecognizedBarcode(this.view, trackedBarcode);
-        }
-    }
-    captureListCompletedHandler() {
-        if (this.view.listener && this.view.listener.didCompleteCaptureList) {
-            this.view.listener.didCompleteCaptureList(this.view);
-        }
-    }
-    brushForRecognizedBarcodeHandler(trackedBarcode) {
-        let brush = this.view.recognizedBrush;
-        if (this.view.listener && this.view.listener.brushForRecognizedBarcode) {
-            brush = this.view.listener.brushForRecognizedBarcode(this.view, trackedBarcode);
-        }
-        const brushForRecognizedBarcodePayload = {
-            brush: brush ? JSON.stringify(brush.toJSON()) : null,
-            trackedBarcodeID: trackedBarcode.identifier,
-        };
-        BarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.FinishBarcodeCountViewListenerBrushForRecognizedBarcode, [brushForRecognizedBarcodePayload]);
-    }
-    brushForUnrecognizedBarcodeHandler(trackedBarcode) {
-        let brush = this.view.unrecognizedBrush;
-        if (this.view.listener && this.view.listener.brushForUnrecognizedBarcode) {
-            brush = this.view.listener.brushForUnrecognizedBarcode(this.view, trackedBarcode);
-        }
-        const brushForUnecognizedBarcodePayload = {
-            brush: brush ? JSON.stringify(brush.toJSON()) : null,
-            trackedBarcodeID: trackedBarcode.identifier,
-        };
-        BarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.FinishBarcodeCountViewListenerOnBrushForUnrecognizedBarcode, [brushForUnecognizedBarcodePayload]);
-    }
-    brushForRecognizedBarcodeNotInListHandler(trackedBarcode) {
-        let brush = this.view.notInListBrush;
-        if (this.view.listener && this.view.listener.brushForRecognizedBarcodeNotInList) {
-            brush = this.view.listener.brushForRecognizedBarcodeNotInList(this.view, trackedBarcode);
-        }
-        const brushForRecognizedBarcodeNotInListPayload = {
-            brush: brush ? JSON.stringify(brush.toJSON()) : null,
-            trackedBarcodeID: trackedBarcode.identifier,
-        };
-        BarcodeCountViewProxy.cordovaExec(null, null, CordovaFunction.FinishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList, [brushForRecognizedBarcodeNotInListPayload]);
-    }
-    notifyListeners(event) {
-        var _a, _b, _c, _d, _e, _f, _g;
-        const done = () => {
-            this.barcodeCount.isInListenerCallback = false;
-            return { enabled: this.barcodeCount.isEnabled };
-        };
-        this.barcodeCount.isInListenerCallback = true;
-        if (!event) {
-            // The event could be undefined/null in case the plugin result did not pass a "message",
-            // which could happen e.g. in case of "ok" results, which could signal e.g. successful
-            // listener subscriptions.
-            return done();
-        }
-        let trackedBarcode;
-        event = Object.assign(Object.assign(Object.assign({}, event), event.argument), { argument: undefined });
-        switch (event.name) {
-            case BarcodeCountViewEventName.brushForRecognizedBarcode:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_a = event.trackedBarcode) !== null && _a !== void 0 ? _a : ''));
-                this.brushForRecognizedBarcodeHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.brushForRecognizedBarcodeNotInList:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_b = event.trackedBarcode) !== null && _b !== void 0 ? _b : ''));
-                this.brushForRecognizedBarcodeNotInListHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.brushForUnrecognizedBarcode:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_c = event.trackedBarcode) !== null && _c !== void 0 ? _c : ''));
-                this.brushForUnrecognizedBarcodeHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.captureListCompleted:
-                this.captureListCompletedHandler();
-                break;
-            case BarcodeCountViewEventName.exitButtonTapped:
-                this.exitButtonTappedHandler();
-                break;
-            case BarcodeCountViewEventName.filteredBarcodeTapped:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_d = event.trackedBarcode) !== null && _d !== void 0 ? _d : ''));
-                this.filteredBarcodeTappedHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.listButtonTapped:
-                this.listButtonTappedHandler();
-                break;
-            case BarcodeCountViewEventName.recognizedBarcodeNotInListTapped:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_e = event.trackedBarcode) !== null && _e !== void 0 ? _e : ''));
-                this.recognizedBarcodeNotInListTappedHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.recognizedBarcodeTapped:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_f = event.trackedBarcode) !== null && _f !== void 0 ? _f : ''));
-                this.recognizedBarcodeTappedHandler(trackedBarcode);
-                break;
-            case BarcodeCountViewEventName.singleScanButtonTapped:
-                this.singleScanButtonTappedHandler();
-                break;
-            case BarcodeCountViewEventName.unrecognizedBarcodeTapped:
-                trackedBarcode = barcode.TrackedBarcode
-                    .fromJSON(JSON.parse((_g = event.trackedBarcode) !== null && _g !== void 0 ? _g : ''));
-                this.unrecognizedBarcodeTappedHandler(trackedBarcode);
-                break;
-        }
-        return done();
-    }
-}
-
 const BarcodeCountDefaults = {
     get BarcodeCountView() {
         const defaults = barcode.getBarcodeCountDefaults();
         return defaults.BarcodeCountView;
     }
 };
-class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
-    get uiListener() {
-        return this._uiListener;
-    }
-    set uiListener(listener) {
-        this._uiListener = listener;
-        this.viewProxy.setUiListener(listener);
-    }
-    get listener() {
-        return this._listener;
-    }
-    set listener(listener) {
-        this._listener = listener;
-        this.viewProxy.setListener(listener);
-    }
-    get shouldShowUserGuidanceView() {
-        return this._shouldShowUserGuidanceView;
-    }
-    set shouldShowUserGuidanceView(newValue) {
-        this._shouldShowUserGuidanceView = newValue;
-        this.updateNative();
-    }
-    get shouldShowListButton() {
-        return this._shouldShowListButton;
-    }
-    set shouldShowListButton(newValue) {
-        this._shouldShowListButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowExitButton() {
-        return this._shouldShowExitButton;
-    }
-    set shouldShowExitButton(newValue) {
-        this._shouldShowExitButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowShutterButton() {
-        return this._shouldShowShutterButton;
-    }
-    set shouldShowShutterButton(newValue) {
-        this._shouldShowShutterButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowHints() {
-        return this._shouldShowHints;
-    }
-    set shouldShowHints(newValue) {
-        this._shouldShowHints = newValue;
-        this.updateNative();
-    }
-    get shouldShowClearHighlightsButton() {
-        return this._shouldShowClearHighlightsButton;
-    }
-    set shouldShowClearHighlightsButton(newValue) {
-        this._shouldShowClearHighlightsButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowSingleScanButton() {
-        return this._shouldShowSingleScanButton;
-    }
-    set shouldShowSingleScanButton(newValue) {
-        this._shouldShowSingleScanButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowFloatingShutterButton() {
-        return this._shouldShowFloatingShutterButton;
-    }
-    set shouldShowFloatingShutterButton(newValue) {
-        this._shouldShowFloatingShutterButton = newValue;
-        this.updateNative();
-    }
-    get shouldShowToolbar() {
-        return this._shouldShowToolbar;
-    }
-    set shouldShowToolbar(newValue) {
-        this._shouldShowToolbar = newValue;
-        this.updateNative();
-    }
-    get shouldShowScanAreaGuides() {
-        return this._shouldShowScanAreaGuides;
-    }
-    set shouldShowScanAreaGuides(newValue) {
-        this._shouldShowScanAreaGuides = newValue;
-        this.updateNative();
-    }
+class BarcodeCountView {
     static get defaultRecognizedBrush() {
-        return BarcodeCountDefaults.BarcodeCountView.defaultRecognizedBrush;
-    }
-    static get defaultUnrecognizedBrush() {
-        return BarcodeCountDefaults.BarcodeCountView.defaultUnrecognizedBrush;
+        return barcode.BaseBarcodeCountView.defaultRecognizedBrush;
     }
     static get defaultNotInListBrush() {
-        return BarcodeCountDefaults.BarcodeCountView.defaultNotInListBrush;
+        return barcode.BaseBarcodeCountView.defaultNotInListBrush;
+    }
+    static get defaultAcceptedBrush() {
+        return barcode.BaseBarcodeCountView.defaultAcceptedBrush;
+    }
+    static get defaultRejectedBrush() {
+        return barcode.BaseBarcodeCountView.defaultRejectedBrush;
+    }
+    static get hardwareTriggerSupported() {
+        return barcode.BaseBarcodeCountView.hardwareTriggerSupported;
+    }
+    get uiListener() {
+        return this.baseBarcodeCountView.uiListener;
+    }
+    set uiListener(listener) {
+        this.baseBarcodeCountView.uiListener = listener;
+    }
+    get listener() {
+        return this.baseBarcodeCountView.listener;
+    }
+    set listener(listener) {
+        this.baseBarcodeCountView.listener = listener;
+    }
+    get shouldShowUserGuidanceView() {
+        return this.baseBarcodeCountView.shouldShowUserGuidanceView;
+    }
+    set shouldShowUserGuidanceView(newValue) {
+        this.baseBarcodeCountView.shouldShowUserGuidanceView = newValue;
+    }
+    get shouldShowListButton() {
+        return this.baseBarcodeCountView.shouldShowListButton;
+    }
+    set shouldShowListButton(newValue) {
+        this.baseBarcodeCountView.shouldShowListButton = newValue;
+    }
+    get shouldDisableModeOnExitButtonTapped() {
+        return this.baseBarcodeCountView.shouldDisableModeOnExitButtonTapped;
+    }
+    set shouldDisableModeOnExitButtonTapped(newValue) {
+        this.baseBarcodeCountView.shouldDisableModeOnExitButtonTapped = newValue;
+    }
+    get shouldShowExitButton() {
+        return this.baseBarcodeCountView.shouldShowExitButton;
+    }
+    set shouldShowExitButton(newValue) {
+        this.baseBarcodeCountView.shouldShowExitButton = newValue;
+    }
+    get shouldShowShutterButton() {
+        return this.baseBarcodeCountView.shouldShowShutterButton;
+    }
+    set shouldShowShutterButton(newValue) {
+        this.baseBarcodeCountView.shouldShowShutterButton = newValue;
+    }
+    get shouldShowHints() {
+        return this.baseBarcodeCountView.shouldShowHints;
+    }
+    set shouldShowHints(newValue) {
+        this.baseBarcodeCountView.shouldShowHints = newValue;
+    }
+    get shouldShowClearHighlightsButton() {
+        return this.baseBarcodeCountView.shouldShowClearHighlightsButton;
+    }
+    set shouldShowClearHighlightsButton(newValue) {
+        this.baseBarcodeCountView.shouldShowClearHighlightsButton = newValue;
+    }
+    get shouldShowSingleScanButton() {
+        return this.baseBarcodeCountView.shouldShowSingleScanButton;
+    }
+    set shouldShowSingleScanButton(newValue) {
+        this.baseBarcodeCountView.shouldShowSingleScanButton = newValue;
+    }
+    get shouldShowFloatingShutterButton() {
+        return this.baseBarcodeCountView.shouldShowFloatingShutterButton;
+    }
+    set shouldShowFloatingShutterButton(newValue) {
+        this.baseBarcodeCountView.shouldShowFloatingShutterButton = newValue;
+    }
+    get shouldShowToolbar() {
+        return this.baseBarcodeCountView.shouldShowToolbar;
+    }
+    set shouldShowToolbar(newValue) {
+        this.baseBarcodeCountView.shouldShowToolbar = newValue;
+    }
+    get shouldShowScanAreaGuides() {
+        return this.baseBarcodeCountView.shouldShowScanAreaGuides;
+    }
+    set shouldShowScanAreaGuides(newValue) {
+        this.baseBarcodeCountView.shouldShowScanAreaGuides = newValue;
     }
     get recognizedBrush() {
-        return this._recognizedBrush;
+        return this.baseBarcodeCountView.recognizedBrush;
     }
     set recognizedBrush(newValue) {
-        this._recognizedBrush = newValue;
-        this.updateNative();
-    }
-    get unrecognizedBrush() {
-        return this._unrecognizedBrush;
-    }
-    set unrecognizedBrush(newValue) {
-        this._unrecognizedBrush = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.recognizedBrush = newValue;
     }
     get notInListBrush() {
-        return this._notInListBrush;
+        return this.baseBarcodeCountView.notInListBrush;
     }
     set notInListBrush(newValue) {
-        this._notInListBrush = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.notInListBrush = newValue;
+    }
+    get acceptedBrush() {
+        return this.baseBarcodeCountView.acceptedBrush;
+    }
+    set acceptedBrush(newValue) {
+        this.baseBarcodeCountView.acceptedBrush = newValue;
+    }
+    get rejectedBrush() {
+        return this.baseBarcodeCountView.rejectedBrush;
+    }
+    set rejectedBrush(newValue) {
+        this.baseBarcodeCountView.rejectedBrush = newValue;
     }
     get filterSettings() {
-        return this._filterSettings;
+        return this.baseBarcodeCountView.filterSettings;
     }
     set filterSettings(newValue) {
-        this._filterSettings = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.filterSettings = newValue;
     }
     get style() {
-        return this._style;
+        return this.baseBarcodeCountView.style;
     }
     get listButtonAccessibilityHint() {
-        return this._listButtonAccessibilityHint;
+        return this.baseBarcodeCountView.listButtonAccessibilityHint;
     }
     set listButtonAccessibilityHint(newValue) {
-        this._listButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.listButtonAccessibilityHint = newValue;
     }
     get listButtonAccessibilityLabel() {
-        return this._listButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.listButtonAccessibilityLabel;
     }
     set listButtonAccessibilityLabel(newValue) {
-        this._listButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.listButtonAccessibilityLabel = newValue;
     }
     get listButtonContentDescription() {
-        return this._listButtonContentDescription;
+        return this.baseBarcodeCountView.listButtonContentDescription;
     }
     set listButtonContentDescription(newValue) {
-        this._listButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.listButtonContentDescription = newValue;
     }
     get exitButtonAccessibilityHint() {
-        return this._exitButtonAccessibilityHint;
+        return this.baseBarcodeCountView.exitButtonAccessibilityHint;
     }
     set exitButtonAccessibilityHint(newValue) {
-        this._exitButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.exitButtonAccessibilityHint = newValue;
     }
     get exitButtonAccessibilityLabel() {
-        return this._exitButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.exitButtonAccessibilityLabel;
     }
     set exitButtonAccessibilityLabel(newValue) {
-        this._exitButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.exitButtonAccessibilityLabel = newValue;
     }
     get exitButtonContentDescription() {
-        return this._exitButtonContentDescription;
+        return this.baseBarcodeCountView.exitButtonContentDescription;
     }
     set exitButtonContentDescription(newValue) {
-        this._exitButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.exitButtonContentDescription = newValue;
     }
     get shutterButtonAccessibilityHint() {
-        return this._shutterButtonAccessibilityHint;
+        return this.baseBarcodeCountView.shutterButtonAccessibilityHint;
     }
     set shutterButtonAccessibilityHint(newValue) {
-        this._shutterButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.shutterButtonAccessibilityHint = newValue;
     }
     get shutterButtonAccessibilityLabel() {
-        return this._shutterButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.shutterButtonAccessibilityLabel;
     }
     set shutterButtonAccessibilityLabel(newValue) {
-        this._shutterButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.shutterButtonAccessibilityLabel = newValue;
     }
     get shutterButtonContentDescription() {
-        return this._shutterButtonContentDescription;
+        return this.baseBarcodeCountView.shutterButtonContentDescription;
     }
     set shutterButtonContentDescription(newValue) {
-        this._shutterButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.shutterButtonContentDescription = newValue;
     }
     get floatingShutterButtonAccessibilityHint() {
-        return this._floatingShutterButtonAccessibilityHint;
+        return this.baseBarcodeCountView.floatingShutterButtonAccessibilityHint;
     }
     set floatingShutterButtonAccessibilityHint(newValue) {
-        this._floatingShutterButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.floatingShutterButtonAccessibilityHint = newValue;
     }
     get floatingShutterButtonAccessibilityLabel() {
-        return this._floatingShutterButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.floatingShutterButtonAccessibilityLabel;
     }
     set floatingShutterButtonAccessibilityLabel(newValue) {
-        this._floatingShutterButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.floatingShutterButtonAccessibilityLabel = newValue;
     }
     get floatingShutterButtonContentDescription() {
-        return this._floatingShutterButtonContentDescription;
+        return this.baseBarcodeCountView.floatingShutterButtonContentDescription;
     }
     set floatingShutterButtonContentDescription(newValue) {
-        this._floatingShutterButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.floatingShutterButtonContentDescription = newValue;
     }
     get clearHighlightsButtonAccessibilityHint() {
-        return this._clearHighlightsButtonAccessibilityHint;
+        return this.baseBarcodeCountView.clearHighlightsButtonAccessibilityHint;
     }
     set clearHighlightsButtonAccessibilityHint(newValue) {
-        this._clearHighlightsButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.clearHighlightsButtonAccessibilityHint = newValue;
     }
     get clearHighlightsButtonAccessibilityLabel() {
-        return this._clearHighlightsButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.clearHighlightsButtonAccessibilityLabel;
     }
     set clearHighlightsButtonAccessibilityLabel(newValue) {
-        this._clearHighlightsButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.clearHighlightsButtonAccessibilityLabel = newValue;
     }
     get clearHighlightsButtonContentDescription() {
-        return this._clearHighlightsButtonContentDescription;
+        return this.baseBarcodeCountView.clearHighlightsButtonContentDescription;
     }
     set clearHighlightsButtonContentDescription(newValue) {
-        this.clearHighlightsButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.clearHighlightsButtonContentDescription = newValue;
     }
     get singleScanButtonAccessibilityHint() {
-        return this._singleScanButtonAccessibilityHint;
+        return this.baseBarcodeCountView.singleScanButtonAccessibilityHint;
     }
     set singleScanButtonAccessibilityHint(newValue) {
-        this._singleScanButtonAccessibilityHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.singleScanButtonAccessibilityHint = newValue;
     }
     get singleScanButtonAccessibilityLabel() {
-        return this._singleScanButtonAccessibilityLabel;
+        return this.baseBarcodeCountView.singleScanButtonAccessibilityLabel;
     }
     set singleScanButtonAccessibilityLabel(newValue) {
-        this._singleScanButtonAccessibilityLabel = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.singleScanButtonAccessibilityLabel = newValue;
     }
     get singleScanButtonContentDescription() {
-        return this._singleScanButtonContentDescription;
+        return this.baseBarcodeCountView.singleScanButtonContentDescription;
     }
     set singleScanButtonContentDescription(newValue) {
-        this._singleScanButtonContentDescription = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.singleScanButtonContentDescription = newValue;
     }
     get clearHighlightsButtonText() {
-        return this._clearHighlightsButtonText;
+        return this.baseBarcodeCountView.clearHighlightsButtonText;
     }
     set clearHighlightsButtonText(newValue) {
-        this._clearHighlightsButtonText = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.clearHighlightsButtonText = newValue;
     }
     get exitButtonText() {
-        return this._exitButtonText;
+        return this.baseBarcodeCountView.exitButtonText;
     }
     set exitButtonText(newValue) {
-        this._exitButtonText = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.exitButtonText = newValue;
     }
     get textForTapShutterToScanHint() {
-        return this._textForTapShutterToScanHint;
+        return this.baseBarcodeCountView.textForTapShutterToScanHint;
     }
     set textForTapShutterToScanHint(newValue) {
-        this._textForTapShutterToScanHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.textForTapShutterToScanHint = newValue;
     }
     get textForScanningHint() {
-        return this._textForScanningHint;
+        return this.baseBarcodeCountView.textForScanningHint;
     }
     set textForScanningHint(newValue) {
-        this._textForScanningHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.textForScanningHint = newValue;
     }
     get textForMoveCloserAndRescanHint() {
-        return this._textForMoveCloserAndRescanHint;
+        return this.baseBarcodeCountView.textForMoveCloserAndRescanHint;
     }
     set textForMoveCloserAndRescanHint(newValue) {
-        this._textForMoveCloserAndRescanHint = newValue;
-        this.updateNative();
-    }
-    get shouldShowListProgressBar() {
-        return this._shouldShowListProgressBar;
-    }
-    set shouldShowListProgressBar(newValue) {
-        this._shouldShowListProgressBar = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.textForMoveCloserAndRescanHint = newValue;
     }
     get textForMoveFurtherAndRescanHint() {
-        return this._textForMoveFurtherAndRescanHint;
+        return this.baseBarcodeCountView.textForMoveFurtherAndRescanHint;
     }
     set textForMoveFurtherAndRescanHint(newValue) {
-        this._textForMoveFurtherAndRescanHint = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.textForMoveFurtherAndRescanHint = newValue;
     }
-    get textForUnrecognizedBarcodesDetectedHint() {
-        return this._textForUnrecognizedBarcodesDetectedHint;
+    get shouldShowListProgressBar() {
+        return this.baseBarcodeCountView.shouldShowListProgressBar;
     }
-    set textForUnrecognizedBarcodesDetectedHint(newValue) {
-        this._textForUnrecognizedBarcodesDetectedHint = newValue;
-        this.updateNative();
+    set shouldShowListProgressBar(newValue) {
+        this.baseBarcodeCountView.shouldShowListProgressBar = newValue;
     }
     get shouldShowTorchControl() {
-        return this._shouldShowTorchControl;
+        return this.baseBarcodeCountView.shouldShowTorchControl;
     }
     set shouldShowTorchControl(newValue) {
-        this._shouldShowTorchControl = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.shouldShowTorchControl = newValue;
     }
     get torchControlPosition() {
-        return this._torchControlPosition;
+        return this.baseBarcodeCountView.torchControlPosition;
     }
     set torchControlPosition(newValue) {
-        this._torchControlPosition = newValue;
-        this.updateNative();
+        this.baseBarcodeCountView.torchControlPosition = newValue;
+    }
+    get textForTapToUncountHint() {
+        return this.baseBarcodeCountView.textForTapToUncountHint;
+    }
+    set textForTapToUncountHint(newValue) {
+        this.baseBarcodeCountView.textForTapToUncountHint = newValue;
+    }
+    get tapToUncountEnabled() {
+        return this.baseBarcodeCountView.tapToUncountEnabled;
+    }
+    set tapToUncountEnabled(newValue) {
+        this.baseBarcodeCountView.tapToUncountEnabled = newValue;
+    }
+    get barcodeNotInListActionSettings() {
+        return this.baseBarcodeCountView.barcodeNotInListActionSettings;
+    }
+    set barcodeNotInListActionSettings(newValue) {
+        this.baseBarcodeCountView.barcodeNotInListActionSettings = newValue;
+    }
+    get hardwareTriggerEnabled() {
+        return this.baseBarcodeCountView.hardwareTriggerEnabled;
+    }
+    set hardwareTriggerEnabled(newValue) {
+        this.baseBarcodeCountView.hardwareTriggerEnabled = newValue;
     }
     set htmlElementState(newState) {
         const didChangeShown = this._htmlElementState.isShown !== newState.isShown;
@@ -2597,53 +2477,6 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         return view;
     }
     constructor({ context, barcodeCount, style }) {
-        super();
-        this._uiListener = null;
-        this._listener = null;
-        this._shouldShowUserGuidanceView = BarcodeCountDefaults.BarcodeCountView.shouldShowUserGuidanceView;
-        this._shouldShowListButton = BarcodeCountDefaults.BarcodeCountView.shouldShowListButton;
-        this._shouldShowExitButton = BarcodeCountDefaults.BarcodeCountView.shouldShowExitButton;
-        this._shouldShowShutterButton = BarcodeCountDefaults.BarcodeCountView.shouldShowShutterButton;
-        this._shouldShowHints = BarcodeCountDefaults.BarcodeCountView.shouldShowHints;
-        this._shouldShowClearHighlightsButton = BarcodeCountDefaults.BarcodeCountView.shouldShowClearHighlightsButton;
-        this._shouldShowSingleScanButton = BarcodeCountDefaults.BarcodeCountView.shouldShowSingleScanButton;
-        this._shouldShowFloatingShutterButton = BarcodeCountDefaults.BarcodeCountView.shouldShowFloatingShutterButton;
-        this._shouldShowToolbar = BarcodeCountDefaults.BarcodeCountView.shouldShowToolbar;
-        this._shouldShowScanAreaGuides = BarcodeCountDefaults.BarcodeCountView.shouldShowScanAreaGuides;
-        this._recognizedBrush = BarcodeCountDefaults.BarcodeCountView.defaultRecognizedBrush;
-        this._unrecognizedBrush = BarcodeCountDefaults.BarcodeCountView.defaultUnrecognizedBrush;
-        this._notInListBrush = BarcodeCountDefaults.BarcodeCountView.defaultNotInListBrush;
-        this._filterSettings = null;
-        this._style = BarcodeCountDefaults.BarcodeCountView.style;
-        this._listButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.listButtonAccessibilityHint;
-        this._listButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.listButtonAccessibilityLabel;
-        this._listButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.listButtonContentDescription;
-        this._exitButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.exitButtonAccessibilityHint;
-        this._exitButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.exitButtonAccessibilityLabel;
-        this._exitButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.exitButtonContentDescription;
-        this._shutterButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.shutterButtonAccessibilityHint;
-        this._shutterButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.shutterButtonAccessibilityLabel;
-        this._shutterButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.shutterButtonContentDescription;
-        this._floatingShutterButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.floatingShutterButtonAccessibilityHint;
-        this._floatingShutterButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.floatingShutterButtonAccessibilityLabel;
-        this._floatingShutterButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.floatingShutterButtonContentDescription;
-        this._clearHighlightsButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.clearHighlightsButtonAccessibilityHint;
-        this._clearHighlightsButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.clearHighlightsButtonAccessibilityLabel;
-        this._clearHighlightsButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.clearHighlightsButtonContentDescription;
-        this._singleScanButtonAccessibilityHint = BarcodeCountDefaults.BarcodeCountView.singleScanButtonAccessibilityHint;
-        this._singleScanButtonAccessibilityLabel = BarcodeCountDefaults.BarcodeCountView.singleScanButtonAccessibilityLabel;
-        this._singleScanButtonContentDescription = BarcodeCountDefaults.BarcodeCountView.singleScanButtonContentDescription;
-        this._clearHighlightsButtonText = BarcodeCountDefaults.BarcodeCountView.clearHighlightsButtonText;
-        this._exitButtonText = BarcodeCountDefaults.BarcodeCountView.exitButtonText;
-        this._textForTapShutterToScanHint = BarcodeCountDefaults.BarcodeCountView.textForTapShutterToScanHint;
-        this._textForScanningHint = BarcodeCountDefaults.BarcodeCountView.textForScanningHint;
-        this._textForMoveCloserAndRescanHint = BarcodeCountDefaults.BarcodeCountView.textForMoveCloserAndRescanHint;
-        this._shouldShowListProgressBar = BarcodeCountDefaults.BarcodeCountView.shouldShowListProgressBar;
-        this._textForMoveFurtherAndRescanHint = BarcodeCountDefaults.BarcodeCountView.textForMoveFurtherAndRescanHint;
-        this._textForUnrecognizedBarcodesDetectedHint = BarcodeCountDefaults.BarcodeCountView.textForUnrecognizedBarcodesDetectedHint;
-        this._shouldShowTorchControl = BarcodeCountDefaults.BarcodeCountView.shouldShowTorchControl;
-        this._torchControlPosition = BarcodeCountDefaults.BarcodeCountView.torchControlPosition;
-        this._toolbarSettings = null;
         this.htmlElement = null;
         this._htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
         this.scrollListener = this.elementDidChange.bind(this);
@@ -2655,36 +2488,38 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
             setTimeout(this.elementDidChange.bind(this), 300);
             setTimeout(this.elementDidChange.bind(this), 1000);
         });
-        this._style = style;
-        this._barcodeCount = barcodeCount;
-        this._context = context;
-        barcodeCount._context = context;
-        this.viewProxy = BarcodeCountViewProxy.forBarcodeCount(this);
+        this.baseBarcodeCountView = new barcode.BaseBarcodeCountView({
+            context,
+            barcodeCount,
+            style,
+            nativeView: this,
+            autoCreateNativeView: false
+        });
     }
     clearHighlights() {
-        return this.viewProxy.clearHighlights();
+        return this.baseBarcodeCountView.clearHighlights();
     }
     setToolbarSettings(settings) {
-        this._toolbarSettings = settings;
-        this.updateNative();
-    }
-    updateNative() {
-        return this.viewProxy.update();
+        this.baseBarcodeCountView.setToolbarSettings(settings);
     }
     connectToElement(element) {
-        this.htmlElement = element;
-        this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
-        // Initial update
-        this.elementDidChange();
-        this.subscribeToChangesOnHTMLElement();
+        this.baseBarcodeCountView.createNativeView().then(() => {
+            this.htmlElement = element;
+            this.htmlElementState = new scanditDatacaptureFrameworksCore.HTMLElementState();
+            // Initial update
+            this.elementDidChange();
+            this.subscribeToChangesOnHTMLElement();
+        });
     }
     detachFromElement() {
-        this.unsubscribeFromChangesOnHTMLElement();
-        this.htmlElement = null;
-        this.elementDidChange();
+        this.baseBarcodeCountView.removeNativeView().then(() => {
+            this.unsubscribeFromChangesOnHTMLElement();
+            this.htmlElement = null;
+            this.elementDidChange();
+        });
     }
     setFrame(frame, isUnderContent = false) {
-        return this.viewProxy.setPositionAndSize(frame.origin.y, frame.origin.x, frame.size.width, frame.size.height, isUnderContent);
+        return this.baseBarcodeCountView.setPositionAndSize(frame.origin.y, frame.origin.x, frame.size.width, frame.size.height, isUnderContent);
     }
     show() {
         if (this.htmlElement) {
@@ -2697,6 +2532,21 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
             throw new Error("Views should only be manually hidden if they're manually sized using setFrame");
         }
         return this._hide();
+    }
+    setBrushForRecognizedBarcode(trackedBarcode, brush) {
+        return this.baseBarcodeCountView.setBrushForRecognizedBarcode(trackedBarcode, brush);
+    }
+    setBrushForRecognizedBarcodeNotInList(trackedBarcode, brush) {
+        return this.baseBarcodeCountView.setBrushForRecognizedBarcodeNotInList(trackedBarcode, brush);
+    }
+    setBrushForAcceptedBarcode(trackedBarcode, brush) {
+        return this.baseBarcodeCountView.setBrushForAcceptedBarcode(trackedBarcode, brush);
+    }
+    setBrushForRejectedBarcode(trackedBarcode, brush) {
+        return this.baseBarcodeCountView.setBrushForRejectedBarcode(trackedBarcode, brush);
+    }
+    enableHardwareTrigger(hardwareTriggerKeyCode) {
+        return this.baseBarcodeCountView.enableHardwareTrigger(hardwareTriggerKeyCode);
     }
     subscribeToChangesOnHTMLElement() {
         this.domObserver.observe(document, { attributes: true, childList: true, subtree: true });
@@ -2729,168 +2579,18 @@ class BarcodeCountView extends scanditDatacaptureFrameworksCore.DefaultSerialize
         if (!this.htmlElementState || !this.htmlElementState.isValid) {
             return;
         }
-        this.viewProxy.setPositionAndSize(this.htmlElementState.position.top, this.htmlElementState.position.left, this.htmlElementState.size.width, this.htmlElementState.size.height, this.htmlElementState.shouldBeUnderContent);
+        this.baseBarcodeCountView.setPositionAndSize(this.htmlElementState.position.top, this.htmlElementState.position.left, this.htmlElementState.size.width, this.htmlElementState.size.height, this.htmlElementState.shouldBeUnderContent);
     }
     _show() {
-        if (!this._context) {
-            throw new Error('There should be a context attached to a view that should be shown');
-        }
-        return this.viewProxy.show();
+        return this.baseBarcodeCountView.show();
     }
     _hide() {
-        if (!this._context) {
-            throw new Error('There should be a context attached to a view that should be shown');
-        }
-        return this.viewProxy.hide();
+        return this.baseBarcodeCountView.hide();
+    }
+    toJSON() {
+        return this.baseBarcodeCountView.toJSON();
     }
 }
-__decorate([
-    scanditDatacaptureFrameworksCore.ignoreFromSerialization
-], BarcodeCountView.prototype, "_barcodeCount", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.ignoreFromSerialization
-], BarcodeCountView.prototype, "_context", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.ignoreFromSerialization
-], BarcodeCountView.prototype, "viewProxy", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.ignoreFromSerialization
-], BarcodeCountView.prototype, "_uiListener", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.ignoreFromSerialization
-], BarcodeCountView.prototype, "_listener", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowUserGuidanceView')
-], BarcodeCountView.prototype, "_shouldShowUserGuidanceView", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowListButton')
-], BarcodeCountView.prototype, "_shouldShowListButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowExitButton')
-], BarcodeCountView.prototype, "_shouldShowExitButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowShutterButton')
-], BarcodeCountView.prototype, "_shouldShowShutterButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowHints')
-], BarcodeCountView.prototype, "_shouldShowHints", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowClearHighlightsButton')
-], BarcodeCountView.prototype, "_shouldShowClearHighlightsButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowSingleScanButton')
-], BarcodeCountView.prototype, "_shouldShowSingleScanButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowFloatingShutterButton')
-], BarcodeCountView.prototype, "_shouldShowFloatingShutterButton", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowToolbar')
-], BarcodeCountView.prototype, "_shouldShowToolbar", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowScanAreaGuides')
-], BarcodeCountView.prototype, "_shouldShowScanAreaGuides", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('recognizedBrush')
-], BarcodeCountView.prototype, "_recognizedBrush", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('unrecognizedBrush')
-], BarcodeCountView.prototype, "_unrecognizedBrush", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('notInListBrush')
-], BarcodeCountView.prototype, "_notInListBrush", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('filterSettings')
-], BarcodeCountView.prototype, "_filterSettings", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('style')
-], BarcodeCountView.prototype, "_style", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('listButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_listButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('listButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_listButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('listButtonContentDescription')
-], BarcodeCountView.prototype, "_listButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('exitButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_exitButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('exitButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_exitButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('exitButtonContentDescription')
-], BarcodeCountView.prototype, "_exitButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shutterButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_shutterButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shutterButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_shutterButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shutterButtonContentDescription')
-], BarcodeCountView.prototype, "_shutterButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('floatingShutterButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_floatingShutterButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('floatingShutterButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_floatingShutterButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('floatingShutterButtonContentDescription')
-], BarcodeCountView.prototype, "_floatingShutterButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('clearHighlightsButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_clearHighlightsButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('clearHighlightsButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_clearHighlightsButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('clearHighlightsButtonContentDescription')
-], BarcodeCountView.prototype, "_clearHighlightsButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('singleScanButtonAccessibilityHint')
-], BarcodeCountView.prototype, "_singleScanButtonAccessibilityHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('singleScanButtonAccessibilityLabel')
-], BarcodeCountView.prototype, "_singleScanButtonAccessibilityLabel", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('singleScanButtonContentDescription')
-], BarcodeCountView.prototype, "_singleScanButtonContentDescription", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('clearHighlightsButtonText')
-], BarcodeCountView.prototype, "_clearHighlightsButtonText", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('exitButtonText')
-], BarcodeCountView.prototype, "_exitButtonText", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('textForTapShutterToScanHint')
-], BarcodeCountView.prototype, "_textForTapShutterToScanHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('textForScanningHint')
-], BarcodeCountView.prototype, "_textForScanningHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('textForMoveCloserAndRescanHint')
-], BarcodeCountView.prototype, "_textForMoveCloserAndRescanHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowListProgressBar')
-], BarcodeCountView.prototype, "_shouldShowListProgressBar", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('textForMoveFurtherAndRescanHint')
-], BarcodeCountView.prototype, "_textForMoveFurtherAndRescanHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('textForUnrecognizedBarcodesDetectedHint')
-], BarcodeCountView.prototype, "_textForUnrecognizedBarcodesDetectedHint", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('shouldShowTorchControl')
-], BarcodeCountView.prototype, "_shouldShowTorchControl", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('torchControlPosition')
-], BarcodeCountView.prototype, "_torchControlPosition", void 0);
-__decorate([
-    scanditDatacaptureFrameworksCore.nameForSerialization('toolbarSettings')
-], BarcodeCountView.prototype, "_toolbarSettings", void 0);
 __decorate([
     scanditDatacaptureFrameworksCore.ignoreFromSerialization
 ], BarcodeCountView.prototype, "htmlElement", void 0);
@@ -2916,6 +2616,18 @@ Object.defineProperty(exports, "ArucoDictionaryPreset", {
 });
 exports.ArucoMarker = barcode.ArucoMarker;
 exports.Barcode = barcode.Barcode;
+exports.BarcodeBatch = barcode.BarcodeBatch;
+exports.BarcodeBatchBasicOverlay = barcode.BarcodeBatchBasicOverlay;
+Object.defineProperty(exports, "BarcodeBatchBasicOverlayStyle", {
+    enumerable: true,
+    get: function () { return barcode.BarcodeBatchBasicOverlayStyle; }
+});
+Object.defineProperty(exports, "BarcodeBatchScenario", {
+    enumerable: true,
+    get: function () { return barcode.BarcodeBatchScenario; }
+});
+exports.BarcodeBatchSession = barcode.BarcodeBatchSession;
+exports.BarcodeBatchSettings = barcode.BarcodeBatchSettings;
 exports.BarcodeCapture = barcode.BarcodeCapture;
 exports.BarcodeCaptureFeedback = barcode.BarcodeCaptureFeedback;
 exports.BarcodeCaptureOverlay = barcode.BarcodeCaptureOverlay;
@@ -2929,6 +2641,7 @@ exports.BarcodeCount = barcode.BarcodeCount;
 exports.BarcodeCountCaptureList = barcode.BarcodeCountCaptureList;
 exports.BarcodeCountCaptureListSession = barcode.BarcodeCountCaptureListSession;
 exports.BarcodeCountFeedback = barcode.BarcodeCountFeedback;
+exports.BarcodeCountNotInListActionSettings = barcode.BarcodeCountNotInListActionSettings;
 exports.BarcodeCountSession = barcode.BarcodeCountSession;
 exports.BarcodeCountSettings = barcode.BarcodeCountSettings;
 exports.BarcodeCountToolbarSettings = barcode.BarcodeCountToolbarSettings;
@@ -2949,6 +2662,8 @@ exports.BarcodeFindItemContent = barcode.BarcodeFindItemContent;
 exports.BarcodeFindItemSearchOptions = barcode.BarcodeFindItemSearchOptions;
 exports.BarcodeFindSettings = barcode.BarcodeFindSettings;
 exports.BarcodeFindViewSettings = barcode.BarcodeFindViewSettings;
+exports.BarcodeGenerator = barcode.BarcodeGenerator;
+exports.BarcodeGeneratorBuilder = barcode.BarcodeGeneratorBuilder;
 exports.BarcodePick = barcode.BarcodePick;
 exports.BarcodePickActionCallback = barcode.BarcodePickActionCallback;
 exports.BarcodePickAsyncMapperProductProvider = barcode.BarcodePickAsyncMapperProductProvider;
@@ -2989,18 +2704,6 @@ Object.defineProperty(exports, "BarcodeSelectionTapBehavior", {
 });
 exports.BarcodeSelectionTapSelection = barcode.BarcodeSelectionTapSelection;
 exports.BarcodeSpatialGrid = barcode.BarcodeSpatialGrid;
-exports.BarcodeTracking = barcode.BarcodeTracking;
-exports.BarcodeTrackingBasicOverlay = barcode.BarcodeTrackingBasicOverlay;
-Object.defineProperty(exports, "BarcodeTrackingBasicOverlayStyle", {
-    enumerable: true,
-    get: function () { return barcode.BarcodeTrackingBasicOverlayStyle; }
-});
-Object.defineProperty(exports, "BarcodeTrackingScenario", {
-    enumerable: true,
-    get: function () { return barcode.BarcodeTrackingScenario; }
-});
-exports.BarcodeTrackingSession = barcode.BarcodeTrackingSession;
-exports.BarcodeTrackingSettings = barcode.BarcodeTrackingSettings;
 Object.defineProperty(exports, "BatterySavingMode", {
     enumerable: true,
     get: function () { return barcode.BatterySavingMode; }
@@ -3009,6 +2712,8 @@ Object.defineProperty(exports, "Checksum", {
     enumerable: true,
     get: function () { return barcode.Checksum; }
 });
+exports.Code128BarcodeGeneratorBuilder = barcode.Code128BarcodeGeneratorBuilder;
+exports.Code39BarcodeGeneratorBuilder = barcode.Code39BarcodeGeneratorBuilder;
 Object.defineProperty(exports, "CompositeFlag", {
     enumerable: true,
     get: function () { return barcode.CompositeFlag; }
@@ -3017,11 +2722,19 @@ Object.defineProperty(exports, "CompositeType", {
     enumerable: true,
     get: function () { return barcode.CompositeType; }
 });
+exports.DataMatrixBarcodeGeneratorBuilder = barcode.DataMatrixBarcodeGeneratorBuilder;
 exports.Dot = barcode.Dot;
 exports.DotWithIcons = barcode.DotWithIcons;
+exports.Ean13BarcodeGeneratorBuilder = barcode.Ean13BarcodeGeneratorBuilder;
 exports.Ean13UpcaClassification = barcode.Ean13UpcaClassification;
 exports.EncodingRange = barcode.EncodingRange;
+exports.InterleavedTwoOfFiveBarcodeGeneratorBuilder = barcode.InterleavedTwoOfFiveBarcodeGeneratorBuilder;
 exports.LocalizedOnlyBarcode = barcode.LocalizedOnlyBarcode;
+exports.QrCodeBarcodeGeneratorBuilder = barcode.QrCodeBarcodeGeneratorBuilder;
+Object.defineProperty(exports, "QrCodeErrorCorrectionLevel", {
+    enumerable: true,
+    get: function () { return barcode.QrCodeErrorCorrectionLevel; }
+});
 exports.Range = barcode.Range;
 exports.Rectangular = barcode.Rectangular;
 exports.RectangularWithIcons = barcode.RectangularWithIcons;
@@ -3029,7 +2742,10 @@ exports.SparkScan = barcode.SparkScan;
 exports.SparkScanBarcodeErrorFeedback = barcode.SparkScanBarcodeErrorFeedback;
 exports.SparkScanBarcodeFeedback = barcode.SparkScanBarcodeFeedback;
 exports.SparkScanBarcodeSuccessFeedback = barcode.SparkScanBarcodeSuccessFeedback;
-exports.SparkScanFeedback = barcode.SparkScanFeedback;
+Object.defineProperty(exports, "SparkScanMiniPreviewSize", {
+    enumerable: true,
+    get: function () { return barcode.SparkScanMiniPreviewSize; }
+});
 Object.defineProperty(exports, "SparkScanPreviewBehavior", {
     enumerable: true,
     get: function () { return barcode.SparkScanPreviewBehavior; }
@@ -3040,21 +2756,14 @@ Object.defineProperty(exports, "SparkScanScanningBehavior", {
 });
 exports.SparkScanScanningModeDefault = barcode.SparkScanScanningModeDefault;
 exports.SparkScanScanningModeTarget = barcode.SparkScanScanningModeTarget;
-Object.defineProperty(exports, "SparkScanScanningPrecision", {
-    enumerable: true,
-    get: function () { return barcode.SparkScanScanningPrecision; }
-});
 exports.SparkScanSession = barcode.SparkScanSession;
 exports.SparkScanSettings = barcode.SparkScanSettings;
 exports.SparkScanToastSettings = barcode.SparkScanToastSettings;
-exports.SparkScanViewErrorFeedback = barcode.SparkScanViewErrorFeedback;
-exports.SparkScanViewFeedback = barcode.SparkScanViewFeedback;
-Object.defineProperty(exports, "SparkScanViewHandMode", {
-    enumerable: true,
-    get: function () { return barcode.SparkScanViewHandMode; }
-});
 exports.SparkScanViewSettings = barcode.SparkScanViewSettings;
-exports.SparkScanViewSuccessFeedback = barcode.SparkScanViewSuccessFeedback;
+Object.defineProperty(exports, "SparkScanViewState", {
+    enumerable: true,
+    get: function () { return barcode.SparkScanViewState; }
+});
 exports.StructuredAppendData = barcode.StructuredAppendData;
 Object.defineProperty(exports, "Symbology", {
     enumerable: true,
@@ -3064,9 +2773,10 @@ exports.SymbologyDescription = barcode.SymbologyDescription;
 exports.SymbologySettings = barcode.SymbologySettings;
 exports.TargetBarcode = barcode.TargetBarcode;
 exports.TrackedBarcode = barcode.TrackedBarcode;
+exports.UpcaBarcodeGeneratorBuilder = barcode.UpcaBarcodeGeneratorBuilder;
+exports.BarcodeBatchAdvancedOverlay = BarcodeBatchAdvancedOverlay;
 exports.BarcodeCountView = BarcodeCountView;
 exports.BarcodeFindView = BarcodeFindView;
 exports.BarcodePickView = BarcodePickView;
-exports.BarcodeTrackingAdvancedOverlay = BarcodeTrackingAdvancedOverlay;
 exports.SparkScanView = SparkScanView;
 exports.TrackedBarcodeView = TrackedBarcodeView;
