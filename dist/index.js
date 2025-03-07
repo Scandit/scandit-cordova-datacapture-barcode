@@ -667,7 +667,7 @@ class NativeSparkScanViewProxy extends scanditDatacaptureFrameworksCore.BaseNati
     static get cordovaExec() {
         return Cordova.exec;
     }
-    updateSparkScanView(viewJson) {
+    updateSparkScanView(_viewId, viewJson) {
         return new Promise((resolve, reject) => {
             NativeSparkScanViewProxy.cordovaExec(resolve, reject, CordovaFunction.UpdateSparkScanView, [viewJson]);
         });
