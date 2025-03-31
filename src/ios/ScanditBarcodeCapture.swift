@@ -209,16 +209,16 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     // MARK: - Subscribe listeners
 
-    @objc(subscribeBarcodeCaptureListener:)
-    func subscribeBarcodeCaptureListener(command: CDVInvokedUrlCommand) {
+    @objc(registerBarcodeCaptureListenerForEvents:)
+    func registerBarcodeCaptureListenerForEvents(command: CDVInvokedUrlCommand) {
         emitter.registerCallback(with: .barcodeScanned, call: command)
         emitter.registerCallback(with: FrameworksBarcodeCaptureEvent.sessionUpdated, call: command)
         barcodeCaptureModule.addListener()
         commandDelegate.send(.keepCallback, callbackId: command.callbackId)
     }
 
-    @objc(unsubscribeBarcodeCaptureListener:)
-    func unsubscribeBarcodeCaptureListener(command: CDVInvokedUrlCommand) {
+    @objc(unregisterBarcodeCaptureListenerForEvents:)
+    func unregisterBarcodeCaptureListenerForEvents(command: CDVInvokedUrlCommand) {
         emitter.unregisterCallback(with: FrameworksBarcodeCaptureEvent.barcodeScanned.rawValue)
         emitter.unregisterCallback(with: FrameworksBarcodeCaptureEvent.sessionUpdated.rawValue)
         barcodeCaptureModule.addListener()
@@ -275,16 +275,16 @@ class ScanditBarcodeCapture: CDVPlugin {
         commandDelegate.send(.keepCallback, callbackId: command.callbackId)
     }
 
-    @objc(subscribeBarcodeSelectionListener:)
-    func subscribeBarcodeSelectionListener(command: CDVInvokedUrlCommand) {
+    @objc(registerBarcodeSelectionListenerForEvents:)
+    func registerBarcodeSelectionListenerForEvents(command: CDVInvokedUrlCommand) {
         emitter.registerCallback(with: .didUpdateSelection, call: command)
         emitter.registerCallback(with: FrameworksBarcodeSelectionEvent.didUpdateSession, call: command)
         barcodeSelectionModule.addListener()
         commandDelegate.send(.keepCallback, callbackId: command.callbackId)
     }
 
-    @objc(unsubscribeBarcodeSelectionListener:)
-    func unsubscribeBarcodeSelectionListener(command: CDVInvokedUrlCommand) {
+    @objc(unregisterBarcodeSelectionListenerForEvents:)
+    func unregisterBarcodeSelectionListenerForEvents(command: CDVInvokedUrlCommand) {
         emitter.unregisterCallback(with: FrameworksBarcodeSelectionEvent.didUpdateSelection.rawValue)
         emitter.unregisterCallback(with: FrameworksBarcodeSelectionEvent.didUpdateSession.rawValue)
         barcodeSelectionModule.removeListener()
@@ -462,8 +462,8 @@ class ScanditBarcodeCapture: CDVPlugin {
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
-    @objc(finishBarcodeSelectionDidUpdateSelection:)
-    func finishBarcodeSelectionDidUpdateSelection(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeSelectionDidSelect:)
+    func finishBarcodeSelectionDidSelect(command: CDVInvokedUrlCommand) {
         var enabled = false
         if let payload = command.defaultArgumentAsDictionary, let value = payload["enabled"] as? Bool {
             enabled = value
@@ -492,12 +492,12 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(getCountForBarcodeInBarcodeSelectionSession:)
     func getCountForBarcodeInBarcodeSelectionSession(command: CDVInvokedUrlCommand) {
-        guard let sessionId = command.defaultArgumentAsString else {
-            commandDelegate.send(.failure(with: .noBarcodeSelectionSession), callbackId: command.callbackId)
+        guard let payload = command.defaultArgumentAsDictionary, let selectionIdentifier = payload["selectionIdentifier"] as? String else {
+            commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
         barcodeSelectionModule.submitBarcodeCountForIdentifier(
-            selectionIdentifier: sessionId,
+            selectionIdentifier: selectionIdentifier,
             result: CordovaResult(commandDelegate, command.callbackId)
         )
     }
@@ -514,7 +514,9 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(unselectBarcodes:)
     func unselectBarcodes(command: CDVInvokedUrlCommand) {
-        guard let barcodesJson = command.defaultArgumentAsString else {
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let barcodesJson = argsJson["barcodesJson"] as? String
+        else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -532,7 +534,7 @@ class ScanditBarcodeCapture: CDVPlugin {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
-        guard let barcodeJson = json["barcode"] as? String else {
+        guard let barcodeJson = json["barcodeJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -544,10 +546,12 @@ class ScanditBarcodeCapture: CDVPlugin {
     @objc(createFindView:)
     func createFindView(command: CDVInvokedUrlCommand) {
         let viewJson = command.defaultArgumentAsString!
-        dispatchMainSync {
-            barcodeFindModule.addViewToContainer(container: barcodeFindViewHandler.webView,
-                                                 jsonString: viewJson,
-                                                 result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.barcodeFindModule.addViewToContainer(
+                container: self.barcodeFindViewHandler.webView,
+                jsonString: viewJson,
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
         }
     }
 
@@ -560,9 +564,9 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(removeFindView:)
     func removeFindView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
-            barcodeFindViewHandler.barcodeFindView = nil
-            barcodeFindModule.removeBarcodeFindView(result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.barcodeFindViewHandler.barcodeFindView = nil
+            self.barcodeFindModule.removeBarcodeFindView(result: CordovaResult(self.commandDelegate, command.callbackId))
         }
     }
 
@@ -675,25 +679,25 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(showFindView:)
     func showFindView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
+        dispatchMain {
             guard let barcodeFindView = self.barcodeFindViewHandler.barcodeFindView else {
-                commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
+                self.commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
                 return
             }
             barcodeFindView.isHidden = false
-            commandDelegate.send(.success, callbackId: command.callbackId)
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
     @objc(hideFindView:)
     func hideFindView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
+        dispatchMain {
             guard let barcodeFindView = self.barcodeFindViewHandler.barcodeFindView else {
-                commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
+                self.commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
                 return
             }
             barcodeFindView.isHidden = true
-            commandDelegate.send(.success, callbackId: command.callbackId)
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
@@ -747,19 +751,23 @@ class ScanditBarcodeCapture: CDVPlugin {
             return
         }
 
-        dispatchMainSync {
-            barcodePickModule.addViewToContainer(container: barcodePickViewHandler.webView,
-                                                 jsonString: viewJson,
-                                                 result: CordovaResult(commandDelegate, command.callbackId))
-            barcodePickViewHandler.barcodePickView = barcodePickModule.barcodePickView
+        dispatchMain {
+            self.barcodePickModule.addViewToContainer(
+                container: self.barcodePickViewHandler.webView,
+                jsonString: viewJson,
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
+            self.barcodePickViewHandler.barcodePickView = self.barcodePickModule.barcodePickView
         }
     }
-    
+
     @objc(removePickView:)
     func removePickView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
-            barcodePickViewHandler.barcodePickView = nil
-            barcodePickModule.removeBarcodePickView(result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.barcodePickViewHandler.barcodePickView = nil
+            self.barcodePickModule.removeBarcodePickView(
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
         }
     }
 
@@ -781,9 +789,9 @@ class ScanditBarcodeCapture: CDVPlugin {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
-        dispatchMainSync {
+        dispatchMain {
             guard let viewPositionAndSizeJSON = try? ViewPositionAndSizeJSON.fromJSONObject(jsonObject as Any) else {
-                commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
+                self.commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
                 return
             }
 
@@ -800,7 +808,7 @@ class ScanditBarcodeCapture: CDVPlugin {
                 self.webView?.scrollView.backgroundColor = nil
             }
 
-            commandDelegate.send(.success, callbackId: command.callbackId)
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
@@ -928,7 +936,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeCaptureOverlay:)
     func updateBarcodeCaptureOverlay(command: CDVInvokedUrlCommand) {
-        guard let overlayJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let overlayJson = payload["overlayJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -938,7 +946,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeCaptureMode:)
     func updateBarcodeCaptureMode(command: CDVInvokedUrlCommand) {
-        guard let modeJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let modeJson = payload["modeJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -948,7 +956,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(applyBarcodeCaptureModeSettings:)
     func applyBarcodeCaptureModeSettings(command: CDVInvokedUrlCommand) {
-        guard let modeSettingsJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let modeSettingsJson = payload["modeSettingsJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -958,7 +966,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeSelectionBasicOverlay:)
     func updateBarcodeSelectionBasicOverlay(command: CDVInvokedUrlCommand) {
-        guard let overlayJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let overlayJson = payload["overlayJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -968,7 +976,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeSelectionMode:)
     func updateBarcodeSelectionMode(command: CDVInvokedUrlCommand) {
-        guard let modeJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let modeJson = payload["modeJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -978,7 +986,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(applyBarcodeSelectionModeSettings:)
     func applyBarcodeSelectionModeSettings(command: CDVInvokedUrlCommand) {
-        guard let modeSettingsJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let modeSettingsJson = payload["modeSettingsJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -988,7 +996,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeSelectionFeedback:)
     func updateBarcodeSelectionFeedback(command: CDVInvokedUrlCommand) {
-        guard let feedbackJson = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let feedbackJson = payload["feedbackJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -1039,11 +1047,11 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(setTextForAimToSelectAutoHint:)
     func setTextForAimToSelectAutoHint(command: CDVInvokedUrlCommand) {
-        guard let hintText = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let text = payload["text"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
-        barcodeSelectionModule.setTextForAimToSelectAutoHint(text: hintText,
+        barcodeSelectionModule.setTextForAimToSelectAutoHint(text: text,
                                                              result: CordovaResult(commandDelegate, command.callbackId))
     }
 
@@ -1068,12 +1076,12 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(increaseCountForBarcodes:)
     func increaseCountForBarcodes(command: CDVInvokedUrlCommand) {
-        guard let json = command.defaultArgumentAsString else {
+        guard let payload = command.defaultArgumentAsDictionary, let barcodesJson = payload["barcodesJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
 
-        barcodeSelectionModule.increaseCountForBarcodes(barcodesJson: json, result: CordovaResult(commandDelegate, command.callbackId))
+        barcodeSelectionModule.increaseCountForBarcodes(barcodesJson: barcodesJson, result: CordovaResult(commandDelegate, command.callbackId))
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
@@ -1143,42 +1151,44 @@ class ScanditBarcodeCapture: CDVPlugin {
             return
         }
 
-        dispatchMainSync {
-            sparkScanModule.addViewToContainer(self.webView,
-                                               jsonString: viewJson,
-                                               result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.sparkScanModule.addViewToContainer(
+                self.webView,
+                jsonString: viewJson,
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
         }
     }
 
     @objc(disposeSparkScanView:)
     func disposeSparkScanView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
-            sparkScanModule.disposeView()
-            commandDelegate.send(.success, callbackId: command.callbackId)
+        dispatchMain {
+            self.sparkScanModule.disposeView()
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
     @objc(showSparkScanView:)
     func showSparkScanView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
+        dispatchMain {
             guard let sparkScanView = self.sparkScanModule.sparkScanView else {
-                commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
+                self.commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
                 return
             }
             sparkScanView.isHidden = false
-            commandDelegate.send(.success, callbackId: command.callbackId)
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
     @objc(hideSparkScanView:)
     func hideSparkScanView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
+        dispatchMain {
             guard let sparkScanView = self.sparkScanModule.sparkScanView else {
-                commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
+                self.commandDelegate.send(.failure(with: .noViewToBeShown), callbackId: command.callbackId)
                 return
             }
             sparkScanView.isHidden = true
-            commandDelegate.send(.success, callbackId: command.callbackId)
+            self.commandDelegate.send(.success, callbackId: command.callbackId)
         }
     }
 
@@ -1322,12 +1332,14 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     // MARK: Barcode Count
 
-    @objc(updateMode:)
-    func updateMode(command: CDVInvokedUrlCommand) {
-        guard let modeJson = command.defaultArgumentAsString else {
+    @objc(updateBarcodeCountMode:)
+    func updateBarcodeCountMode(command: CDVInvokedUrlCommand) {
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let modeJson = argsJson["barcodeCountJson"] as? String else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
+
         barcodeCountModule.updateBarcodeCount(modeJson: modeJson, result: CordovaResult(commandDelegate, command.callbackId))
     }
 
@@ -1353,7 +1365,12 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(setBarcodeCountModeEnabledState:)
     func setBarcodeCountModeEnabledState(command: CDVInvokedUrlCommand) {
-        let enabled = (command.defaultArgument as? Bool) ?? (command.defaultArgument == nil ? true : false)
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let enabled = argsJson["isEnabled"] as? Bool
+        else {
+            commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
+            return
+        }
 
         barcodeCountModule.setModeEnabled(enabled: enabled)
         commandDelegate.send(.success, callbackId: command.callbackId)
@@ -1361,35 +1378,39 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeCountFeedback:)
     func updateBarcodeCountFeedback(command: CDVInvokedUrlCommand) {
-        if let feedbackJson = command.defaultArgumentAsString {
-            barcodeCountModule.updateFeedback(feedbackJson: feedbackJson, result: CordovaResult(commandDelegate, command.callbackId))
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let feedbackJson = argsJson["feedbackJson"] as? String
+        else {
+            commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
 
-        commandDelegate.send(.failure(with: .noFeedbackJsonPassed), callbackId: command.callbackId)
+        barcodeCountModule.updateFeedback(feedbackJson: feedbackJson, result: CordovaResult(commandDelegate, command.callbackId))
     }
 
-    @objc(finishBarcodeCountListenerOnScan:)
-    func finishBarcodeCountListenerOnScan(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeCountOnScan:)
+    func finishBarcodeCountOnScan(command: CDVInvokedUrlCommand) {
         barcodeCountModule.finishOnScan(enabled: true)
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
-    @objc(startScanningPhase:)
-    func startScanningPhase(command: CDVInvokedUrlCommand) {
+    @objc(startBarcodeCountScanningPhase:)
+    func startBarcodeCountScanningPhase(command: CDVInvokedUrlCommand) {
         barcodeCountModule.startScanningPhase()
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
-    @objc(endScanningPhase:)
-    func endScanningPhase(command: CDVInvokedUrlCommand) {
+    @objc(endBarcodeCountScanningPhase:)
+    func endBarcodeCountScanningPhase(command: CDVInvokedUrlCommand) {
         barcodeCountModule.endScanningPhase()
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
     @objc(setBarcodeCountCaptureList:)
     func setBarcodeCountCaptureList(command: CDVInvokedUrlCommand) {
-        guard let barcodesJson = command.defaultArgumentAsString else {
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let barcodesJson = argsJson["captureListJson"] as? String
+        else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -1397,17 +1418,17 @@ class ScanditBarcodeCapture: CDVPlugin {
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
-    @objc(getSpatialMap:)
-    func getSpatialMap(command: CDVInvokedUrlCommand) {
+    @objc(getBarcodeCountSpatialMap:)
+    func getBarcodeCountSpatialMap(command: CDVInvokedUrlCommand) {
         barcodeCountModule.submitSpatialMap(result: CordovaResult(commandDelegate, command.callbackId))
     }
 
-    @objc(getSpatialMapWithHints:)
-    func getSpatialMapWithHints(command: CDVInvokedUrlCommand) {
+    @objc(getBarcodeCountSpatialMapWithHints:)
+    func getBarcodeCountSpatialMapWithHints(command: CDVInvokedUrlCommand) {
         if let hints = command.defaultArgumentAsDictionary,
            let expectedNumberOfRows = hints["expectedNumberOfRows"] as? Int,
            let expectedNumberOfColumns = hints["expectedNumberOfColumns"] as? Int {
-            
+
             barcodeCountModule.submitSpatialMap(
                 expectedNumberOfRows: expectedNumberOfRows,
                 expectedNumberOfColumns: expectedNumberOfColumns,
@@ -1426,7 +1447,9 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(updateBarcodeCountView:)
     func updateBarcodeCountView(command: CDVInvokedUrlCommand) {
-        guard let viewJson = command.defaultArgumentAsString else {
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let viewJson = argsJson["viewJson"] as? String
+        else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
@@ -1435,30 +1458,38 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(createBarcodeCountView:)
     func createBarcodeCountView(command: CDVInvokedUrlCommand) {
-        guard let viewJson = command.defaultArgumentAsString else {
+        guard let argsJson = command.defaultArgumentAsDictionary,
+              let viewJson = argsJson["viewJson"] as? String
+        else {
             commandDelegate.send(.failure(with: .invalidJSON), callbackId: command.callbackId)
             return
         }
-        
-        dispatchMainSync {
-            barcodeCountViewConstraints.captureView?.removeFromSuperview()
-            barcodeCountViewConstraints.captureView = nil
 
-            barcodeCountModule.addViewFromJson(parent: viewController.view, viewJson: viewJson, result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.barcodeCountViewConstraints.captureView?.removeFromSuperview()
+            self.barcodeCountViewConstraints.captureView = nil
 
-            if let barcodeCountView = barcodeCountModule.barcodeCountView {
+            self.barcodeCountModule.addViewFromJson(
+                parent: self.viewController.view,
+                viewJson: viewJson,
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
+
+            if let barcodeCountView = self.barcodeCountModule.barcodeCountView {
                 barcodeCountView.isHidden = true
                 barcodeCountView.translatesAutoresizingMaskIntoConstraints = false
-                barcodeCountViewConstraints.captureView = barcodeCountView
+                self.barcodeCountViewConstraints.captureView = barcodeCountView
             }
         }
     }
-    
+
     @objc(removeBarcodeCountView:)
     func rmeoveBarcodeCountView(command: CDVInvokedUrlCommand) {
-        dispatchMainSync {
-            barcodeCountViewConstraints.captureView = nil
-            barcodeCountModule.removeBarcodeCountView(result: CordovaResult(commandDelegate, command.callbackId))
+        dispatchMain {
+            self.barcodeCountViewConstraints.captureView = nil
+            self.barcodeCountModule.removeBarcodeCountView(
+                result: CordovaResult(self.commandDelegate, command.callbackId)
+            )
         }
     }
 
@@ -1549,11 +1580,11 @@ class ScanditBarcodeCapture: CDVPlugin {
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 
-    @objc(finishBarcodeCountViewListenerBrushForRecognizedBarcode:)
-    func finishBarcodeCountViewListenerBrushForRecognizedBarcode(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeCountBrushForRecognizedBarcode:)
+    func finishBarcodeCountBrushForRecognizedBarcode(command: CDVInvokedUrlCommand) {
         if let hints = command.defaultArgumentAsDictionary,
-           let brushJson = hints["brush"] as? String,
-           let trackedBarcodeId = hints["trackedBarcodeID"] as? Int {
+           let brushJson = hints["brushJson"] as? String,
+           let trackedBarcodeId = hints["trackedBarcodeId"] as? Int {
 
             let brush = Brush(jsonString: brushJson)
 
@@ -1563,11 +1594,11 @@ class ScanditBarcodeCapture: CDVPlugin {
         }
     }
 
-    @objc(finishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList:)
-    func finishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeCountBrushForRecognizedBarcodeNotInList:)
+    func finishBarcodeCountBrushForRecognizedBarcodeNotInList(command: CDVInvokedUrlCommand) {
         if let hints = command.defaultArgumentAsDictionary,
-           let brushJson = hints["brush"] as? String,
-           let trackedBarcodeId = hints["trackedBarcodeID"] as? Int {
+           let brushJson = hints["brushJson"] as? String,
+           let trackedBarcodeId = hints["trackedBarcodeId"] as? Int {
 
             let brush = Brush(jsonString: brushJson)
 
@@ -1577,11 +1608,11 @@ class ScanditBarcodeCapture: CDVPlugin {
         }
     }
 
-    @objc(finishBarcodeCountViewListenerOnBrushForAcceptedBarcode:)
-    func finishBarcodeCountViewListenerOnBrushForAcceptedBarcode(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeCountBrushForAcceptedBarcode:)
+    func finishBarcodeCountBrushForAcceptedBarcode(command: CDVInvokedUrlCommand) {
         if let hints = command.defaultArgumentAsDictionary,
-           let brushJson = hints["brush"] as? String,
-           let trackedBarcodeId = hints["trackedBarcodeID"] as? Int {
+           let brushJson = hints["brushJson"] as? String,
+           let trackedBarcodeId = hints["trackedBarcodeId"] as? Int {
 
             let brush = Brush(jsonString: brushJson)
 
@@ -1593,11 +1624,11 @@ class ScanditBarcodeCapture: CDVPlugin {
         }
     }
 
-    @objc(finishBarcodeCountViewListenerOnBrushForRejectedBarcode:)
-    func finishBarcodeCountViewListenerOnBrushForRejectedBarcode(command: CDVInvokedUrlCommand) {
+    @objc(finishBarcodeCountBrushForRejectedBarcode:)
+    func finishBarcodeCountBrushForRejectedBarcode(command: CDVInvokedUrlCommand) {
         if let hints = command.defaultArgumentAsDictionary,
-           let brushJson = hints["brush"] as? String,
-           let trackedBarcodeId = hints["trackedBarcodeID"] as? Int {
+           let brushJson = hints["brushJson"] as? String,
+           let trackedBarcodeId = hints["trackedBarcodeId"] as? Int {
 
             let brush = Brush(jsonString: brushJson)
 

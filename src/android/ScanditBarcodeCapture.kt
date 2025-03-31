@@ -63,7 +63,6 @@ import com.scandit.datacapture.frameworks.barcode.spark.delegates.FrameworksSpar
 import com.scandit.datacapture.frameworks.barcode.spark.listeners.FrameworksSparkScanListener
 import com.scandit.datacapture.frameworks.barcode.spark.listeners.FrameworksSparkScanViewUiListener
 import com.scandit.datacapture.frameworks.core.extensions.getOrNull
-import com.scandit.datacapture.frameworks.core.result.NoopFrameworksResult
 import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
 import com.scandit.datacapture.frameworks.core.utils.MainThread
 import org.apache.cordova.CallbackContext
@@ -192,20 +191,6 @@ class ScanditBarcodeCapture :
         barcodeCountModule.setModeEnabled(lastBarcodeCountEnabledState)
     }
 
-    override fun onPause(multitasking: Boolean) {
-        super.onPause(multitasking)
-        barcodePickModule.viewOnPause()
-        sparkScanModule.onPause()
-        barcodeFindModule.viewOnPause(NoopFrameworksResult())
-    }
-
-    override fun onResume(multitasking: Boolean) {
-        super.onResume(multitasking)
-        barcodePickModule.viewOnResume()
-        sparkScanModule.onResume(NoopFrameworksResult())
-        barcodeFindModule.viewOnResume(NoopFrameworksResult())
-    }
-
     override fun onReset() {
         destroy()
         pluginInitialize()
@@ -260,7 +245,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun subscribeBarcodeCaptureListener(
+    fun registerBarcodeCaptureListenerForEvents(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -277,7 +262,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun unsubscribeBarcodeCaptureListener(
+    fun unregisterBarcodeCaptureListenerForEvents(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -318,7 +303,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun subscribeBarcodeSelectionListener(
+    fun registerBarcodeSelectionListenerForEvents(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -335,7 +320,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun unsubscribeBarcodeSelectionListener(
+    fun unregisterBarcodeSelectionListenerForEvents(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -362,7 +347,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun finishBarcodeSelectionDidUpdateSelection(
+    fun finishBarcodeSelectionDidSelect(
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -596,8 +581,13 @@ class ScanditBarcodeCapture :
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val selectionIdentifier = args.optString("selectionIdentifier", "")
+        if (selectionIdentifier.isBlank()) {
+            callbackContext.error("selectionIdentifier cannot be empty.")
+            return
+        }
         barcodeSelectionModule.submitBarcodeCountForIdentifier(
-            args.defaultArgumentAsString,
+            selectionIdentifier,
             CordovaResult(callbackContext)
         )
     }
@@ -658,16 +648,26 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun increaseCountForBarcodes(args: JSONArray, callbackContext: CallbackContext) {
+        val barcodesJson = args.optString("barcodesJson", "")
+        if (barcodesJson.isBlank()) {
+            callbackContext.error("barcodesJson cannot be empty")
+            return
+        }
         barcodeSelectionModule.increaseCountForBarcodes(
-            args.defaultArgumentAsString,
+            barcodesJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun unselectBarcodes(args: JSONArray, callbackContext: CallbackContext) {
+        val barcodesJson = args.optString("barcodesJson", "")
+        if (barcodesJson.isBlank()) {
+            callbackContext.error("barcodesJson cannot be empty")
+            return
+        }
         barcodeSelectionModule.unselectBarcodes(
-            args.defaultArgumentAsString,
+            barcodesJson,
             CordovaResult(callbackContext)
         )
     }
@@ -676,7 +676,7 @@ class ScanditBarcodeCapture :
     fun setSelectBarcodeEnabled(args: JSONArray, callbackContext: CallbackContext) {
         val argument = args.getJSONObject(0)
         val enabled = argument.optBoolean("enabled", false)
-        val barcodeJson = argument["barcode"].toString()
+        val barcodeJson = argument["barcodeJson"].toString()
         barcodeSelectionModule.setSelectBarcodeEnabled(
             barcodeJson,
             enabled,
@@ -830,7 +830,8 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewOnPause(CordovaResult(callbackContext))
+        // No need for this
+        callbackContext.success()
     }
 
     @PluginMethod
@@ -838,7 +839,8 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewOnResume(CordovaResult(callbackContext))
+        // No need for this
+        callbackContext.success()
     }
 
     @PluginMethod
@@ -1230,7 +1232,7 @@ class ScanditBarcodeCapture :
     @PluginMethod
     fun updateBarcodeCaptureOverlay(args: JSONArray, callbackContext: CallbackContext) {
         barcodeCaptureModule.updateOverlay(
-            args.defaultArgumentAsString,
+            args.optString("overlayJson", ""),
             CordovaResult(callbackContext)
         )
     }
@@ -1238,7 +1240,7 @@ class ScanditBarcodeCapture :
     @PluginMethod
     fun updateBarcodeCaptureMode(args: JSONArray, callbackContext: CallbackContext) {
         barcodeCaptureModule.updateModeFromJson(
-            args.defaultArgumentAsString,
+            args.optString("modeJson", ""),
             CordovaResult(callbackContext)
         )
     }
@@ -1246,47 +1248,68 @@ class ScanditBarcodeCapture :
     @PluginMethod
     fun applyBarcodeCaptureModeSettings(args: JSONArray, callbackContext: CallbackContext) {
         barcodeCaptureModule.applyModeSettings(
-            args.defaultArgumentAsString,
+            args.optString("modeSettingsJson", ""),
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun updateBarcodeSelectionBasicOverlay(args: JSONArray, callbackContext: CallbackContext) {
+        val overlayJson = args.optString("overlayJson", "")
+        if (overlayJson.isBlank()) {
+            callbackContext.error("overlayJson cannot be empty")
+            return
+        }
         barcodeSelectionModule.updateBasicOverlay(
-            args.defaultArgumentAsString,
+            overlayJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun updateBarcodeSelectionMode(args: JSONArray, callbackContext: CallbackContext) {
+        val modeJson = args.optString("modeJson", "")
+        if (modeJson.isBlank()) {
+            callbackContext.error("modeJson cannot be empty.")
+            return
+        }
         barcodeSelectionModule.updateModeFromJson(
-            args.defaultArgumentAsString,
+            modeJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun applyBarcodeSelectionModeSettings(args: JSONArray, callbackContext: CallbackContext) {
+        val modeSettingsJson = args.optString("modeSettingsJson", "")
+        if (modeSettingsJson.isBlank()) {
+            callbackContext.error("modeSettingsJson cannot be empty.")
+            return
+        }
         barcodeSelectionModule.applyModeSettings(
-            args.defaultArgumentAsString,
+            modeSettingsJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun updateBarcodeSelectionFeedback(args: JSONArray, callbackContext: CallbackContext) {
+        val feedbackJson = args.optString("feedbackJson", "")
+        if (feedbackJson.isBlank()) {
+            callbackContext.error("feedbackJson cannot be empty.")
+            return
+        }
         barcodeSelectionModule.updateFeedback(
-            args.defaultArgumentAsString,
+            feedbackJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun setTextForAimToSelectAutoHint(args: JSONArray, callbackContext: CallbackContext) {
+        val text = args.optString("text", "")
         barcodeSelectionModule.setTextForAimToSelectAutoHint(
-            args.defaultArgumentAsString,
+            text,
             CordovaResult(callbackContext)
         )
     }
@@ -1519,7 +1542,7 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        sparkScanModule.onPause()
+        // Noop
         callbackContext.success()
     }
 
@@ -1545,7 +1568,8 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        sparkScanModule.onResume(CordovaResult(callbackContext))
+        // Noop
+        callbackContext.success()
     }
 
     @PluginMethod
@@ -1662,9 +1686,11 @@ class ScanditBarcodeCapture :
     // Barcode Count - Start
 
     @PluginMethod
-    fun updateMode(args: JSONArray, callbackContext: CallbackContext) {
+    fun updateBarcodeCountMode(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val modeJson = argsJson.getString("barcodeCountJson")
         barcodeCountModule.updateBarcodeCount(
-            args.defaultArgumentAsString,
+            modeJson,
         )
         callbackContext.success()
     }
@@ -1707,14 +1733,17 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun setBarcodeCountModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCountModule.setModeEnabled(args.optBoolean(0, true))
+        val argsJson = args.getJSONObject(0)
+        val isEnabled = argsJson.getBoolean("isEnabled")
+        barcodeCountModule.setModeEnabled(isEnabled)
         callbackContext.success()
     }
 
     @PluginMethod
     fun updateBarcodeCountFeedback(args: JSONArray, callbackContext: CallbackContext) {
-        val feedbackJson = args.optString(0)
-        if (feedbackJson.isNullOrBlank()) {
+        val argsJson = args.getJSONObject(0)
+        val feedbackJson = argsJson.getString("feedbackJson")
+        if (feedbackJson.isBlank()) {
             callbackContext.error("No feedbackJson was provided for the function.")
             return
         }
@@ -1722,7 +1751,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun finishBarcodeCountListenerOnScan(
+    fun finishBarcodeCountOnScan(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1731,7 +1760,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun startScanningPhase(
+    fun startBarcodeCountScanningPhase(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1740,7 +1769,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun endScanningPhase(
+    fun endBarcodeCountScanningPhase(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1756,7 +1785,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun getSpatialMap(
+    fun getBarcodeCountSpatialMap(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1764,7 +1793,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun getSpatialMapWithHints(args: JSONArray, callbackContext: CallbackContext) {
+    fun getBarcodeCountSpatialMapWithHints(args: JSONArray, callbackContext: CallbackContext) {
         val hints = args.getJSONObject(0)
         val expectedNumberOfRows = hints.getInt("expectedNumberOfRows")
         val expectedNumberOfColumns = hints.getInt("expectedNumberOfColumns")
@@ -1786,13 +1815,16 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun updateBarcodeCountView(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCountModule.updateBarcodeCountView(args.defaultArgumentAsString)
+        val argsJson = args.getJSONObject(0)
+        val viewJson = argsJson.getString("viewJson")
+        barcodeCountModule.updateBarcodeCountView(viewJson)
         callbackContext.success()
     }
 
     @PluginMethod
     fun createBarcodeCountView(args: JSONArray, callbackContext: CallbackContext) {
-        val viewJson = args.defaultArgumentAsString
+        val argsJson = args.getJSONObject(0)
+        val viewJson = argsJson.getString("viewJson")
         val barcodeCountView = barcodeCountModule.getViewFromJson(viewJson)
         if (barcodeCountView == null) {
             callbackContext.error(
@@ -1983,62 +2015,64 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun finishBarcodeCountViewListenerBrushForRecognizedBarcode(
+    fun finishBarcodeCountBrushForRecognizedBarcode(
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
-        val brushJson = payload.getOrNull("brush")
+        val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
-        val trackedBarcodeId = payload.optInt("trackedBarcodeID", -1)
+        val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
         barcodeCountModule.finishBrushForRecognizedBarcodeEvent(brush, trackedBarcodeId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun finishBarcodeCountViewListenerBrushForRecognizedBarcodeNotInList(
+    fun finishBarcodeCountBrushForRecognizedBarcodeNotInList(
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
-        val brushJson = payload.getOrNull("brush")
+        val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
-        val trackedBarcodeId = payload.optInt("trackedBarcodeID", -1)
+        val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
         barcodeCountModule.finishBrushForRecognizedBarcodeNotInListEvent(brush, trackedBarcodeId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun finishBarcodeCountViewListenerOnBrushAcceptedBarcode(
+    fun finishBarcodeCountBrushForAcceptedBarcode(
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
-        val brushJson = payload.getOrNull("brush")
+        val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
-        val trackedBarcodeId = payload.optInt("trackedBarcodeID", -1)
+        val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
         barcodeCountModule.finishBrushForAcceptedBarcodeEvent(brush, trackedBarcodeId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun finishBarcodeCountViewListenerOnBrushRejectedBarcode(
+    fun finishBarcodeCountBrushForRejectedBarcode(
         args: JSONArray,
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
-        val brushJson = payload.getOrNull("brush")
+        val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
-        val trackedBarcodeId = payload.optInt("trackedBarcodeID", -1)
+        val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
         barcodeCountModule.finishBrushForRejectedBarcodeEvent(brush, trackedBarcodeId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun barcodeCountViewEnableHardwareTrigger(args: JSONArray, callbackContext: CallbackContext) {
-        val hardwareTriggerKeyCode = args.optInt(0, Int.MAX_VALUE).takeIf {
-            it != Int.MAX_VALUE
-        }
+    fun enablenableHardwareTrigger(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val hardwareTriggerKeyCode = argsJson.optInt("hardwareTriggerKeyCode", Int.MAX_VALUE)
+            .takeIf {
+                it != Int.MAX_VALUE
+            }
 
         barcodeCountModule.enableHardwareTrigger(
             hardwareTriggerKeyCode,
