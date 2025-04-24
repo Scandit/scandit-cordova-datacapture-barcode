@@ -11,13 +11,9 @@ class BarcodeFindViewHandler {
     let webView: WKWebView
 
     var barcodeFindView: BarcodeFindView? {
-        willSet {
-            barcodeFindView?.removeFromSuperview()
-        }
         didSet {
             guard let barcodeFindView = barcodeFindView else { return }
             barcodeFindView.translatesAutoresizingMaskIntoConstraints = false
-            webView.addSubview(barcodeFindView)
             resetConstraints()
             update()
         }
