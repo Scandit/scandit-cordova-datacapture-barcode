@@ -13,7 +13,7 @@ export { SparkScanBarcodeFeedback, SparkScanBarcodeSuccessFeedback, SparkScanBar
 export { BarcodePickViewListener, BarcodePickViewUiListener, BarcodePickScanningSession, BarcodePickScanningListener } from 'scandit-datacapture-frameworks-barcode';
 export { Dot, DotWithIcons } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeFind, BarcodeFindFeedback, BarcodeFindItem, BarcodeFindItemContent, BarcodeFindItemSearchOptions } from 'scandit-datacapture-frameworks-barcode';
-export { BarcodeFindListener, BarcodeFindSettings, BarcodeFindViewSettings, BarcodeFindViewUiListener, BarcodeFindTransformer } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeFindListener, BarcodeFindSession, BarcodeFindSettings, BarcodeFindViewSettings, BarcodeFindViewUiListener, BarcodeFindTransformer } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeFindView } from './BarcodeFindView';
 export { BarcodeCount, BarcodeCountViewListener, BarcodeCountViewUiListener, BarcodeCountFeedback, BarcodeCountSession, BarcodeCountSettings, BarcodeCountViewStyle, BarcodeCountToolbarSettings, BarcodeCountNotInListActionSettings } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeCountCaptureList, BarcodeCountCaptureListSession, BarcodeFilterSettings, BarcodeFilterHighlightType, BarcodeCountListener, BarcodeFilterHighlightSettingsBrush, BarcodeFilterHighlightSettings } from 'scandit-datacapture-frameworks-barcode';
