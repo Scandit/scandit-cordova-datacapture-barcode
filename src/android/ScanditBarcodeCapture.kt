@@ -764,10 +764,6 @@ class ScanditBarcodeCapture :
             FrameworksBarcodeFindListener.ON_SEARCH_STOPPED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
-            FrameworksBarcodeFindListener.ON_SESSION_UPDATED_EVENT_NAME,
-            callbackContext
-        )
 
         barcodeFindModule.addBarcodeFindListener(CordovaResultKeepCallback(callbackContext))
     }
@@ -786,9 +782,6 @@ class ScanditBarcodeCapture :
         )
         eventEmitter.unregisterCallback(
             FrameworksBarcodeFindListener.ON_SEARCH_STOPPED_EVENT_NAME
-        )
-        eventEmitter.unregisterCallback(
-            FrameworksBarcodeFindListener.ON_SESSION_UPDATED_EVENT_NAME
         )
 
         barcodeFindModule.removeBarcodeFindListener(CordovaResult(callbackContext))
@@ -911,8 +904,7 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun createPickView(args: JSONArray, callbackContext: CallbackContext) {
-        val argsJson = args.getJSONObject(0)
-        val viewJson = argsJson.getString("json")
+        val viewJson = args.defaultArgumentAsString
         val container = barcodePickViewHandler.prepareContainer()
 
         barcodePickModule.addViewToContainer(container, viewJson, CordovaResult(callbackContext))
@@ -932,7 +924,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun pickViewStart(
+    fun viewStart(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -941,7 +933,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun pickViewStop(
+    fun viewStop(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -950,7 +942,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun pickViewFreeze(
+    fun viewFreeze(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -973,7 +965,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun addPickActionListener(
+    fun subscribeDidPickItemListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -981,22 +973,27 @@ class ScanditBarcodeCapture :
             FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
-            FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME,
-            callbackContext
-        )
-        barcodePickModule.addActionListener()
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun removePickActionListener(
+    fun subscribeDidUnpickItemListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME)
-        barcodePickModule.removeActionListener()
+        eventEmitter.registerCallback(
+            FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME,
+            callbackContext
+        )
+        callbackContext.successAndKeepCallback()
+    }
+
+    @PluginMethod
+    fun addActionListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        barcodePickModule.addActionListener()
         callbackContext.success()
     }
 
@@ -1045,7 +1042,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun registerOnProductIdentifierForItemsListener(
+    fun subscribeProductIdentifierForItemsListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1058,7 +1055,7 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun unregisterOnProductIdentifierForItemsListener(
+    fun unsubscribeProductIdentifierForItemsListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1070,26 +1067,16 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun addBarcodePickScanningListener(
+    fun addScanningListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
-            FrameworksBarcodePickScanningListener
-                .ON_COMPLETE_SCANNING,
-            callbackContext
-        )
-        eventEmitter.registerCallback(
-            FrameworksBarcodePickScanningListener
-                .ON_UPDATE_SCANNING,
-            callbackContext
-        )
-        barcodePickModule.addScanningListener(CordovaResultKeepCallback(callbackContext))
+        barcodePickModule.addScanningListener(CordovaResult(callbackContext))
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
-    fun removeBarcodePickScanningListener(
+    fun removeScanningListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1105,7 +1092,15 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun addPickViewListener(
+    fun addViewListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        barcodePickModule.addViewListener(CordovaResult(callbackContext))
+    }
+
+    @PluginMethod
+    fun subscribeDidStartScanningListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1114,38 +1109,90 @@ class ScanditBarcodeCapture :
                 .DID_START_SCANNING_EVENT,
             callbackContext
         )
+
+        callbackContext.successAndKeepCallback()
+    }
+
+    @PluginMethod
+    fun subscribeDidFreezeScanningListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
         eventEmitter.registerCallback(
             FrameworksBarcodePickViewListener
                 .DID_FREEZE_SCANNING_EVENT,
             callbackContext
         )
+
+        callbackContext.successAndKeepCallback()
+    }
+
+    @PluginMethod
+    fun subscribeDidPauseScanningListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
         eventEmitter.registerCallback(
             FrameworksBarcodePickViewListener
                 .DID_PAUSE_SCANNING_EVENT,
             callbackContext
         )
+
+        callbackContext.successAndKeepCallback()
+    }
+
+    @PluginMethod
+    fun subscribeDidStopScanningListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
         eventEmitter.registerCallback(
             FrameworksBarcodePickViewListener
                 .DID_STOP_SCANNING_EVENT,
             callbackContext
         )
-        barcodePickModule.addViewListener(CordovaResultKeepCallback(callbackContext))
+
+        callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun removePickViewListener(
+    fun subscribeDidCompleteScanningSessionListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_START_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_STOP_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_PAUSE_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_FREEZE_SCANNING_EVENT)
-        barcodePickModule.removeViewListener(CordovaResult(callbackContext))
+        eventEmitter.registerCallback(
+            FrameworksBarcodePickScanningListener
+                .ON_COMPLETE_SCANNING,
+            callbackContext
+        )
+
+        callbackContext.successAndKeepCallback()
+    }
+
+    @PluginMethod
+    fun subscribeDidUpdateScanningSessionListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        eventEmitter.registerCallback(
+            FrameworksBarcodePickScanningListener
+                .ON_UPDATE_SCANNING,
+            callbackContext
+        )
+
+        callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
     fun registerBarcodePickViewUiListener(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        barcodePickModule.addViewUiListener(CordovaResultKeepCallback(callbackContext))
+    }
+
+    @PluginMethod
+    fun subscribeBarcodePickViewUiListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1154,12 +1201,13 @@ class ScanditBarcodeCapture :
                 .DID_TAP_FINISH_BUTTON_EVENT,
             callbackContext
         )
-        barcodePickModule.addViewUiListener(CordovaResultKeepCallback(callbackContext))
+
+        callbackContext.successAndKeepCallback()
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
-    fun unregisterBarcodePickViewUiListener(
+    fun unsubscribeBarcodePickViewUiListener(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
@@ -1173,7 +1221,7 @@ class ScanditBarcodeCapture :
     @PluginMethod
     fun finishOnProductIdentifierForItems(args: JSONArray, callbackContext: CallbackContext) {
         barcodePickModule.finishOnProductIdentifierForItems(
-            args.optString("itemsJson", "")
+            args.defaultArgumentAsString
         )
         callbackContext.success()
     }
@@ -1492,12 +1540,6 @@ class ScanditBarcodeCapture :
             callbackContext
         )
 
-        eventEmitter.registerViewSpecificCallback(
-            viewId,
-            FrameworksSparkScanViewUiListener.EVENT_LABEL_CAPTURE_BUTTON_TAP,
-            callbackContext
-        )
-
         sparkScanModule.addSparkScanViewUiListener(viewId)
 
         callbackContext.successAndKeepCallback()
@@ -1526,11 +1568,6 @@ class ScanditBarcodeCapture :
         eventEmitter.unregisterViewSpecificCallback(
             viewId,
             FrameworksSparkScanViewUiListener.EVENT_BARCODE_FIND_BUTTON_TAP
-        )
-
-        eventEmitter.unregisterViewSpecificCallback(
-            viewId,
-            FrameworksSparkScanViewUiListener.EVENT_LABEL_CAPTURE_BUTTON_TAP
         )
         callbackContext.success()
     }
