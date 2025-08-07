@@ -11,13 +11,9 @@ class BarcodePickViewHandler {
     let webView: WKWebView
 
     var barcodePickView: BarcodePickView? {
-        willSet {
-            barcodePickView?.removeFromSuperview()
-        }
         didSet {
             guard let barcodePickView = barcodePickView else { return }
             barcodePickView.translatesAutoresizingMaskIntoConstraints = false
-            webView.addSubview(barcodePickView)
             resetConstraints()
             update()
         }
