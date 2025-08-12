@@ -1,6 +1,6 @@
 {
   "name": "scandit-cordova-datacapture-barcode",
-  "version": "7.2.4",
+  "version": "7.5.0",
   "description": "Scandit Data Capture SDK for Cordova",
   "license": "Apache-2.0",
   "private": false,
@@ -21,9 +21,9 @@
     "clean-all": "npm run clean && rimraf node_modules"
   },
   "dependencies": {
-    "scandit-cordova-datacapture-core": "7.2.4",
-    "scandit-datacapture-frameworks-core": "7.2.4",
-    "scandit-datacapture-frameworks-barcode": "7.2.4"
+    "scandit-cordova-datacapture-core": "7.5.0",
+    "scandit-datacapture-frameworks-core": "7.5.0",
+    "scandit-datacapture-frameworks-barcode": "7.5.0"
   },
   "devDependencies": {},
   "cordova": {
