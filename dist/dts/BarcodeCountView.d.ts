@@ -11,6 +11,7 @@ export declare class BarcodeCountView {
     static get defaultAcceptedBrush(): Brush;
     static get defaultRejectedBrush(): Brush;
     static get hardwareTriggerSupported(): boolean;
+    private viewId;
     get uiListener(): BarcodeCountViewUiListener | null;
     set uiListener(listener: BarcodeCountViewUiListener | null);
     get listener(): BarcodeCountViewListener | null;
