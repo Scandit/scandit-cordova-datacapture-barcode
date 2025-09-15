@@ -80,9 +80,7 @@ class ScanditBarcodeCapture :
     private val permissionRequest = PermissionRequest.getInstance()
 
     private val barcodeModule = BarcodeModule()
-    private val barcodeCaptureModule = BarcodeCaptureModule(
-        FrameworksBarcodeCaptureListener(eventEmitter)
-    )
+    private val barcodeCaptureModule = BarcodeCaptureModule.create(eventEmitter)
     private val barcodeBatchModule = BarcodeBatchModule.create(eventEmitter)
     private val barcodeSelectionModule = BarcodeSelectionModule(
         FrameworksBarcodeSelectionListener(eventEmitter),
@@ -137,7 +135,7 @@ class ScanditBarcodeCapture :
 
     override fun onStop() {
         lastBarcodeCaptureEnabledState = barcodeCaptureModule.isModeEnabled()
-        barcodeCaptureModule.setModeEnabled(false)
+        barcodeCaptureModule.setTopMostModeEnabled(false)
 
         lastBarcodeBatchEnabledState = barcodeBatchModule.isModeEnabled()
         barcodeBatchModule.setTopMostModeEnabled(false)
@@ -156,7 +154,7 @@ class ScanditBarcodeCapture :
     }
 
     override fun onStart() {
-        barcodeCaptureModule.setModeEnabled(lastBarcodeCaptureEnabledState)
+        barcodeCaptureModule.setTopMostModeEnabled(lastBarcodeCaptureEnabledState)
         barcodeBatchModule.setTopMostModeEnabled(lastBarcodeBatchEnabledState)
         barcodeSelectionModule.setModeEnabled(lastBarcodeSelectionEnabledState)
         barcodeFindModule.setTopMostModeEnabled(lastBarcodeFindEnabledState)
@@ -221,33 +219,41 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun registerBarcodeCaptureListenerForEvents(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        eventEmitter.registerModeSpecificCallback(
+            modeId,
             FrameworksBarcodeCaptureListener.ON_SESSION_UPDATED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerModeSpecificCallback(
+            modeId,
             FrameworksBarcodeCaptureListener.ON_BARCODE_SCANNED_EVENT_NAME,
             callbackContext
         )
-        barcodeCaptureModule.addListener()
+        barcodeCaptureModule.addListener(modeId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
     fun unregisterBarcodeCaptureListenerForEvents(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        eventEmitter.unregisterModeSpecificCallback(
+            modeId,
             FrameworksBarcodeCaptureListener.ON_SESSION_UPDATED_EVENT_NAME
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterModeSpecificCallback(
+            modeId,
             FrameworksBarcodeCaptureListener.ON_BARCODE_SCANNED_EVENT_NAME
         )
-        barcodeCaptureModule.removeListener()
+        barcodeCaptureModule.removeListener(modeId)
         callbackContext.success()
     }
 
@@ -319,13 +325,19 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun finishBarcodeCaptureDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCaptureModule.finishDidUpdateSession(args.optBoolean("enabled", true))
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val enabled = argsJson.optBoolean("enabled", true)
+        barcodeCaptureModule.finishDidUpdateSession(modeId, enabled)
         callbackContext.success()
     }
 
     @PluginMethod
     fun finishBarcodeCaptureDidScan(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCaptureModule.finishDidScan(args.optBoolean("enabled", true))
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val enabled = argsJson.optBoolean("enabled", true)
+        barcodeCaptureModule.finishDidScan(modeId, enabled)
         callbackContext.success()
     }
 
@@ -613,10 +625,12 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun resetBarcodeCaptureSession(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCaptureModule.resetSession(null)
+        val argsJson = args.getJSONObject(0)
+        val frameSequenceId = argsJson.optLong("frameSequenceId", -1L)
+        barcodeCaptureModule.resetSession(if (frameSequenceId == -1L) null else frameSequenceId)
         callbackContext.success()
     }
 
@@ -712,8 +726,14 @@ class ScanditBarcodeCapture :
         )
         val container = barcodeFindViewHandler.prepareContainer()
 
-        barcodeFindModule.addViewToContainer(container, viewJson, CordovaResult(callbackContext))
-        barcodeFindViewHandler.addBarcodeFindViewContainer(viewId, container)
+        container.post {
+            barcodeFindModule.addViewToContainer(
+                container,
+                viewJson,
+                CordovaResult(callbackContext)
+            )
+            barcodeFindViewHandler.addBarcodeFindViewContainer(viewId, container)
+        }
     }
 
     @PluginMethod
@@ -1023,10 +1043,15 @@ class ScanditBarcodeCapture :
         val viewJson = argsJson.getString("json")
         val container = barcodePickViewHandler.prepareContainer()
 
-        barcodePickModule.addViewToContainer(container, viewJson, CordovaResult(callbackContext))
-
-        barcodePickViewHandler.addBarcodePickViewContainer(container)
-        barcodePickViewHandler.render()
+        container.post {
+            barcodePickModule.addViewToContainer(
+                container,
+                viewJson,
+                CordovaResult(callbackContext)
+            )
+            barcodePickViewHandler.addBarcodePickViewContainer(container)
+            barcodePickViewHandler.render()
+        }
     }
 
     @PluginMethod
@@ -1401,24 +1426,27 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun updateBarcodeCaptureOverlay(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCaptureModule.updateOverlay(
-            args.optString("overlayJson", ""),
-            CordovaResult(callbackContext)
-        )
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val overlayJson = argsJson.getString("overlayJson")
+        barcodeCaptureModule.updateOverlay(viewId, overlayJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun updateBarcodeCaptureMode(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCaptureModule.updateModeFromJson(
-            args.optString("modeJson", ""),
-            CordovaResult(callbackContext)
-        )
+        val argsJson = args.getJSONObject(0)
+        val modeJson = argsJson.getString("modeJson")
+        barcodeCaptureModule.updateModeFromJson(modeJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun applyBarcodeCaptureModeSettings(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val modeSettingsJson = argsJson.getString("modeSettingsJson")
         barcodeCaptureModule.applyModeSettings(
-            args.optString("modeSettingsJson", ""),
+            modeId,
+            modeSettingsJson,
             CordovaResult(callbackContext)
         )
     }
@@ -1558,7 +1586,10 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun setBarcodeCaptureModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeCaptureModule.setModeEnabled(args.optBoolean("enabled", false))
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val enabled = argsJson.optBoolean("enabled", false)
+        barcodeCaptureModule.setModeEnabled(modeId, enabled)
         callbackContext.success()
     }
 
