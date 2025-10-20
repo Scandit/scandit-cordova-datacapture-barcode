@@ -324,12 +324,7 @@ class ScanditBarcodeCapture: CDVPlugin {
 
     @objc(resetBarcodeCaptureSession:)
     func resetBarcodeCaptureSession(command: CDVInvokedUrlCommand) {
-        guard let json = command.defaultArgumentAsDictionary else {
-            commandDelegate.send(.failure(with: "Invalid arguments. Please provide a JSON object."), callbackId: command.callbackId)
-            return
-        }
-        let frameSequenceId = json["frameSequenceId"] as? Int
-        barcodeCaptureModule.resetSession(frameSequenceId: frameSequenceId)
+        barcodeCaptureModule.resetSession()
         commandDelegate.send(.success, callbackId: command.callbackId)
     }
 

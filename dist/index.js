@@ -62,7 +62,7 @@ function __decorate$1(decorators, target, key, desc) {
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
 
-function __awaiter(thisArg, _arguments, P, generator) {
+function __awaiter$1(thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -969,7 +969,7 @@ class BarcodeCountSessionController extends scanditDatacaptureFrameworksCore.Bas
         return this._proxy.$resetBarcodeCountSession({ viewId: this.viewId });
     }
     getSpatialMap() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const result = yield this._proxy.$getBarcodeCountSpatialMap({ viewId: this.viewId });
             if (result) {
                 const payload = JSON.parse(result.data);
@@ -978,7 +978,7 @@ class BarcodeCountSessionController extends scanditDatacaptureFrameworksCore.Bas
         });
     }
     getSpatialMapWithHints(expectedNumberOfRows, expectedNumberOfColumns) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const result = yield this._proxy.$getBarcodeCountSpatialMapWithHints({ viewId: this.viewId, expectedNumberOfRows, expectedNumberOfColumns });
             if (result) {
                 const payload = JSON.parse(result.data);
@@ -1016,13 +1016,13 @@ class BarcodeCountSession extends scanditDatacaptureFrameworksCore.DefaultSerial
         return this.sessionController.resetSession();
     }
     getSpatialMap() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = yield this.sessionController.getSpatialMap()) !== null && _a !== void 0 ? _a : null;
         });
     }
     getSpatialMapWithHints(expectedNumberOfRows, expectedNumberOfColumns) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = yield this.sessionController.getSpatialMapWithHints(expectedNumberOfRows, expectedNumberOfColumns)) !== null && _a !== void 0 ? _a : null;
         });
@@ -1207,7 +1207,7 @@ class BarcodeCountViewEventHandlers {
         (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapExitButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view.platformView);
     }
     handleBrushForRecognizedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController brushForRecognizedBarcode payload is null');
@@ -1227,7 +1227,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleBrushForRecognizedBarcodeNotInList(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController brushForRecognizedBarcodeNotInList payload is null');
@@ -1247,7 +1247,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleBrushForAcceptedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController brushForAcceptedBarcode payload is null');
@@ -1267,7 +1267,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleBrushForRejectedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController brushForRejectedBarcode payload is null');
@@ -1287,7 +1287,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleFilteredBarcodeTapped(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController filteredBarcodeTapped payload is null');
@@ -1304,7 +1304,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleRecognizedBarcodeNotInListTapped(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController recognizedBarcodeNotInListTapped payload is null');
@@ -1321,7 +1321,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleRecognizedBarcodeTapped(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController recognizedBarcodeTapped payload is null');
@@ -1338,7 +1338,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleAcceptedBarcodeTapped(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController acceptedBarcodeTapped payload is null');
@@ -1355,7 +1355,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleRejectedBarcodeTapped(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountViewController rejectedBarcodeTapped payload is null');
@@ -1385,7 +1385,7 @@ class BarcodeCountViewEventHandlers {
         }
     }
     handleDidScan(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountListenerController didScan payload is null');
@@ -1400,7 +1400,7 @@ class BarcodeCountViewEventHandlers {
         });
     }
     handleDidUpdateSession(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCountListenerController.subscribeListener: didListSessionUpdate payload is null');
@@ -1421,7 +1421,7 @@ class BarcodeCountViewEventHandlers {
         };
     }
     notifyListenersOfDidScanSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.barcodeCount;
             for (const listener of mode.listeners) {
                 if (listener.didScan) {
@@ -1475,7 +1475,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         this.eventHandlers = new BarcodeCountViewEventHandlers(this.view, this.barcodeCount, this._proxy);
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.setupEventListeners();
             if (this.barcodeCount._hasListeners) {
                 this.registerModeListener();
@@ -1523,7 +1523,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         return this._proxy.$createBarcodeCountView({ viewId: this.view.viewId, viewJson: JSON.stringify(barcodeCountViewJson) });
     }
     setUiListener(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (listener != null) {
                 this.registerUiListener();
             }
@@ -1533,7 +1533,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         });
     }
     setViewListener(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (listener != null) {
                 this.registerViewListener();
             }
@@ -1543,12 +1543,12 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         });
     }
     clearHighlights() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this._proxy.$clearBarcodeCountHighlights({ viewId: this.view.viewId });
         });
     }
     dispose() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.unsubscribeListeners();
             this._proxy.$disposeBarcodeCountView({ viewId: this.view.viewId });
             this._proxy.dispose();
@@ -1595,7 +1595,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         };
     }
     setupEventListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             this._proxy.on$singleScanButtonTapped = this.eventHandlers.handleSingleScanButtonTapped;
             this._proxy.on$listButtonTapped = this.eventHandlers.handleListButtonTapped;
             this._proxy.on$exitButtonTapped = this.eventHandlers.handleExitButtonTapped;
@@ -1614,7 +1614,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         });
     }
     unsubscribeListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this._proxy.$unregisterBarcodeCountViewListener({ viewId: this.view.viewId });
             yield this._proxy.$unregisterBarcodeCountViewUiListener({ viewId: this.view.viewId });
         });
@@ -1641,7 +1641,7 @@ class BarcodeCountViewController extends scanditDatacaptureFrameworksCore.BaseNe
         this._proxy.$setBarcodeCountModeEnabledState({ viewId: this.view.viewId, isEnabled: enabled });
     }
     removeModeListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this._proxy.$unregisterBarcodeCountListener({ viewId: this.view.viewId });
         });
     }
@@ -2410,7 +2410,7 @@ class BaseBarcodeCountView {
         this._controller = BarcodeCountViewController.forBarcodeCountAndBarcodeCountView(this, this._barcodeCount);
     }
     dispose() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this._controller.dispose();
             this.isViewCreated = false;
         });
@@ -2447,7 +2447,7 @@ class BaseBarcodeCountView {
         return this._controller.enableHardwareTrigger(hardwareTriggerKeyCode);
     }
     createNativeView(viewId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -2457,7 +2457,7 @@ class BaseBarcodeCountView {
         });
     }
     removeNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this._controller.removeNativeView();
             this.isViewCreated = false;
         });
@@ -3291,7 +3291,7 @@ class BarcodeCaptureListenerController extends scanditDatacaptureFrameworksCore.
     constructor(barcodeCapture) {
         super('BarcodeCaptureListenerProxy');
         this.isListeningForEvents = false;
-        this.handleDidUpdateSession = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.handleDidUpdateSession = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCaptureListenerController.subscribeListener: didUpdateSession payload is null');
@@ -3304,7 +3304,7 @@ class BarcodeCaptureListenerController extends scanditDatacaptureFrameworksCore.
             yield this.notifyListenersOfDidUpdateSession(session);
             this._proxy.$finishBarcodeCaptureDidUpdateSession({ modeId: this.modeId, enabled: this.mode.isEnabled });
         });
-        this.handleDidScan = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.handleDidScan = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeCaptureListenerController.subscribeListener: didScan payload is null');
@@ -3324,14 +3324,14 @@ class BarcodeCaptureListenerController extends scanditDatacaptureFrameworksCore.
         return this.mode.modeId;
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.mode.listeners.length > 0) {
                 this.subscribeListener();
             }
         });
     }
     reset() {
-        return this._proxy.$resetBarcodeCaptureSession({ modeId: this.modeId });
+        return this._proxy.$resetBarcodeCaptureSession();
     }
     setModeEnabledState(enabled) {
         this._proxy.$setBarcodeCaptureModeEnabledState({ modeId: this.modeId, enabled });
@@ -3367,7 +3367,7 @@ class BarcodeCaptureListenerController extends scanditDatacaptureFrameworksCore.
         this._proxy.dispose();
     }
     notifyListenersOfDidUpdateSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.mode;
             for (const listener of mode.listeners) {
                 if (listener.didUpdateSession) {
@@ -3377,7 +3377,7 @@ class BarcodeCaptureListenerController extends scanditDatacaptureFrameworksCore.
         });
     }
     notifyListenersOfDidScan(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.mode;
             for (const listener of mode.listeners) {
                 if (listener.didScan) {
@@ -3466,7 +3466,7 @@ class BarcodeCapture extends scanditDatacaptureFrameworksCore.DefaultSerializeab
         this.settings = settings;
     }
     applySettings(settings) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             this.settings = settings;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.applyBarcodeCaptureModeSettings(settings);
@@ -3869,7 +3869,7 @@ class BarcodeAr extends scanditDatacaptureFrameworksCore.DefaultSerializeable {
         this._settings = settings;
     }
     applySettings(settings) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             this._settings = settings;
             return (_a = this._controller) === null || _a === void 0 ? void 0 : _a.applyNewSettings(settings);
@@ -4857,7 +4857,7 @@ class BarcodeArViewEventHandlers {
         this.annotationsCache = {};
     }
     handleDidTapHighlightForBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             if (!this.view.barcodeArViewUiListener) {
                 return;
@@ -4880,7 +4880,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleHighlightForBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -4910,7 +4910,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleAnnotationForBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -4952,7 +4952,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapPopoverEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -4970,7 +4970,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapPopoverButtonEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -4989,7 +4989,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapInfoAnnotationRightIconEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -5008,7 +5008,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapInfoAnnotationLeftIconEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -5027,7 +5027,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapInfoAnnotationEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -5045,7 +5045,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapInfoAnnotationHeaderEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -5063,7 +5063,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidTapInfoAnnotationFooterEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -5081,7 +5081,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     handleDidUpdateSession(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeArViewController didUpdateSession payload is null');
@@ -5096,7 +5096,7 @@ class BarcodeArViewEventHandlers {
         });
     }
     notifyListenersOfDidUpdateSession(session, frameId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.barcodeAr;
             mode.isInListenerCallback = true;
             for (const listener of mode.listeners) {
@@ -5178,20 +5178,20 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         }
     }
     createView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const barcodeArView = this.baseView.toJSON();
             const viewJson = JSON.stringify(barcodeArView);
             return this._proxy.$createBarcodeArView({ viewId: this.baseView.viewId, viewJson });
         });
     }
     createNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.createView();
             this.initialize();
         });
     }
     registerModeListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5205,7 +5205,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     unregisterModeListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5219,7 +5219,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     registerUiListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5233,7 +5233,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     unregisterUiListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5247,7 +5247,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     registerAnnotationProvider() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5276,7 +5276,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     unregisterAnnotationProvider() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5322,7 +5322,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     registerHighlightProvider() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5336,7 +5336,7 @@ class BarcodeArViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     unregisterHighlightProvider() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5446,7 +5446,7 @@ class BaseBarcodeArView extends scanditDatacaptureFrameworksCore.DefaultSerializ
         this._barcodeAr.unsubscribeNativeListeners();
     }
     createNativeView(viewId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -5456,7 +5456,7 @@ class BaseBarcodeArView extends scanditDatacaptureFrameworksCore.DefaultSerializ
         });
     }
     removeNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.controller.removeNativeView();
             this.isViewCreated = false;
         });
@@ -5809,14 +5809,14 @@ class BarcodeSelectionListenerController extends scanditDatacaptureFrameworksCor
         this.initialize();
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.barcodeSelection.listeners.length > 0) {
                 this.subscribeListener();
             }
         });
     }
     getCount(barcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const result = yield this._proxy.$getCountForBarcodeInBarcodeSelectionSession({ selectionIdentifier: barcode.selectionIdentifier });
             if (result == null) {
                 return 0;
@@ -5832,7 +5832,7 @@ class BarcodeSelectionListenerController extends scanditDatacaptureFrameworksCor
             return;
         }
         this._proxy.$registerBarcodeSelectionListenerForEvents();
-        this._proxy.on$didUpdateSelection = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this._proxy.on$didUpdateSelection = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeSelectionListenerController didUpdateSelection payload is null');
@@ -5843,7 +5843,7 @@ class BarcodeSelectionListenerController extends scanditDatacaptureFrameworksCor
             yield this.notifyListenersOfDidUpdateSelection(session);
             this._proxy.$finishBarcodeSelectionDidSelect({ enabled: this.barcodeSelection.isEnabled });
         });
-        this._proxy.on$didUpdateSession = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this._proxy.on$didUpdateSession = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeSelectionListenerController didUpdateSession payload is null');
@@ -5868,7 +5868,7 @@ class BarcodeSelectionListenerController extends scanditDatacaptureFrameworksCor
         return this._proxy.dispose();
     }
     notifyListenersOfDidUpdateSelection(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.barcodeSelection;
             for (const listener of mode.listeners) {
                 if (listener.didUpdateSelection) {
@@ -5878,7 +5878,7 @@ class BarcodeSelectionListenerController extends scanditDatacaptureFrameworksCor
         });
     }
     notifyListenersOfDidUpdateSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.barcodeSelection;
             for (const listener of mode.listeners) {
                 if (listener.didUpdateSession) {
@@ -6145,7 +6145,7 @@ class BarcodeSelectionOverlayController extends scanditDatacaptureFrameworksCore
         }
     }
     setTextForAimToSelectAutoHint(text) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             return yield this._proxy.$setTextForAimToSelectAutoHint({ text });
         });
     }
@@ -6340,20 +6340,20 @@ class BarcodeSelectionBasicOverlay extends scanditDatacaptureFrameworksCore.Defa
         this.modeId = mode.modeId;
     }
     setTextForAimToSelectAutoHint(text) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setTextForAimToSelectAutoHint(text);
         });
     }
     setAimedBarcodeBrushProvider(brushProvider) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             this.aimedBrushProvider = brushProvider;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setAimedBarcodeBrushProvider(brushProvider);
         });
     }
     setTrackedBarcodeBrushProvider(brushProvider) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             this.trackedBrushProvider = brushProvider;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setTrackedBarcodeBrushProvider(brushProvider);
@@ -6623,7 +6623,7 @@ class BarcodeBatchListenerController extends scanditDatacaptureFrameworksCore.Ba
         this.initialize();
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.mode.listeners.length > 0) {
                 this.subscribeListener();
             }
@@ -6664,7 +6664,7 @@ class BarcodeBatchListenerController extends scanditDatacaptureFrameworksCore.Ba
         return this._proxy.$applyBarcodeBatchModeSettings({ modeId: this.mode.modeId, modeSettingsJson: JSON.stringify(newSettings.toJSON()) });
     }
     handleDidUpdateSessionEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchListenerController didUpdateSession payload is null');
@@ -6679,7 +6679,7 @@ class BarcodeBatchListenerController extends scanditDatacaptureFrameworksCore.Ba
         });
     }
     notifyListenersOfDidUpdateSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.mode;
             for (const listener of mode.listeners) {
                 if (listener.didUpdateSession) {
@@ -6757,7 +6757,7 @@ class BarcodeBatch extends scanditDatacaptureFrameworksCore.DefaultSerializeable
         this.settings = settings;
     }
     applySettings(settings) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             this.settings = settings;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.applyBarcodeBatchModeSettings(settings);
@@ -6786,7 +6786,7 @@ class BarcodeBatch extends scanditDatacaptureFrameworksCore.DefaultSerializeable
         }
     }
     reset() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.resetSession();
         });
@@ -6849,7 +6849,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         });
     }
     setViewForTrackedBarcode(view, trackedBarcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const awitedView = yield view;
             const viewJson = this.getJSONStringForView(awitedView);
             return this._proxy.$setViewForTrackedBarcode({
@@ -6861,7 +6861,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         });
     }
     updateSizeOfTrackedBarcodeView(trackedBarcodeIdentifier, width, height) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             return this._proxy.$updateSizeOfTrackedBarcodeView({
                 dataCaptureViewId: this.dataCaptureViewId,
                 trackedBarcodeIdentifier,
@@ -6955,7 +6955,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         this.hasListeners = true;
     }
     handleViewForTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchAdvancedOverlayController viewForTrackedBarcode payload is null');
@@ -6975,7 +6975,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         });
     }
     handleAnchorForTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchAdvancedOverlayController anchorForTrackedBarcode payload is null');
@@ -6990,7 +6990,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         });
     }
     handleOffsetForTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchAdvancedOverlayController offsetForTrackedBarcode payload is null');
@@ -7005,7 +7005,7 @@ class BarcodeBatchAdvancedOverlayController extends scanditDatacaptureFrameworks
         });
     }
     handleDidTapViewForTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -7105,7 +7105,7 @@ class BarcodeBatchBasicOverlayController extends scanditDatacaptureFrameworksCor
         this.hasListeners = true;
     }
     handleBrushForTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchBasicOverlayController brushForTrackedBarcode payload is null');
@@ -7120,7 +7120,7 @@ class BarcodeBatchBasicOverlayController extends scanditDatacaptureFrameworksCor
         });
     }
     handleDidTapTrackedBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodeBatchBasicOverlayController didTapTrackedBarcode payload is null');
@@ -7270,13 +7270,13 @@ class BarcodeBatchBasicOverlay extends scanditDatacaptureFrameworksCore.DefaultS
         this.modeId = mode.modeId;
     }
     setBrushForTrackedBarcode(brush, trackedBarcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setBrushForTrackedBarcode(brush, trackedBarcode);
         });
     }
     clearTrackedBarcodeBrushes() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.clearTrackedBarcodeBrushes();
         });
@@ -7420,31 +7420,31 @@ class BaseBarcodeBatchAdvancedOverlay extends scanditDatacaptureFrameworksCore.D
         this.modeId = mode.modeId;
     }
     setViewForTrackedBarcode(view, trackedBarcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setViewForTrackedBarcode(view, trackedBarcode);
         });
     }
     setAnchorForTrackedBarcode(anchor, trackedBarcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setAnchorForTrackedBarcode(anchor, trackedBarcode);
         });
     }
     setOffsetForTrackedBarcode(offset, trackedBarcode) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.setOffsetForTrackedBarcode(offset, trackedBarcode);
         });
     }
     clearTrackedBarcodeViews() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.clearTrackedBarcodeViews();
         });
     }
     updateSizeOfTrackedBarcodeView(trackedBarcodeIdentifier, width, height) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             return (_a = this.controller) === null || _a === void 0 ? void 0 : _a.updateSizeOfTrackedBarcodeView(trackedBarcodeIdentifier, width, height);
         });
@@ -7973,7 +7973,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         this.hasNativeViewListenerSubscriptions = false;
         this.hasNativeModeListenerSubscriptions = false;
         this.viewInstanceId = -1;
-        this.didUpdateSessionListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.didUpdateSessionListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('SparkScanListenerController didUpdateSession payload is null');
@@ -7987,7 +7987,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             yield this.notifyListenersOfDidUpdateSession(session);
             this._proxy.$finishSparkScanDidUpdateSession({ viewId: this.viewInstanceId, isEnabled: this.sparkScan.isEnabled });
         });
-        this.didScanListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.didScanListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('SparkScanListenerController.subscribeListener: didScan payload is null');
@@ -8001,7 +8001,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             yield this.notifyListenersOfDidScan(session);
             this._proxy.$finishSparkScanDidScan({ viewId: this.viewInstanceId, isEnabled: this.sparkScan.isEnabled });
         });
-        this.barcodeCountButtonTappedListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.barcodeCountButtonTappedListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -8012,7 +8012,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             }
             (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapBarcodeCountButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
         });
-        this.barcodeFindButtonTappedListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.barcodeFindButtonTappedListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -8023,7 +8023,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             }
             (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapBarcodeFindButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
         });
-        this.labelCaptureButtonTappedListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.labelCaptureButtonTappedListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -8034,7 +8034,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             }
             (_b = (_a = this.view.uiListener) === null || _a === void 0 ? void 0 : _a.didTapLabelCaptureButton) === null || _b === void 0 ? void 0 : _b.call(_a, this.view);
         });
-        this.didChangeViewStateListener = (ev) => __awaiter(this, void 0, void 0, function* () {
+        this.didChangeViewStateListener = (ev) => __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -8116,10 +8116,12 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         return this._proxy.$stopSparkScanViewScanning({ viewId: this.viewInstanceId });
     }
     pauseScanning() {
-        if (!this.isViewCreated) {
-            return Promise.resolve(); // No updates if view not created yet
-        }
-        return this._proxy.$pauseSparkScanViewScanning({ viewId: this.viewInstanceId });
+        return __awaiter$1(this, void 0, void 0, function* () {
+            if (!this.isViewCreated) {
+                return Promise.resolve(); // No updates if view not created yet
+            }
+            return this._proxy.$pauseSparkScanViewScanning({ viewId: this.viewInstanceId });
+        });
     }
     startScanning() {
         if (!this.isViewCreated) {
@@ -8132,6 +8134,12 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
             return Promise.resolve(); // No updates if view not created yet
         }
         return this._proxy.$prepareSparkScanViewScanning({ viewId: this.viewInstanceId });
+    }
+    onHostPause() {
+        if (!this.isViewCreated) {
+            return Promise.resolve(); // No updates if view not created yet
+        }
+        return this._proxy.$onHostPauseSparkScanView({ viewId: this.viewInstanceId });
     }
     showToast(text) {
         if (!this.isViewCreated) {
@@ -8206,7 +8214,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         return this.viewInstanceId !== -1;
     }
     handleFeedbackForBarcode(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -8229,7 +8237,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     notifyListenersOfDidUpdateSession(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.sparkScan;
             mode.isInListenerCallback = true;
             for (const listener of mode.listeners) {
@@ -8241,7 +8249,7 @@ class SparkScanViewController extends scanditDatacaptureFrameworksCore.BaseNewCo
         });
     }
     notifyListenersOfDidScan(session) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const mode = this.sparkScan;
             mode.isInListenerCallback = true;
             for (const listener of mode.listeners) {
@@ -8287,6 +8295,9 @@ class BaseSparkScanView {
             sparkScan: props.sparkScan,
             settings: props.sparkScanViewSettings,
         });
+        if (props.shouldHandleAndroidLifecycleAutomatically !== undefined && props.shouldHandleAndroidLifecycleAutomatically !== null) {
+            view.shouldHandleAndroidLifecycleAutomatically = props.shouldHandleAndroidLifecycleAutomatically;
+        }
         if (props.uiListener) {
             view.uiListener = props.uiListener;
         }
@@ -8375,6 +8386,7 @@ class BaseSparkScanView {
         this._triggerButtonImage = BaseSparkScanView.sparkScanDefaults.SparkScanView.triggerButtonImage;
         this._torchControlVisible = BaseSparkScanView.sparkScanDefaults.SparkScanView.torchControlVisible;
         this._previewCloseControlVisible = BaseSparkScanView.sparkScanDefaults.SparkScanView.previewSizeControlVisible;
+        this.shouldHandleAndroidLifecycleAutomatically = true;
         this._sparkScan = sparkScan;
         this.context = context;
         this._viewSettings = settings !== null && settings !== void 0 ? settings : new SparkScanViewSettings();
@@ -8604,35 +8616,58 @@ class BaseSparkScanView {
         this.update();
     }
     showToast(text) {
-        this._controller.showToast(text);
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.showToast(text);
+        });
     }
     prepareScanning() {
-        this._controller.prepareScanning();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.prepareScanning();
+        });
     }
     startScanning() {
-        this._controller.startScanning();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.startScanning();
+        });
     }
     pauseScanning() {
-        this._controller.pauseScanning();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.pauseScanning();
+        });
     }
     stopScanning() {
-        this._controller.stopScanning();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.stopScanning();
+        });
+    }
+    onHostPause() {
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.onHostPause();
+        });
     }
     update() {
-        return this._controller.updateView();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._controller.updateView();
+        });
     }
     dispose() {
         this._controller.dispose();
     }
     show() {
-        return this._show();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._show();
+        });
     }
     hide() {
-        return this._hide();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            yield this._hide();
+        });
     }
     createNativeView(viewId) {
-        this._viewId = viewId;
-        return this._controller.createView();
+        return __awaiter$1(this, void 0, void 0, function* () {
+            this._viewId = viewId;
+            yield this._controller.createView();
+        });
     }
     get feedbackDelegate() {
         return this._feedbackDelegate;
@@ -8647,6 +8682,10 @@ class BaseSparkScanView {
         }
     }
     updateWithProps(prevProps, props) {
+        if (props.shouldHandleAndroidLifecycleAutomatically !== prevProps.shouldHandleAndroidLifecycleAutomatically &&
+            props.shouldHandleAndroidLifecycleAutomatically !== undefined) {
+            this.shouldHandleAndroidLifecycleAutomatically = props.shouldHandleAndroidLifecycleAutomatically;
+        }
         // Update UI Listener
         if (props.uiListener !== prevProps.uiListener) {
             this.uiListener = props.uiListener || null;
@@ -8771,6 +8810,7 @@ class BaseSparkScanView {
             previewCloseControlVisible: this.previewCloseControlVisible,
             hasUiListener: this.uiListener !== null,
             viewId: this.viewId,
+            shouldHandleAndroidLifecycleAutomatically: this.shouldHandleAndroidLifecycleAutomatically,
         };
         if (this._viewSettings != null) {
             json.viewSettings = (_a = this._viewSettings) === null || _a === void 0 ? void 0 : _a.toJSON();
@@ -9201,7 +9241,7 @@ class BarcodePickViewEventHandlers {
         this.barcodePickMapperCallback = callback;
     }
     handleDidCompleteScanningSession(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodePickViewEventHandlers DidCompleteScanningSession payload is null');
@@ -9216,7 +9256,7 @@ class BarcodePickViewEventHandlers {
         });
     }
     handleDidUpdateScanningSession(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
                 console.error('BarcodePickViewEventHandlers DidUpdateScanningSession payload is null');
@@ -9507,7 +9547,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         return this._proxy.$finishPickAction({ viewId: this.view.viewId, code: itemData, result });
     }
     createNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.create();
             this.initialize();
         });
@@ -9533,7 +9573,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         this._proxy.dispose();
     }
     subscribeScanningListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9548,7 +9588,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unsubscribeScanningListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9563,7 +9603,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     subscribePickListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9577,7 +9617,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unsubscribePickListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9591,7 +9631,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     registerUiListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9605,7 +9645,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unregisterUiListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9619,7 +9659,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     setUiListener(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (listener) {
                 yield this.registerUiListener();
             }
@@ -9629,7 +9669,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     subscribeActionListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9644,7 +9684,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unsubscribeActionListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9659,7 +9699,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     subscribePickViewListeners() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9692,7 +9732,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
     }
     // Methods migrated from BarcodePickProductController
     registerProductListener(callback) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             this.eventHandlers.setBarcodePickMapperCallback(callback);
             if (!this.isViewCreated) {
                 return Promise.resolve();
@@ -9707,7 +9747,7 @@ class BarcodePickViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unregisterProductListener() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9770,7 +9810,7 @@ class BaseBarcodePickView extends scanditDatacaptureFrameworksCore.DefaultSerial
         this.viewController = BarcodePickViewController.forBarcodePick(this, nativeView);
     }
     createNativeView(viewId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.isViewCreated) {
                 return Promise.resolve();
             }
@@ -9780,7 +9820,7 @@ class BaseBarcodePickView extends scanditDatacaptureFrameworksCore.DefaultSerial
         });
     }
     removeNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.viewController.removeNativeView();
             this.isViewCreated = false;
         });
@@ -10766,7 +10806,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         return viewController;
     }
     setUiListener(listener) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated)
                 return; // view not created yet
             if (listener && !this.isListenerEnabled) {
@@ -10828,7 +10868,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.baseView.barcodeFindViewUiListener) {
                 this.subscribeViewEvents();
             }
@@ -10852,7 +10892,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         this._proxy.eventEmitter.on(BarcodeFindViewEvents.onFinishButtonTappedEventName, this.boundHandleOnFinishButtonTappedEvent);
     }
     handleOnFinishButtonTappedEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a, _b;
             if (!this.baseView.barcodeFindViewUiListener) {
                 return;
@@ -10907,7 +10947,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         return this._proxy.$updateBarcodeFindFeedback({ viewId: this.baseView.viewId, feedbackJson });
     }
     setBarcodeTransformer() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.isViewCreated)
                 return; // view not created yet
             if (this.boundHandleTransformerEvent) {
@@ -10920,7 +10960,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     handleOnTransformBarcodeDataEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -10935,7 +10975,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     unsetBarcodeTransformer() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (!this.boundHandleTransformerEvent)
                 return; // view not created yet
             this._proxy.$unsetBarcodeTransformer({ viewId: this.baseView.viewId });
@@ -10962,7 +11002,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         this._proxy.eventEmitter.on(BarcodeFindListenerEvents.onSearchStoppedEvent, this.boundHandleOnSearchStoppedEvent);
     }
     handleDidUpdateSession(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             const payload = scanditDatacaptureFrameworksCore.EventDataParser.parse(ev.data);
             if (payload === null) {
@@ -10977,7 +11017,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     handleOnSearchStartedEvent(_ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             for (const listener of this.baseView.barcodeFind.listeners) {
                 (_a = listener === null || listener === void 0 ? void 0 : listener.didStartSearch) === null || _a === void 0 ? void 0 : _a.call(listener);
@@ -10985,7 +11025,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     handleOnSearchPausedEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             const foundItems = this.filterFoundItemsFromEvent(ev.data);
             for (const listener of this.baseView.barcodeFind.listeners) {
@@ -10994,7 +11034,7 @@ class BarcodeFindViewController extends scanditDatacaptureFrameworksCore.BaseNew
         });
     }
     handleOnSearchStoppedEvent(ev) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             var _a;
             const foundItems = this.filterFoundItemsFromEvent(ev.data);
             for (const listener of this.baseView.barcodeFind.listeners) {
@@ -11092,7 +11132,7 @@ class BaseBarcodeFindView {
         return BaseBarcodeFindView.barcodeFindViewDefaults.hardwareTriggerSupported;
     }
     createNativeView(viewId) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             if (this.isViewCreated) {
                 return;
             }
@@ -11101,7 +11141,7 @@ class BaseBarcodeFindView {
         });
     }
     removeNativeView() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.controller.removeNativeView();
             this.isViewCreated = false;
         });
@@ -11369,7 +11409,7 @@ class BarcodeGeneratorController {
         return controller;
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             // We call update because it returns a promise, this guarantees, that by the time
             // we need the deserialized context, it will be set in the native layer.
             yield this.generator.dataCaptureContext.update();
@@ -11380,7 +11420,7 @@ class BarcodeGeneratorController {
         return this._proxy.create(JSON.stringify(this.generator.toJSON()));
     }
     generateFromBase64EncodedData(data, imageWidth) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const result = yield this._proxy.generateFromBase64EncodedData(this.generator.id, data, imageWidth);
             if (result == null) {
                 return '';
@@ -11389,7 +11429,7 @@ class BarcodeGeneratorController {
         });
     }
     generate(text, imageWidth) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             const result = yield this._proxy.generate(this.generator.id, text, imageWidth);
             if (result == null) {
                 return '';
@@ -11433,7 +11473,7 @@ class BarcodeGenerator extends scanditDatacaptureFrameworksCore.DefaultSerialize
         this.versionNumber = versionNumber;
     }
     initialize() {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             this.controller = BarcodeGeneratorController.forBarcodeGenerator(this);
             this.initializationPromise = this.controller.initialize();
             return this.initializationPromise;
@@ -11445,13 +11485,13 @@ class BarcodeGenerator extends scanditDatacaptureFrameworksCore.DefaultSerialize
         return generator;
     }
     generate(text, imageWidth) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.initializationPromise;
             return this.controller.generate(text, imageWidth);
         });
     }
     generateFromBase64EncodedData(data, imageWidth) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return __awaiter$1(this, void 0, void 0, function* () {
             yield this.initializationPromise;
             return this.controller.generateFromBase64EncodedData(data, imageWidth);
         });
@@ -12021,6 +12061,16 @@ function __decorate(decorators, target, key, desc) {
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 }
 
+function __awaiter(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
 typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
     var e = new Error(message);
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
@@ -12507,25 +12557,37 @@ class SparkScanView {
         this.baseSparkScanView.triggerButtonImage = newValue;
     }
     prepareScanning() {
-        this.baseSparkScanView.prepareScanning();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.prepareScanning();
+        });
     }
     startScanning() {
-        this.baseSparkScanView.startScanning();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.startScanning();
+        });
     }
     pauseScanning() {
-        this.baseSparkScanView.pauseScanning();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.pauseScanning();
+        });
     }
     stopScanning() {
-        this.baseSparkScanView.stopScanning();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.stopScanning();
+        });
     }
     dispose() {
         this.baseSparkScanView.dispose();
     }
     show() {
-        return this.baseSparkScanView.show();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.show();
+        });
     }
     hide() {
-        return this.baseSparkScanView.hide();
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.hide();
+        });
     }
     get feedbackDelegate() {
         return this.baseSparkScanView.feedbackDelegate;
@@ -12534,7 +12596,9 @@ class SparkScanView {
         this.baseSparkScanView.feedbackDelegate = delegate;
     }
     showToast(text) {
-        return this.baseSparkScanView.showToast(text);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.baseSparkScanView.showToast(text);
+        });
     }
     toJSON() {
         return this.baseSparkScanView.toJSON();

@@ -625,12 +625,10 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun resetBarcodeCaptureSession(
-        args: JSONArray,
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        val argsJson = args.getJSONObject(0)
-        val frameSequenceId = argsJson.optLong("frameSequenceId", -1L)
-        barcodeCaptureModule.resetSession(if (frameSequenceId == -1L) null else frameSequenceId)
+        barcodeCaptureModule.resetSession()
         callbackContext.success()
     }
 
@@ -1812,8 +1810,8 @@ class ScanditBarcodeCapture :
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        // Noop
-        callbackContext.success()
+        val argsJson = args.getJSONObject(0)
+        sparkScanModule.stopScanning(argsJson.getInt("viewId"), CordovaResult(callbackContext))
     }
 
     @PluginMethod
