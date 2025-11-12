@@ -76,7 +76,7 @@ class BarcodeCountViewHandler(
 
     fun disposeCurrentView() {
         val view = barcodeCountView ?: return
-        removeBarcodeFindViewContainer(view)
+        removeBarcodeCountView(view)
     }
 
     private fun disposeCurrentWebView() {
@@ -101,7 +101,7 @@ class BarcodeCountViewHandler(
         }
     }
 
-    private fun removeBarcodeFindViewContainer(barcodeCountView: BarcodeCountView) {
+    private fun removeBarcodeCountView(barcodeCountView: BarcodeCountView) {
         barcodeCountViewReference = WeakReference(null)
         removeView(barcodeCountView) {
             barcodeCountView.listener = null
