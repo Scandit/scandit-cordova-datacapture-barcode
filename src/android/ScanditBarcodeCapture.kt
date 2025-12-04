@@ -36,9 +36,7 @@ import com.scandit.datacapture.frameworks.barcode.batch.listeners.FrameworksBarc
 import com.scandit.datacapture.frameworks.barcode.capture.BarcodeCaptureModule
 import com.scandit.datacapture.frameworks.barcode.capture.listeners.FrameworksBarcodeCaptureListener
 import com.scandit.datacapture.frameworks.barcode.count.BarcodeCountModule
-import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountCaptureListListener
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountListener
-import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountStatusProvider
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountViewListener
 import com.scandit.datacapture.frameworks.barcode.count.listeners.FrameworksBarcodeCountViewUiListener
 import com.scandit.datacapture.frameworks.barcode.find.BarcodeFindModule
@@ -49,6 +47,7 @@ import com.scandit.datacapture.frameworks.barcode.generator.BarcodeGeneratorModu
 import com.scandit.datacapture.frameworks.barcode.pick.BarcodePickModule
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickActionListener
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickAsyncMapperProductProviderCallback
+import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickListener
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickScanningListener
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickViewListener
 import com.scandit.datacapture.frameworks.barcode.pick.listeners.FrameworksBarcodePickViewUiListener
@@ -84,42 +83,22 @@ class ScanditBarcodeCapture :
     private val barcodeCaptureModule = BarcodeCaptureModule(
         FrameworksBarcodeCaptureListener(eventEmitter)
     )
-    private val barcodeBatchModule = BarcodeBatchModule(
-        FrameworksBarcodeBatchListener(eventEmitter),
-        FrameworksBarcodeBatchBasicOverlayListener(eventEmitter),
-        FrameworksBarcodeBatchAdvancedOverlayListener(eventEmitter)
-    )
+    private val barcodeBatchModule = BarcodeBatchModule.create(eventEmitter)
     private val barcodeSelectionModule = BarcodeSelectionModule(
         FrameworksBarcodeSelectionListener(eventEmitter),
         FrameworksBarcodeSelectionAimedBrushProvider(eventEmitter),
         FrameworksBarcodeSelectionTrackedBrushProvider(eventEmitter)
     )
 
-    private val barcodeFindModule = BarcodeFindModule(
-        FrameworksBarcodeFindListener(eventEmitter),
-        FrameworksBarcodeFindViewUiListener(eventEmitter),
-        FrameworksBarcodeFindTransformer(eventEmitter)
-    )
+    private val barcodeFindModule = BarcodeFindModule.create(eventEmitter)
     private val barcodeFindViewHandler: BarcodeFindViewHandler = BarcodeFindViewHandler()
 
-    private val barcodePickModule = BarcodePickModule(
-        eventEmitter,
-        FrameworksBarcodePickActionListener(eventEmitter),
-        FrameworksBarcodePickScanningListener(eventEmitter),
-        FrameworksBarcodePickViewListener(eventEmitter),
-        FrameworksBarcodePickViewUiListener(eventEmitter)
-    )
+    private val barcodePickModule: BarcodePickModule = BarcodePickModule.create(eventEmitter)
     private val barcodePickViewHandler: BarcodePickViewHandler = BarcodePickViewHandler()
 
     private val sparkScanModule: SparkScanModule = SparkScanModule.create(eventEmitter)
 
-    private val barcodeCountModule = BarcodeCountModule(
-        FrameworksBarcodeCountListener(eventEmitter),
-        FrameworksBarcodeCountCaptureListListener(eventEmitter),
-        FrameworksBarcodeCountViewListener(eventEmitter),
-        FrameworksBarcodeCountViewUiListener(eventEmitter),
-        FrameworksBarcodeCountStatusProvider(eventEmitter)
-    )
+    private val barcodeCountModule = BarcodeCountModule.create(eventEmitter)
 
     private val barcodeGeneratorModule = BarcodeGeneratorModule()
 
@@ -161,27 +140,27 @@ class ScanditBarcodeCapture :
         barcodeCaptureModule.setModeEnabled(false)
 
         lastBarcodeBatchEnabledState = barcodeBatchModule.isModeEnabled()
-        barcodeBatchModule.setModeEnabled(false)
+        barcodeBatchModule.setTopMostModeEnabled(false)
 
         lastBarcodeSelectionEnabledState = barcodeSelectionModule.isModeEnabled()
         barcodeSelectionModule.setModeEnabled(false)
 
         lastBarcodeFindEnabledState = barcodeFindModule.isModeEnabled()
-        barcodeFindModule.setModeEnabled(false)
+        barcodeFindModule.setTopMostModeEnabled(false)
 
         lastSparkScanEnabledState = sparkScanModule.isModeEnabled()
         sparkScanModule.setTopMostViewModeEnabled(false)
 
         lastBarcodeCountEnabledState = barcodeCountModule.isModeEnabled()
-        barcodeCountModule.setModeEnabled(false)
+        barcodeCountModule.setTopMostModeEnabled(false)
     }
 
     override fun onStart() {
         barcodeCaptureModule.setModeEnabled(lastBarcodeCaptureEnabledState)
-        barcodeBatchModule.setModeEnabled(lastBarcodeBatchEnabledState)
+        barcodeBatchModule.setTopMostModeEnabled(lastBarcodeBatchEnabledState)
         barcodeSelectionModule.setModeEnabled(lastBarcodeSelectionEnabledState)
-        barcodeFindModule.setModeEnabled(lastBarcodeFindEnabledState)
-        barcodeCountModule.setModeEnabled(lastBarcodeCountEnabledState)
+        barcodeFindModule.setTopMostModeEnabled(lastBarcodeFindEnabledState)
+        barcodeCountModule.setTopMostModeEnabled(lastBarcodeCountEnabledState)
         sparkScanModule.setTopMostViewModeEnabled(lastSparkScanEnabledState)
     }
 
@@ -204,6 +183,8 @@ class ScanditBarcodeCapture :
         barcodePickModule.onDestroy()
         barcodeCountModule.onDestroy()
         barcodeGeneratorModule.onDestroy()
+
+        barcodeFindViewHandler.disposeAll()
     }
 
     override fun execute(
@@ -271,28 +252,36 @@ class ScanditBarcodeCapture :
     }
 
     @PluginMethod
-    fun subscribeBarcodeBatchListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun registerBarcodeBatchListenerForEvents(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+
+        eventEmitter.registerModeSpecificCallback(
+            modeId,
             FrameworksBarcodeBatchListener.ON_SESSION_UPDATED_EVENT_NAME,
             callbackContext
         )
-        barcodeBatchModule.addBarcodeBatchListener()
+        barcodeBatchModule.addBarcodeBatchListener(modeId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun unregisterBarcodeBatchListenerForEvents(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+
+        eventEmitter.unregisterModeSpecificCallback(
+            modeId,
             FrameworksBarcodeBatchListener.ON_SESSION_UPDATED_EVENT_NAME
         )
 
-        barcodeBatchModule.removeBarcodeBatchListener()
+        barcodeBatchModule.removeBarcodeBatchListener(modeId)
         callbackContext.success()
     }
 
@@ -331,13 +320,13 @@ class ScanditBarcodeCapture :
     @PluginMethod
     fun finishBarcodeCaptureDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
         barcodeCaptureModule.finishDidUpdateSession(args.optBoolean("enabled", true))
-        callbackContext.successAndKeepCallback()
+        callbackContext.success()
     }
 
     @PluginMethod
     fun finishBarcodeCaptureDidScan(args: JSONArray, callbackContext: CallbackContext) {
         barcodeCaptureModule.finishDidScan(args.optBoolean("enabled", true))
-        callbackContext.successAndKeepCallback()
+        callbackContext.success()
     }
 
     @PluginMethod
@@ -346,26 +335,35 @@ class ScanditBarcodeCapture :
         callbackContext: CallbackContext
     ) {
         barcodeSelectionModule.finishDidSelect(args.optBoolean("enabled", true))
-        callbackContext.successAndKeepCallback()
+        callbackContext.success()
     }
 
     @PluginMethod
     fun finishBarcodeSelectionDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
         barcodeSelectionModule.finishDidUpdateSession(args.optBoolean("enabled", true))
-        callbackContext.successAndKeepCallback()
+        callbackContext.success()
     }
 
     @PluginMethod
-    fun finishBarcodeBatchDidUpdateSession(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.finishDidUpdateSession(args.optBoolean("enabled", true))
-        callbackContext.successAndKeepCallback()
-    }
-
-    @PluginMethod
-    fun subscribeBarcodeBatchBasicOverlayListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun finishBarcodeBatchDidUpdateSessionCallback(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val enabled = argsJson.optBoolean("enabled", true)
+        barcodeBatchModule.finishDidUpdateSession(modeId, enabled)
+        callbackContext.success()
+    }
+
+    @PluginMethod
+    fun registerListenerForBasicOverlayEvents(
+        args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+
         eventEmitter.registerCallback(
             FrameworksBarcodeBatchBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED,
             callbackContext
@@ -374,31 +372,41 @@ class ScanditBarcodeCapture :
             FrameworksBarcodeBatchBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE,
             callbackContext
         )
-        barcodeBatchModule.addBasicOverlayListener()
+        barcodeBatchModule.addBasicOverlayListener(dataCaptureViewId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchBasicOverlayListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun unregisterListenerForBasicOverlayEvents(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+
         eventEmitter.unregisterCallback(
             FrameworksBarcodeBatchBasicOverlayListener.EVENT_ON_TRACKED_BARCODE_TAPPED
         )
         eventEmitter.unregisterCallback(
             FrameworksBarcodeBatchBasicOverlayListener.EVENT_SET_BRUSH_FOR_TRACKED_BARCODE
         )
-        barcodeBatchModule.removeBasicOverlayListener()
+        barcodeBatchModule.removeBasicOverlayListener(dataCaptureViewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun setBrushForTrackedBarcode(args: JSONArray, callbackContext: CallbackContext) {
         try {
-            val payload = args.getJSONObject(0)
+            val argsJson = args.getJSONObject(0)
+            val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+            val brushJson = argsJson.getString("brushJson")
+            val trackedBarcodeIdentifier = argsJson.getInt("trackedBarcodeIdentifier")
+            val sessionFrameSequenceId = argsJson.optLong("sessionFrameSequenceID", -1L)
             barcodeBatchModule.setBasicOverlayBrushForTrackedBarcode(
-                payload.toString()
+                dataCaptureViewId,
+                brushJson,
+                trackedBarcodeIdentifier,
+                sessionFrameSequenceId
             )
 
             callbackContext.success()
@@ -411,18 +419,23 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun clearTrackedBarcodeBrushes(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeBatchModule.clearBasicOverlayTrackedBarcodeBrushes()
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+        barcodeBatchModule.clearBasicOverlayTrackedBarcodeBrushes(dataCaptureViewId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun subscribeBarcodeBatchAdvancedOverlayListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun registerListenerForAdvancedOverlayEvents(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+
         eventEmitter.registerCallback(
             FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE,
             callbackContext
@@ -439,15 +452,18 @@ class ScanditBarcodeCapture :
             FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE,
             callbackContext
         )
-        barcodeBatchModule.addAdvancedOverlayListener()
+        barcodeBatchModule.addAdvancedOverlayListener(dataCaptureViewId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
-    fun unregisterBarcodeBatchAdvancedOverlayListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun unregisterListenerForAdvancedOverlayEvents(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+
         eventEmitter.unregisterCallback(
             FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_ANCHOR_FOR_TRACKED_BARCODE
         )
@@ -460,7 +476,7 @@ class ScanditBarcodeCapture :
         eventEmitter.unregisterCallback(
             FrameworksBarcodeBatchAdvancedOverlayListener.EVENT_DID_TAP_VIEW_FOR_TRACKED_BARCODE
         )
-        barcodeBatchModule.removeAdvancedOverlayListener()
+        barcodeBatchModule.removeAdvancedOverlayListener(dataCaptureViewId)
         callbackContext.success()
     }
 
@@ -472,7 +488,6 @@ class ScanditBarcodeCapture :
             )
 
             val image = getBitmapFromBase64String(data.view?.data)
-
             mainThread.runOnMainThread {
                 val view = barcodeBatchModule.getTrackedBarcodeViewFromBitmap(
                     data.trackedBarcodeId,
@@ -485,6 +500,7 @@ class ScanditBarcodeCapture :
                 )
 
                 barcodeBatchModule.setViewForTrackedBarcode(
+                    data.dataCaptureViewId,
                     view,
                     data.trackedBarcodeId,
                     data.sessionFrameSequenceId
@@ -498,6 +514,14 @@ class ScanditBarcodeCapture :
         } catch (e: RuntimeException) {
             callbackContext.error(JsonParseError(e.message).toString())
         }
+    }
+
+    @PluginMethod
+    fun updateSizeOfTrackedBarcodeView(
+        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        @Suppress("UNUSED_PARAMETER") callbackContext: CallbackContext
+    ) {
+        // https://scandit.atlassian.net/browse/SDC-26621
     }
 
     private fun getBitmapFromBase64String(string: String?): Bitmap? {
@@ -519,15 +543,14 @@ class ScanditBarcodeCapture :
         try {
             val payload = args.getJSONObject(0)
             barcodeBatchModule.setOffsetForTrackedBarcode(
-                hashMapOf(
-                    "offset" to payload.getString("offset"),
-                    "identifier" to payload.getInt("trackedBarcodeID"),
-                    "sessionFrameSequenceID" to if (payload.has("sessionFrameSequenceID")) {
-                        payload.getLong("sessionFrameSequenceID")
-                    } else {
-                        null
-                    }
-                )
+                payload.getString("offsetJson"),
+                payload.getInt("trackedBarcodeIdentifier"),
+                if (payload.has("sessionFrameSequenceID")) {
+                    payload.getLong("sessionFrameSequenceID")
+                } else {
+                    null
+                },
+                payload.getInt("dataCaptureViewId")
             )
 
             callbackContext.success()
@@ -542,16 +565,16 @@ class ScanditBarcodeCapture :
     fun setAnchorForTrackedBarcode(args: JSONArray, callbackContext: CallbackContext) {
         try {
             val argument = args.getJSONObject(0)
-            val payload = hashMapOf<String, Any?>(
-                "anchor" to argument.getString("anchor"),
-                "identifier" to argument.getInt("trackedBarcodeID"),
-                "sessionFrameSequenceID" to if (argument.has("sessionFrameSequenceID")) {
+            barcodeBatchModule.setAnchorForTrackedBarcode(
+                argument.getString("anchor"),
+                argument.getInt("trackedBarcodeIdentifier"),
+                if (argument.has("sessionFrameSequenceID")) {
                     argument.getLong("sessionFrameSequenceID")
                 } else {
                     null
-                }
+                },
+                argument.getInt("dataCaptureViewId")
             )
-            barcodeBatchModule.setAnchorForTrackedBarcode(payload)
 
             callbackContext.success()
         } catch (e: JSONException) {
@@ -563,10 +586,12 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun clearTrackedBarcodeViews(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeBatchModule.clearAdvancedOverlayTrackedBarcodeViews()
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+        barcodeBatchModule.clearAdvancedOverlayTrackedBarcodeViews(dataCaptureViewId)
         callbackContext.success()
     }
 
@@ -680,59 +705,88 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun createFindView(args: JSONArray, callbackContext: CallbackContext) {
-        val viewJson = args.defaultArgumentAsString
+        val argument = args.getJSONObject(0)
+        val viewId = argument.getInt("viewId")
+        val viewJson = argument.getString("json") ?: return callbackContext.error(
+            "incorrect or no json passed for createFindView"
+        )
         val container = barcodeFindViewHandler.prepareContainer()
 
-        val result = barcodeFindModule.getView(container, viewJson)
-        if (result.isFailure) {
-            callbackContext.error(
-                result.exceptionOrNull()?.message
-                    ?: "Unable to create the BarcodeFindView from the given json=$viewJson"
-            )
-            return
-        }
-
-        barcodeFindViewHandler.addBarcodeFindViewContainer(container)
-        barcodeFindViewHandler.render()
-        callbackContext.success()
+        barcodeFindModule.addViewToContainer(container, viewJson, CordovaResult(callbackContext))
+        barcodeFindViewHandler.addBarcodeFindViewContainer(viewId, container)
     }
 
     @PluginMethod
     fun updateFindView(args: JSONArray, callbackContext: CallbackContext) {
-        val viewJson = args.toString()
-        barcodeFindModule.updateBarcodeFindView(viewJson, CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val viewJson = argsJson.getString("barcodeFindViewJson")
+        barcodeFindModule.updateBarcodeFindView(viewId, viewJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun removeFindView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewDisposed()
-        barcodeFindViewHandler.disposeCurrentView()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeFindModule.viewDisposed(viewId)
+        barcodeFindViewHandler.disposeContainer(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun updateFindMode(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val barcodeFindJson = argsJson.getString("barcodeFindJson")
         barcodeFindModule.updateBarcodeFindMode(
-            args.defaultArgumentAsString,
+            viewId,
+            barcodeFindJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
-    fun setBarcodeFindTransformer(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+    fun setBarcodeTransformer(
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.setBarcodeFindTransformer(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
+            FrameworksBarcodeFindTransformer.ON_TRANSFORM_BARCODE_DATA,
+            callbackContext
+        )
+        barcodeFindModule.setBarcodeFindTransformer(
+            viewId,
+            CordovaResultKeepCallback(callbackContext)
+        )
+    }
+
+    @PluginMethod
+    fun unsetBarcodeTransformer(
+        args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodeFindTransformer.ON_TRANSFORM_BARCODE_DATA
+        )
+        barcodeFindModule.unsetBarcodeFindTransformer(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun submitBarcodeFindTransformerResult(args: JSONArray, callbackContext: CallbackContext) {
-        val transformedBarcode = args.defaultArgumentAsString
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val transformedBarcode = argsJson.getString("transformedBarcode")
         barcodeFindModule.submitBarcodeFindTransformerResult(
+            viewId,
             transformedBarcode,
             CordovaResult(callbackContext)
         )
@@ -740,8 +794,11 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun updateBarcodeFindFeedback(args: JSONArray, callbackContext: CallbackContext) {
-        val feedbackJson = args.defaultArgumentAsString
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val feedbackJson = argsJson.getString("feedbackJson")
         barcodeFindModule.updateFeedback(
+            viewId,
             feedbackJson,
             CordovaResult(callbackContext)
         )
@@ -749,75 +806,99 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun registerBarcodeFindListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_PAUSED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_STARTED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_STOPPED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SESSION_UPDATED_EVENT_NAME,
             callbackContext
         )
 
-        barcodeFindModule.addBarcodeFindListener(CordovaResultKeepCallback(callbackContext))
+        barcodeFindModule.addBarcodeFindListener(viewId, CordovaResultKeepCallback(callbackContext))
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
     fun unregisterBarcodeFindListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_PAUSED_EVENT_NAME
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_STARTED_EVENT_NAME
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SEARCH_STOPPED_EVENT_NAME
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindListener.ON_SESSION_UPDATED_EVENT_NAME
         )
 
-        barcodeFindModule.removeBarcodeFindListener(CordovaResult(callbackContext))
+        barcodeFindModule.removeBarcodeFindListener(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun registerBarcodeFindViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindViewUiListener.ON_FINISH_BUTTON_TAPPED_EVENT_NAME,
             callbackContext
         )
 
-        barcodeFindModule.addBarcodeFindViewListener(CordovaResultKeepCallback(callbackContext))
+        barcodeFindModule.addBarcodeFindViewListener(
+            viewId,
+            CordovaResultKeepCallback(callbackContext)
+        )
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
     fun unregisterBarcodeFindViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeFindViewUiListener.ON_FINISH_BUTTON_TAPPED_EVENT_NAME
         )
 
-        barcodeFindModule.removeBarcodeFindViewListener(CordovaResult(callbackContext))
+        barcodeFindModule.removeBarcodeFindViewListener(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
@@ -840,72 +921,99 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun barcodeFindSetItemList(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeFindModule.setItemList(args.defaultArgumentAsString, CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val itemsJson = argsJson.getString("itemsJson")
+        barcodeFindModule.setItemList(viewId, itemsJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindViewStopSearching(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewStopSearching(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeFindModule.viewStopSearching(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindViewStartSearching(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewStartSearching(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeFindModule.viewStartSearching(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindViewPauseSearching(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.viewPauseSearching(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.viewPauseSearching(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindModeStart(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.modeStart(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.modeStart(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindModePause(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.modePause(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.modePause(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun barcodeFindModeStop(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindModule.modeStop(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.modeStop(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun showFindView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindViewHandler.setVisible()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.showView(viewId)
+        barcodeFindViewHandler.setVisible(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun hideFindView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeFindViewHandler.setInvisible()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeFindModule.hideView(viewId)
+        barcodeFindViewHandler.setInvisible(viewId)
         callbackContext.success()
     }
 
@@ -923,38 +1031,63 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun removePickView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
         barcodePickViewHandler.disposeCurrentView()
-        barcodePickModule.viewDisposed()
-        callbackContext.success()
+        barcodePickModule.releasePickView(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun pickViewStart(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodePickModule.viewStart()
-        callbackContext.success()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.startPickView(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun pickViewStop(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodePickModule.viewStop()
-        callbackContext.success()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.stopPickView(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun pickViewFreeze(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodePickModule.viewFreeze(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.freezePickView(viewId, CordovaResult(callbackContext))
+    }
+
+    @PluginMethod
+    fun pickViewPause(
+        args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.pausePickView(viewId, CordovaResult(callbackContext))
+    }
+
+    @PluginMethod
+    fun pickViewResume(
+        args: JSONArray,
+        callbackContext: CallbackContext
+    ) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.resumePickView(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
@@ -968,88 +1101,130 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun updatePickView(args: JSONArray, callbackContext: CallbackContext) {
-        val viewJson = args.toString()
-        barcodePickModule.updateView(viewJson, CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewJson = argsJson.toString()
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.updateView(viewId, viewJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun addPickActionListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME,
             callbackContext
         )
-        barcodePickModule.addActionListener()
-        callbackContext.successAndKeepCallback()
+        barcodePickModule.addActionListener(viewId, CordovaResultKeepCallback(callbackContext))
     }
 
     @PluginMethod
     fun removePickActionListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME)
-        barcodePickModule.removeActionListener()
-        callbackContext.success()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME
+        )
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME
+        )
+        barcodePickModule.removeActionListener(
+            viewId,
+            CordovaResult(callbackContext)
+        )
     }
 
     @PluginMethod
     fun finishPickAction(args: JSONArray, callbackContext: CallbackContext) {
-        val itemDataJson = args.optString("code", "")
-        val result = args.optBoolean("result", false)
-
-        barcodePickModule.finishPickAction(itemData = itemDataJson, result)
-        callbackContext.success()
+        val argsJson = args.getJSONObject(0)
+        val response = hashMapOf<String, Any?>(
+            "viewId" to argsJson.getInt("viewId"),
+            "itemData" to argsJson.optString("code", ""),
+            "result" to argsJson.optBoolean("result", false)
+        )
+        barcodePickModule.finishPickAction(
+            response,
+            CordovaResult(callbackContext)
+        )
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
     fun unsubscribeListeners(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodePickModule.removeActionListener()
-        barcodePickModule.removeScanningListener(CordovaResult(callbackContext))
-        barcodePickModule.removeViewListener(CordovaResult(callbackContext))
-        barcodePickModule.removeViewUiListener(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodePickModule.removeActionListener(viewId, CordovaResult(callbackContext))
+        barcodePickModule.removeScanningListener(viewId, CordovaResult(callbackContext))
+        barcodePickModule.removeViewListener(viewId, CordovaResult(callbackContext))
+        barcodePickModule.removeViewUiListener(viewId, CordovaResult(callbackContext))
+        barcodePickModule.removeBarcodePickListener(viewId, CordovaResult(callbackContext))
 
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME)
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickActionListener.DID_PICK_EVENT_NAME
+        )
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickActionListener.DID_UNPICK_EVENT_NAME
+        )
 
-        eventEmitter.unregisterCallback(FrameworksBarcodePickScanningListener.ON_COMPLETE_SCANNING)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickScanningListener.ON_UPDATE_SCANNING)
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickScanningListener.ON_COMPLETE_SCANNING
+        )
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickScanningListener.ON_UPDATE_SCANNING
+        )
 
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener.DID_START_SCANNING_EVENT
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener.DID_STOP_SCANNING_EVENT
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener.DID_PAUSE_SCANNING_EVENT
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener.DID_FREEZE_SCANNING_EVENT
         )
-
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewUiListener.DID_TAP_FINISH_BUTTON_EVENT
         )
     }
 
     @PluginMethod
     fun registerOnProductIdentifierForItemsListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickAsyncMapperProductProviderCallback
                 .ON_PRODUCT_IDENTIFIERS_FOR_ITEMS_EVENT_NAME,
             callbackContext
@@ -1059,10 +1234,13 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun unregisterOnProductIdentifierForItemsListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickAsyncMapperProductProviderCallback
                 .ON_PRODUCT_IDENTIFIERS_FOR_ITEMS_EVENT_NAME
         )
@@ -1071,111 +1249,154 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun addBarcodePickScanningListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickScanningListener
                 .ON_COMPLETE_SCANNING,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickScanningListener
                 .ON_UPDATE_SCANNING,
             callbackContext
         )
-        barcodePickModule.addScanningListener(CordovaResultKeepCallback(callbackContext))
+        barcodePickModule.addScanningListener(viewId, CordovaResultKeepCallback(callbackContext))
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
     fun removeBarcodePickScanningListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickScanningListener
                 .ON_COMPLETE_SCANNING
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickScanningListener
                 .ON_UPDATE_SCANNING
         )
-        barcodePickModule.removeScanningListener(CordovaResult(callbackContext))
+        barcodePickModule.removeScanningListener(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun addPickViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener
                 .DID_START_SCANNING_EVENT,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener
                 .DID_FREEZE_SCANNING_EVENT,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener
                 .DID_PAUSE_SCANNING_EVENT,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewListener
                 .DID_STOP_SCANNING_EVENT,
             callbackContext
         )
-        barcodePickModule.addViewListener(CordovaResultKeepCallback(callbackContext))
+        barcodePickModule.addViewListener(viewId, CordovaResultKeepCallback(callbackContext))
     }
 
     @PluginMethod
     fun removePickViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_START_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_STOP_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_PAUSE_SCANNING_EVENT)
-        eventEmitter.unregisterCallback(FrameworksBarcodePickViewListener.DID_FREEZE_SCANNING_EVENT)
-        barcodePickModule.removeViewListener(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickViewListener.DID_START_SCANNING_EVENT
+        )
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickViewListener.DID_STOP_SCANNING_EVENT
+        )
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickViewListener.DID_PAUSE_SCANNING_EVENT
+        )
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickViewListener.DID_FREEZE_SCANNING_EVENT
+        )
+
+        barcodePickModule.removeViewListener(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun registerBarcodePickViewUiListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewUiListener
                 .DID_TAP_FINISH_BUTTON_EVENT,
             callbackContext
         )
-        barcodePickModule.addViewUiListener(CordovaResultKeepCallback(callbackContext))
+        barcodePickModule.addViewUiListener(viewId, CordovaResultKeepCallback(callbackContext))
     }
 
     @SuppressLint("ImplicitSamInstance")
     @PluginMethod
     fun unregisterBarcodePickViewUiListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodePickViewUiListener
                 .DID_TAP_FINISH_BUTTON_EVENT
         )
-        barcodePickModule.removeViewUiListener(CordovaResult(callbackContext))
+        barcodePickModule.removeViewUiListener(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun finishOnProductIdentifierForItems(args: JSONArray, callbackContext: CallbackContext) {
-        barcodePickModule.finishOnProductIdentifierForItems(
-            args.optString("itemsJson", "")
+        val argsJson = args.getJSONObject(0)
+        val response = hashMapOf<String, Any?>(
+            "viewId" to argsJson.getInt("viewId"),
+            "data" to argsJson.optString("itemsJson", "")
         )
-        callbackContext.success()
+        barcodePickModule.finishOnProductIdentifierForItems(
+            response,
+            CordovaResult(callbackContext)
+        )
     }
 
     @PluginMethod
@@ -1349,28 +1570,44 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun setBarcodeBatchModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeBatchModule.setModeEnabled(args.optBoolean("enabled", false))
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val enabled = argsJson.optBoolean("enabled", false)
+        barcodeBatchModule.setModeEnabled(modeId, enabled)
         callbackContext.success()
     }
 
     @PluginMethod
     fun setBarcodeFindModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeFindModule.setModeEnabled(args.optBoolean(0, false))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val enabled = argsJson.getBoolean("enabled")
+        barcodeFindModule.setModeEnabled(viewId, enabled)
         callbackContext.success()
     }
 
     @PluginMethod
     fun updateBarcodeBatchAdvancedOverlay(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+        val overlayJson = argsJson.getString("overlayJson")
+
         barcodeBatchModule.updateAdvancedOverlay(
-            args.defaultArgumentAsString,
+            dataCaptureViewId,
+            overlayJson,
             CordovaResult(callbackContext)
         )
     }
 
     @PluginMethod
     fun updateBarcodeBatchBasicOverlay(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val dataCaptureViewId = argsJson.getInt("dataCaptureViewId")
+        val overlayJson = argsJson.getString("overlayJson")
+
         barcodeBatchModule.updateBasicOverlay(
-            args.defaultArgumentAsString,
+            dataCaptureViewId,
+            overlayJson,
             CordovaResult(callbackContext)
         )
     }
@@ -1385,8 +1622,12 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun applyBarcodeBatchModeSettings(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val modeId = argsJson.getInt("modeId")
+        val modeSettingsJson = argsJson.getString("modeSettingsJson")
         barcodeBatchModule.applyModeSettings(
-            args.defaultArgumentAsString,
+            modeId,
+            modeSettingsJson,
             CordovaResult(callbackContext)
         )
     }
@@ -1728,7 +1969,9 @@ class ScanditBarcodeCapture :
     fun updateBarcodeCountMode(args: JSONArray, callbackContext: CallbackContext) {
         val argsJson = args.getJSONObject(0)
         val modeJson = argsJson.getString("barcodeCountJson")
+        val viewId = argsJson.getInt("viewId")
         barcodeCountModule.updateBarcodeCount(
+            viewId,
             modeJson,
         )
         callbackContext.success()
@@ -1736,37 +1979,45 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun resetBarcodeCount(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.resetBarcodeCount()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.resetBarcodeCount(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun registerBarcodeCountListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountListener.ON_BARCODE_SCANNED_EVENT_NAME,
             callbackContext
         )
 
-        barcodeCountModule.addBarcodeCountListener()
+        barcodeCountModule.addBarcodeCountListener(viewId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
     fun unregisterBarcodeCountListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountListener.ON_BARCODE_SCANNED_EVENT_NAME
         )
 
-        barcodeCountModule.removeBarcodeCountListener()
+        barcodeCountModule.removeBarcodeCountListener(viewId)
         callbackContext.success()
     }
 
@@ -1774,69 +2025,83 @@ class ScanditBarcodeCapture :
     fun setBarcodeCountModeEnabledState(args: JSONArray, callbackContext: CallbackContext) {
         val argsJson = args.getJSONObject(0)
         val isEnabled = argsJson.getBoolean("isEnabled")
-        barcodeCountModule.setModeEnabled(isEnabled)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.setModeEnabled(viewId, isEnabled)
         callbackContext.success()
     }
 
     @PluginMethod
     fun updateBarcodeCountFeedback(args: JSONArray, callbackContext: CallbackContext) {
         val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
         val feedbackJson = argsJson.getString("feedbackJson")
         if (feedbackJson.isBlank()) {
             callbackContext.error("No feedbackJson was provided for the function.")
             return
         }
-        barcodeCountModule.updateFeedback(feedbackJson, CordovaResult(callbackContext))
+        barcodeCountModule.updateFeedback(viewId, feedbackJson, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun finishBarcodeCountOnScan(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.finishOnScan(true)
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.finishOnScan(viewId, true)
         callbackContext.success()
     }
 
     @PluginMethod
     fun startBarcodeCountScanningPhase(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.startScanningPhase()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.startScanningPhase(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun endBarcodeCountScanningPhase(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.endScanningPhase()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.endScanningPhase(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun setBarcodeCountCaptureList(args: JSONArray, callbackContext: CallbackContext) {
-        val barcodes = JSONArray(args.defaultArgumentAsString)
-        barcodeCountModule.setBarcodeCountCaptureList(barcodes)
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val barcodes = argsJson.getJSONArray("captureListJson")
+        barcodeCountModule.setBarcodeCountCaptureList(viewId, barcodes)
         callbackContext.success()
     }
 
     @PluginMethod
     fun getBarcodeCountSpatialMap(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.submitSpatialMap(CordovaResult(callbackContext))
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.submitSpatialMap(viewId, CordovaResult(callbackContext))
     }
 
     @PluginMethod
     fun getBarcodeCountSpatialMapWithHints(args: JSONArray, callbackContext: CallbackContext) {
-        val hints = args.getJSONObject(0)
-        val expectedNumberOfRows = hints.getInt("expectedNumberOfRows")
-        val expectedNumberOfColumns = hints.getInt("expectedNumberOfColumns")
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        val expectedNumberOfRows = argsJson.getInt("expectedNumberOfRows")
+        val expectedNumberOfColumns = argsJson.getInt("expectedNumberOfColumns")
         barcodeCountModule.submitSpatialMap(
+            viewId,
             expectedNumberOfRows,
             expectedNumberOfColumns,
             CordovaResult(callbackContext)
@@ -1845,10 +2110,12 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun resetBarcodeCountSession(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.resetBarcodeCountSession(null)
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.resetBarcodeCountSession(viewId, null)
         callbackContext.success()
     }
 
@@ -1856,7 +2123,8 @@ class ScanditBarcodeCapture :
     fun updateBarcodeCountView(args: JSONArray, callbackContext: CallbackContext) {
         val argsJson = args.getJSONObject(0)
         val viewJson = argsJson.getString("viewJson")
-        barcodeCountModule.updateBarcodeCountView(viewJson)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.updateBarcodeCountView(viewId, viewJson)
         callbackContext.success()
     }
 
@@ -1882,147 +2150,187 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun removeBarcodeCountView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
         barcodeCountViewHandler.disposeCurrentView()
-        barcodeCountModule.viewDisposed()
+        barcodeCountModule.viewDisposed(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun registerBarcodeCountViewUiListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_EXIT_BUTTON_TAPPED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_LIST_BUTTON_TAPPED_EVENT_NAME,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_SINGLE_SCAN_BUTTON_TAPPED_EVENT_NAME,
             callbackContext
         )
-        barcodeCountModule.addBarcodeCountViewUiListener()
+        barcodeCountModule.addBarcodeCountViewUiListener(viewId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
     fun unregisterBarcodeCountViewUiListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_EXIT_BUTTON_TAPPED_EVENT_NAME,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_LIST_BUTTON_TAPPED_EVENT_NAME,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewUiListener.ON_SINGLE_SCAN_BUTTON_TAPPED_EVENT_NAME,
         )
-        barcodeCountModule.removeBarcodeCountViewUiListener()
+        barcodeCountModule.removeBarcodeCountViewUiListener(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun registerBarcodeCountViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.registerCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_RECOGNIZED_BARCODE_EVENT,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_RECOGNIZED_BARCODE_NOT_IN_LIST_EVENT,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_ACCEPTED_BARCODE,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_REJECTED_BARCODE,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_FILTERED_BARCODE,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_COMPLETE_CAPTURE_LIST,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_RECOGNIZED_BARCODE,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_RECOGNIZED_BARCODE_NOT_IN_LIST,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_ACCEPTED_BARCODE,
             callbackContext
         )
-        eventEmitter.registerCallback(
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_REJECTED_BARCODE,
             callbackContext
         )
-        barcodeCountModule.addBarcodeCountViewListener()
+        barcodeCountModule.addBarcodeCountViewListener(viewId)
         callbackContext.successAndKeepCallback()
     }
 
     @PluginMethod
     fun unregisterBarcodeCountViewListener(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        eventEmitter.unregisterCallback(
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_RECOGNIZED_BARCODE_EVENT,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_RECOGNIZED_BARCODE_NOT_IN_LIST_EVENT,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_ACCEPTED_BARCODE,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.BRUSH_FOR_REJECTED_BARCODE,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_FILTERED_BARCODE,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_COMPLETE_CAPTURE_LIST,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_RECOGNIZED_BARCODE,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_RECOGNIZED_BARCODE_NOT_IN_LIST,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_ACCEPTED_BARCODE,
         )
-        eventEmitter.unregisterCallback(
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
             FrameworksBarcodeCountViewListener.DID_TAP_REJECTED_BARCODE,
         )
-        barcodeCountModule.removeBarcodeCountViewListener()
+        barcodeCountModule.removeBarcodeCountViewListener(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun clearBarcodeCountViewHighlights(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountModule.clearHighlights()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+
+        barcodeCountModule.clearHighlights(viewId)
         callbackContext.success()
     }
 
@@ -2037,19 +2345,23 @@ class ScanditBarcodeCapture :
 
     @PluginMethod
     fun showBarcodeCountView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountViewHandler.setVisible()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.showView(viewId)
         callbackContext.success()
     }
 
     @PluginMethod
     fun hideBarcodeCountView(
-        @Suppress("UNUSED_PARAMETER") args: JSONArray,
+        args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        barcodeCountViewHandler.setInvisible()
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        barcodeCountModule.hideView(viewId)
         callbackContext.success()
     }
 
@@ -2059,10 +2371,11 @@ class ScanditBarcodeCapture :
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
+        val viewId = payload.getInt("viewId")
         val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
         val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
-        barcodeCountModule.finishBrushForRecognizedBarcodeEvent(brush, trackedBarcodeId)
+        barcodeCountModule.finishBrushForRecognizedBarcodeEvent(viewId, brush, trackedBarcodeId)
         callbackContext.success()
     }
 
@@ -2072,10 +2385,15 @@ class ScanditBarcodeCapture :
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
+        val viewId = payload.getInt("viewId")
         val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
         val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
-        barcodeCountModule.finishBrushForRecognizedBarcodeNotInListEvent(brush, trackedBarcodeId)
+        barcodeCountModule.finishBrushForRecognizedBarcodeNotInListEvent(
+            viewId,
+            brush,
+            trackedBarcodeId
+        )
         callbackContext.success()
     }
 
@@ -2085,10 +2403,11 @@ class ScanditBarcodeCapture :
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
+        val viewId = payload.getInt("viewId")
         val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
         val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
-        barcodeCountModule.finishBrushForAcceptedBarcodeEvent(brush, trackedBarcodeId)
+        barcodeCountModule.finishBrushForAcceptedBarcodeEvent(viewId, brush, trackedBarcodeId)
         callbackContext.success()
     }
 
@@ -2098,22 +2417,25 @@ class ScanditBarcodeCapture :
         callbackContext: CallbackContext
     ) {
         val payload = args.getJSONObject(0)
+        val viewId = payload.getInt("viewId")
         val brushJson = payload.getOrNull("brushJson")
         val brush = if (brushJson.isNullOrBlank()) null else BrushDeserializer.fromJson(brushJson)
         val trackedBarcodeId = payload.optInt("trackedBarcodeId", -1)
-        barcodeCountModule.finishBrushForRejectedBarcodeEvent(brush, trackedBarcodeId)
+        barcodeCountModule.finishBrushForRejectedBarcodeEvent(viewId, brush, trackedBarcodeId)
         callbackContext.success()
     }
 
     @PluginMethod
-    fun enablenableHardwareTrigger(args: JSONArray, callbackContext: CallbackContext) {
+    fun enableHardwareTrigger(args: JSONArray, callbackContext: CallbackContext) {
         val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
         val hardwareTriggerKeyCode = argsJson.optInt("hardwareTriggerKeyCode", Int.MAX_VALUE)
             .takeIf {
                 it != Int.MAX_VALUE
             }
 
         barcodeCountModule.enableHardwareTrigger(
+            viewId,
             hardwareTriggerKeyCode,
             CordovaResult(callbackContext)
         )
@@ -2191,4 +2513,29 @@ class ScanditBarcodeCapture :
     }
 
     // Barcode Generator - End
+
+    @PluginMethod
+    fun addBarcodePickListener(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.registerViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickListener.DID_UPDATE_SESSION,
+            callbackContext
+        )
+
+        barcodePickModule.addBarcodePickListener(viewId, CordovaResultKeepCallback(callbackContext))
+    }
+
+    @PluginMethod
+    fun removeBarcodePickListener(args: JSONArray, callbackContext: CallbackContext) {
+        val argsJson = args.getJSONObject(0)
+        val viewId = argsJson.getInt("viewId")
+        eventEmitter.unregisterViewSpecificCallback(
+            viewId,
+            FrameworksBarcodePickListener.DID_UPDATE_SESSION
+        )
+
+        barcodePickModule.removeBarcodePickListener(viewId, CordovaResult(callbackContext))
+    }
 }
