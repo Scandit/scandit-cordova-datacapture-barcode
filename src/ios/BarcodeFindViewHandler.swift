@@ -29,7 +29,7 @@ class BarcodeFindViewHandler {
     private var shouldBeUnderWebView = false
 
     private var constraints: [NSLayoutConstraint] {
-        [top, left, width, height].compactMap({ $0 })
+        return [top, left, width, height].compactMap({ $0 })
     }
 
     init(relativeTo webView: WKWebView) {
@@ -125,3 +125,4 @@ class BarcodeFindViewHandler {
         }
     }
 }
+

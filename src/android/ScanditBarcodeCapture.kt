@@ -19,7 +19,6 @@ import com.scandit.datacapture.cordova.core.ScanditCaptureCore
 import com.scandit.datacapture.cordova.core.data.ResizeAndMoveInfo
 import com.scandit.datacapture.cordova.core.errors.JsonParseError
 import com.scandit.datacapture.cordova.core.utils.CordovaEventEmitter
-import com.scandit.datacapture.cordova.core.utils.CordovaMethodCall
 import com.scandit.datacapture.cordova.core.utils.CordovaResult
 import com.scandit.datacapture.cordova.core.utils.CordovaResultKeepCallback
 import com.scandit.datacapture.cordova.core.utils.PermissionRequest
@@ -2528,8 +2527,70 @@ class ScanditBarcodeCapture :
     // Barcode Generator - Start
 
     @PluginMethod
-    fun executeNativeBarcodeGenerator(args: JSONArray, callbackContext: CallbackContext) {
-        barcodeGeneratorModule.execute(CordovaMethodCall(args), CordovaResult(callbackContext))
+    fun createBarcodeGenerator(args: JSONArray, callbackContext: CallbackContext) {
+        val barcodeGeneratorJson = args.optString(0)
+
+        if (barcodeGeneratorJson.isNullOrBlank()) {
+            callbackContext.error("No barcodeGeneratorJson was provided for the function.")
+            return
+        }
+        barcodeGeneratorModule.createGenerator(barcodeGeneratorJson, CordovaResult(callbackContext))
+    }
+
+    @PluginMethod
+    fun generateFromBase64EncodedData(args: JSONArray, callbackContext: CallbackContext) {
+        val dataJson = args.getJSONObject(0)
+
+        val generatorId = dataJson.getString("generatorId") ?: run {
+            callbackContext.error("No generatorId was provided for the function.")
+            return
+        }
+        val data = dataJson.getString("data") ?: run {
+            callbackContext.error("No data was provided for the function.")
+            return
+        }
+        val imageWidth = dataJson.optInt("imageWidth", -1)
+
+        barcodeGeneratorModule.generateFromBase64EncodedData(
+            generatorId,
+            data,
+            imageWidth,
+            CordovaResult(callbackContext)
+        )
+    }
+
+    @PluginMethod
+    fun generateFromString(args: JSONArray, callbackContext: CallbackContext) {
+        val dataJson = args.getJSONObject(0)
+
+        val generatorId = dataJson.getString("generatorId") ?: run {
+            callbackContext.error("No generatorId was provided for the function.")
+            return
+        }
+        val text = dataJson.getString("text") ?: run {
+            callbackContext.error("No text was provided for the function.")
+            return
+        }
+        val imageWidth = dataJson.optInt("imageWidth", -1)
+
+        barcodeGeneratorModule.generate(
+            generatorId,
+            text,
+            imageWidth,
+            CordovaResult(callbackContext)
+        )
+    }
+
+    @PluginMethod
+    fun disposeBarcodeGenerator(args: JSONArray, callbackContext: CallbackContext) {
+        val generatorId = args.optString(0)
+
+        if (generatorId.isNullOrBlank()) {
+            callbackContext.error("No generatorId was provided for the function.")
+            return
+        }
+
+        barcodeGeneratorModule.disposeGenerator(generatorId, CordovaResult(callbackContext))
     }
 
     // Barcode Generator - End
