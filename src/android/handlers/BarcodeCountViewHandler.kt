@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 class BarcodeCountViewHandler(
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 ) {
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
+    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0, 0, 600, 600, false)
     private var isVisible: Boolean = true
     private var barcodeCountViewReference: WeakReference<BarcodeCountView?> = WeakReference(null)
     private var webViewReference: WeakReference<View>? = null
@@ -76,7 +76,7 @@ class BarcodeCountViewHandler(
 
     fun disposeCurrentView() {
         val view = barcodeCountView ?: return
-        removeBarcodeCountView(view)
+        removeBarcodeFindViewContainer(view)
     }
 
     private fun disposeCurrentWebView() {
@@ -101,7 +101,7 @@ class BarcodeCountViewHandler(
         }
     }
 
-    private fun removeBarcodeCountView(barcodeCountView: BarcodeCountView) {
+    private fun removeBarcodeFindViewContainer(barcodeCountView: BarcodeCountView) {
         barcodeCountViewReference = WeakReference(null)
         removeView(barcodeCountView) {
             barcodeCountView.listener = null
