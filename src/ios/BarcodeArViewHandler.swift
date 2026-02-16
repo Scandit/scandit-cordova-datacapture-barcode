@@ -1,23 +1,23 @@
 /*
  * This file is part of the Scandit Data Capture SDK
  *
- * Copyright (C) 2023- Scandit AG. All rights reserved.
+ * Copyright (C) 2025- Scandit AG. All rights reserved.
  */
 
 import ScanditBarcodeCapture
 import WebKit
 
-class BarcodePickViewHandler {
+class BarcodeArViewHandler {
     let webView: WKWebView
 
-    var barcodePickView: BarcodePickView? {
+    var barcodeArView: BarcodeArView? {
         didSet {
-            guard let barcodePickView = barcodePickView else { return }
-            barcodePickView.translatesAutoresizingMaskIntoConstraints = false
             resetConstraints()
             update()
         }
     }
+
+    var containerView: UIView?
 
     private var top: NSLayoutConstraint?
     private var left: NSLayoutConstraint?
@@ -29,11 +29,20 @@ class BarcodePickViewHandler {
     private var shouldBeUnderWebView = false
 
     private var constraints: [NSLayoutConstraint] {
-        [top, left, width, height].compactMap({ $0 })
+        [top, left, width, height].compactMap { $0 }
     }
 
     init(relativeTo webView: WKWebView) {
         self.webView = webView
+
+    }
+
+    func createContainerView() -> UIView {
+        let containerView = UIView(frame: .zero)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
+        self.containerView = containerView
+        return containerView
     }
 
     /// Update the constraints that set the position and size of the capture view,
@@ -55,11 +64,8 @@ class BarcodePickViewHandler {
         updatePosition()
     }
 
-    private func activate() {
-        NSLayoutConstraint.activate(constraints)
-    }
-
     private func resetConstraints() {
+        NSLayoutConstraint.deactivate(constraints)
         top = nil
         left = nil
         width = nil
@@ -67,7 +73,9 @@ class BarcodePickViewHandler {
     }
 
     private func updateConstraints() {
-        guard let barcodePickView = barcodePickView else {
+        guard let containerView = containerView
+        else {
+            assert(true, "barcodeArView or containerView is not set")
             return
         }
 
@@ -77,50 +85,57 @@ class BarcodePickViewHandler {
         if let top = top {
             top.constant = topConstant
         } else {
-            top = barcodePickView.topAnchor.constraint(equalTo: webView.topAnchor, constant: topConstant)
+            top = containerView.topAnchor.constraint(equalTo: webView.topAnchor, constant: topConstant)
             top?.isActive = true
         }
 
         if let left = left {
             left.constant = leftConstant
         } else {
-            left = barcodePickView.leadingAnchor.constraint(equalTo: webView.leadingAnchor, constant: leftConstant)
+            left = containerView.leadingAnchor.constraint(equalTo: webView.leadingAnchor, constant: leftConstant)
             left?.isActive = true
         }
 
-        if let width = width {
-            width.constant = size.width
+        width?.isActive = false
+        if size.width == 0 {
+            // Default to full screen if width not set
+            self.width = containerView.widthAnchor.constraint(equalTo: webView.widthAnchor)
         } else {
-            width = barcodePickView.widthAnchor.constraint(equalToConstant: size.width)
-            width?.isActive = true
+            self.width = containerView.widthAnchor.constraint(equalToConstant: size.width)
         }
 
-        if let height = height {
-            height.constant = size.height
-        } else {
-            height = barcodePickView.heightAnchor.constraint(equalToConstant: size.height)
-            height?.isActive = true
-        }
+        self.width?.isActive = true
 
-        barcodePickView.superview?.layoutIfNeeded()
+        height?.isActive = false
+        if size.height == 0 {
+            self.height = containerView.heightAnchor.constraint(equalTo: webView.heightAnchor)
+        } else {
+            self.height = containerView.heightAnchor.constraint(equalToConstant: size.height)
+        }
+        self.height?.isActive = true
+
+        containerView.superview?.layoutIfNeeded()
     }
 
     private func updatePosition() {
-        guard let barcodePickView = barcodePickView else {
+        guard let containerView = containerView
+        else {
+            assert(true, "containerView is not set")
             return
         }
 
         if shouldBeUnderWebView {
             #if swift(>=5.0)
-            barcodePickView.superview?.sendSubviewToBack(barcodePickView)
+            webView.sendSubviewToBack(containerView)
             #else
-            barcodePickView.superview?.sendSubview(toBack: barcodePickView)
+            webView.sendSubview(toBack: containerView)
             #endif
         } else {
             #if swift(>=5.0)
-            barcodePickView.superview?.bringSubviewToFront(barcodePickView)
+            webView.bringSubviewToFront(containerView)
+            // barcodeArView.superview?.bringSubviewToFront(barcodeArView)
             #else
-            barcodePickView.superview?.bringSubview(toFront: barcodePickView)
+            webView.bringSubview(toFront: containerView)
             #endif
         }
     }

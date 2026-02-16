@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 class BarcodeCountViewHandler(
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 ) {
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0, 0, 600, 600, false)
+    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
     private var isVisible: Boolean = true
     private var barcodeCountViewReference: WeakReference<BarcodeCountView?> = WeakReference(null)
     private var webViewReference: WeakReference<View>? = null
@@ -46,7 +46,6 @@ class BarcodeCountViewHandler(
             webViewReference = WeakReference(webView)
             activityRef = WeakReference(activity)
             mainThread.runOnMainThread {
-                webView.bringToFront()
                 webView.setBackgroundColor(Color.TRANSPARENT)
             }
         }
@@ -76,7 +75,7 @@ class BarcodeCountViewHandler(
 
     fun disposeCurrentView() {
         val view = barcodeCountView ?: return
-        removeBarcodeFindViewContainer(view)
+        removeBarcodeCountView(view)
     }
 
     private fun disposeCurrentWebView() {
@@ -93,15 +92,15 @@ class BarcodeCountViewHandler(
             activity.addContentView(
                 barcodeCountView,
                 ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                    latestInfo.width.pxFromDp().toInt(),
+                    latestInfo.height.pxFromDp().toInt()
                 )
             )
             render()
         }
     }
 
-    private fun removeBarcodeFindViewContainer(barcodeCountView: BarcodeCountView) {
+    private fun removeBarcodeCountView(barcodeCountView: BarcodeCountView) {
         barcodeCountViewReference = WeakReference(null)
         removeView(barcodeCountView) {
             barcodeCountView.listener = null
@@ -132,11 +131,21 @@ class BarcodeCountViewHandler(
                 height = latestInfo.height.pxFromDp().toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
-                webView?.bringToFront()
+                webView?.let {
+                    it.bringToFront()
+                    (it.parent as? View)?.translationZ = 1F
+                }
             } else {
                 barcodeCountView.bringToFront()
+                webView?.let {
+                    (it.parent as? View)?.translationZ = -1F
+                }
             }
             barcodeCountView.requestLayout()
         }
+    }
+
+    fun disposeAll() {
+        disposeCurrent()
     }
 }
