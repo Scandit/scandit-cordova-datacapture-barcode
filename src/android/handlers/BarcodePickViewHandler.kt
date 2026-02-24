@@ -23,7 +23,7 @@ import java.lang.ref.WeakReference
 class BarcodePickViewHandler(
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 ) {
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
+    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0, 0, 600, 600, false)
     private var isVisible: Boolean = true
     private var barcodePickViewContainerReference: WeakReference<FrameLayout>? = null
     private var webViewReference: WeakReference<View>? = null
@@ -107,8 +107,8 @@ class BarcodePickViewHandler(
             activity.addContentView(
                 barcodePickViewContainer,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
             render()
@@ -145,8 +145,8 @@ class BarcodePickViewHandler(
             barcodePickViewContainer.x = latestInfo.left.pxFromDp()
             barcodePickViewContainer.y = latestInfo.top.pxFromDp()
             barcodePickViewContainer.layoutParams.apply {
-                width = latestInfo.width.pxFromDp().toInt()
-                height = latestInfo.height.pxFromDp().toInt()
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
             }
             if (latestInfo.shouldBeUnderWebView) {
                 webView?.bringToFront()
@@ -157,9 +157,5 @@ class BarcodePickViewHandler(
             }
             barcodePickViewContainer.requestLayout()
         }
-    }
-
-    fun disposeAll() {
-        disposeCurrent()
     }
 }
