@@ -3,7 +3,9 @@ import { Anchor, CameraSettings, DataCaptureContext } from 'scandit-datacapture-
 export declare class BarcodeFindView {
     private baseBarcodeFindView;
     private htmlElement;
-    private htmlElementState;
+    private _htmlElementState;
+    private get htmlElementState();
+    private set htmlElementState(value);
     private domObserver;
     private scrollListener;
     static forMode(dataCaptureContext: DataCaptureContext, barcodeFind: BarcodeFind): BarcodeFindView;
@@ -13,7 +15,6 @@ export declare class BarcodeFindView {
     private orientationChangeListener;
     get barcodeFindViewUiListener(): BarcodeFindViewUiListener | null;
     set barcodeFindViewUiListener(value: BarcodeFindViewUiListener | null);
-    static get hardwareTriggerSupported(): boolean;
     get shouldShowUserGuidanceView(): boolean;
     set shouldShowUserGuidanceView(value: boolean);
     get shouldShowHints(): boolean;
@@ -28,8 +29,6 @@ export declare class BarcodeFindView {
     set shouldShowProgressBar(value: boolean);
     get shouldShowTorchControl(): boolean;
     set shouldShowTorchControl(value: boolean);
-    get shouldShowZoomControl(): boolean;
-    set shouldShowZoomControl(value: boolean);
     get torchControlPosition(): Anchor;
     set torchControlPosition(value: Anchor);
     get textForCollapseCardsButton(): string | null;
@@ -60,5 +59,6 @@ export declare class BarcodeFindView {
     private elementDidChange;
     private _show;
     private _hide;
+    private updatePositionAndSize;
     private toJSON;
 }

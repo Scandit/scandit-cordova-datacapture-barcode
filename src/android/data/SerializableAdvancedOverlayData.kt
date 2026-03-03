@@ -20,9 +20,7 @@ data class SerializableAdvancedOverlayViewActionData(
         trackedBarcodeId = json.getInt(FIELD_TRACKED_BARCODE_ID),
         sessionFrameSequenceId = if (json.has(FIELD_FRAME_SEQUENCE_ID)) {
             json.getLong(FIELD_FRAME_SEQUENCE_ID)
-        } else {
-            null
-        }
+        } else null
     )
 }
 
