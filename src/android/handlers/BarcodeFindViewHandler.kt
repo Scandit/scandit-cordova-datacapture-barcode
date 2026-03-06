@@ -13,8 +13,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import com.scandit.datacapture.cordova.core.data.ResizeAndMoveInfo
-import com.scandit.datacapture.cordova.core.utils.pxFromDp
 import com.scandit.datacapture.cordova.core.utils.removeFromParent
 import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
 import com.scandit.datacapture.frameworks.core.utils.MainThread
@@ -26,27 +24,12 @@ class BarcodeFindViewHandler(
 ) {
     private val containers: MutableMap<Int, WeakReference<FrameLayout>> = ConcurrentHashMap()
     private val containerVisibility: MutableMap<Int, Boolean> = ConcurrentHashMap()
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
 
     private var webViewReference: WeakReference<View>? = null
     private var activityRef: WeakReference<AppCompatActivity>? = null
 
     private val webView: View?
         get() = webViewReference?.get()
-
-    fun setResizeAndMoveInfo(info: ResizeAndMoveInfo) {
-        latestInfo = info
-        render()
-    }
-
-    private fun render() {
-        for ((viewId, containerRef) in containers) {
-            containerRef.get()?.let { container ->
-                val isVisible = containerVisibility[viewId] ?: true
-                renderNoAnimate(container, isVisible)
-            }
-        }
-    }
 
     fun prepareContainer(): FrameLayout {
         return FrameLayout(
@@ -144,8 +127,8 @@ class BarcodeFindViewHandler(
             activity.addContentView(
                 container,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
             renderNoAnimate(container, containerVisibility[viewId] == true)
@@ -160,36 +143,23 @@ class BarcodeFindViewHandler(
 
     @UiThread
     private fun renderNoAnimate(container: FrameLayout, isVisible: Boolean) {
-        container.post {
-            container.visibility = if (isVisible) View.VISIBLE else View.GONE
-            container.x = latestInfo.left.pxFromDp()
-            container.y = latestInfo.top.pxFromDp()
-            container.layoutParams.apply {
-                width = latestInfo.width.pxFromDp().toInt()
-                height = latestInfo.height.pxFromDp().toInt()
-            }
-
-            if (latestInfo.shouldBeUnderWebView) {
-                webView?.let {
-                    it.bringToFront()
-                    (it.parent as View).translationZ = 1F
-                }
-            } else {
-                if (isVisible) {
-                    container.bringToFront()
-                    webView?.let {
-                        (it.parent as View).translationZ = -1F
-                    }
-                } else {
-                    setWebViewVisible()
-                }
-            }
-            container.requestLayout()
+        container.visibility =
+            if (isVisible) View.VISIBLE else View.GONE
+        container.layoutParams.apply {
+            width = ViewGroup.LayoutParams.MATCH_PARENT
+            height = ViewGroup.LayoutParams.MATCH_PARENT
         }
+        container.bringToFront()
+        setWebViewInvisible()
+        container.requestLayout()
     }
 
     private fun setWebViewVisible() {
         webView?.bringToFront()
         (webView?.parent as View).translationZ = 1F
+    }
+
+    private fun setWebViewInvisible() {
+        (webView?.parent as View).translationZ = -1F
     }
 }
