@@ -107,8 +107,8 @@ class BarcodePickViewHandler(
             activity.addContentView(
                 barcodePickViewContainer,
                 ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                    latestInfo.width.pxFromDp().toInt(),
+                    latestInfo.height.pxFromDp().toInt()
                 )
             )
             render()
@@ -145,8 +145,8 @@ class BarcodePickViewHandler(
             barcodePickViewContainer.x = latestInfo.left.pxFromDp()
             barcodePickViewContainer.y = latestInfo.top.pxFromDp()
             barcodePickViewContainer.layoutParams.apply {
-                width = ViewGroup.LayoutParams.MATCH_PARENT
-                height = ViewGroup.LayoutParams.MATCH_PARENT
+                width = latestInfo.width.pxFromDp().toInt()
+                height = latestInfo.height.pxFromDp().toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
                 webView?.bringToFront()
@@ -157,5 +157,9 @@ class BarcodePickViewHandler(
             }
             barcodePickViewContainer.requestLayout()
         }
+    }
+
+    fun disposeAll() {
+        disposeCurrent()
     }
 }
