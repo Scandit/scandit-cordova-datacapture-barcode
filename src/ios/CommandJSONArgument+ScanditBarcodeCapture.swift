@@ -2,13 +2,13 @@ import ScanditCaptureCore
 
 struct BrushAndTrackedBarcodeJSON: CommandJSONArgument {
     enum CodingKeys: String, CodingKey {
-        case trackedBarcodeIdentifier
+        case trackedBarcodeID
         case sessionFrameSequenceID
         case brushJSONString = "brush"
     }
 
     let brushJSONString: String?
-    let trackedBarcodeIdentifier: String
+    let trackedBarcodeID: String
     let sessionFrameSequenceID: String?
 
     var brush: Brush? {
@@ -21,15 +21,14 @@ struct BrushAndTrackedBarcodeJSON: CommandJSONArgument {
 }
 
 struct ViewAndTrackedBarcodeJSON: CommandJSONArgument {
-    let viewJson: TrackedBarcodeView.JSON?
-    let trackedBarcodeIdentifier: Int?
-    let sessionFrameSequenceID: Int?
-    let dataCaptureViewId: Int?
+    let view: TrackedBarcodeView.JSON?
+    let trackedBarcodeID: String
+    let sessionFrameSequenceID: String?
 }
 
 struct AnchorAndTrackedBarcodeJSON: CommandJSONArgument {
     let anchor: String?
-    let trackedBarcodeIdentifier: String
+    let trackedBarcodeID: String
     let sessionFrameSequenceID: String?
 }
 
