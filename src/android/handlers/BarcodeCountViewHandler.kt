@@ -46,6 +46,7 @@ class BarcodeCountViewHandler(
             webViewReference = WeakReference(webView)
             activityRef = WeakReference(activity)
             mainThread.runOnMainThread {
+                webView.bringToFront()
                 webView.setBackgroundColor(Color.TRANSPARENT)
             }
         }
@@ -92,8 +93,8 @@ class BarcodeCountViewHandler(
             activity.addContentView(
                 barcodeCountView,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
             render()
@@ -131,21 +132,11 @@ class BarcodeCountViewHandler(
                 height = latestInfo.height.pxFromDp().toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
-                webView?.let {
-                    it.bringToFront()
-                    (it.parent as? View)?.translationZ = 1F
-                }
+                webView?.bringToFront()
             } else {
                 barcodeCountView.bringToFront()
-                webView?.let {
-                    (it.parent as? View)?.translationZ = -1F
-                }
             }
             barcodeCountView.requestLayout()
         }
-    }
-
-    fun disposeAll() {
-        disposeCurrent()
     }
 }
