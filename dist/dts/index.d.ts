@@ -146,6 +146,7 @@ export { BarcodeCountMappingFlowSettings } from 'scandit-datacapture-frameworks-
 export { BarcodeAr } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeArAnnotation } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeArAnnotationProvider } from 'scandit-datacapture-frameworks-barcode';
+export { BarcodeArFilter } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeArAnnotationTrigger } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeArCircleHighlight } from 'scandit-datacapture-frameworks-barcode';
 export { BarcodeArCircleHighlightPreset } from 'scandit-datacapture-frameworks-barcode';
