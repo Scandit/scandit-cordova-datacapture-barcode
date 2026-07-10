@@ -8,9 +8,8 @@ interface BarcodePickViewProps {
     style: any;
 }
 export declare class BarcodePickView extends DefaultSerializeable {
-    private viewId;
-    private static get cordovaExec();
     private baseBarcodePickView;
+    private viewProxy;
     private htmlElement;
     private _htmlElementState;
     private domObserver;
@@ -27,13 +26,9 @@ export declare class BarcodePickView extends DefaultSerializeable {
     private unsubscribeFromChangesOnHTMLElement;
     private elementDidChange;
     private updatePositionAndSize;
-    private setPositionAndSize;
-    start(): Promise<void>;
-    freeze(): Promise<void>;
-    stop(): Promise<void>;
-    pause(): Promise<void>;
-    resume(): Promise<void>;
-    reset(): Promise<void>;
+    start(): void;
+    freeze(): void;
+    stop(): void;
     addListener(listener: BarcodePickViewListener): void;
     removeListener(listener: BarcodePickViewListener): void;
     addActionListener(listener: BarcodePickActionListener): void;
