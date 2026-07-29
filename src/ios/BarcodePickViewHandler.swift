@@ -7,11 +7,6 @@
 import ScanditBarcodeCapture
 import WebKit
 
-#if SWIFT_PACKAGE
-import Cordova
-import ScanditCordovaDatacaptureCore
-#endif
-
 class BarcodePickViewHandler {
     let webView: WKWebView
 
@@ -116,9 +111,17 @@ class BarcodePickViewHandler {
         }
 
         if shouldBeUnderWebView {
+            #if swift(>=5.0)
             barcodePickView.superview?.sendSubviewToBack(barcodePickView)
+            #else
+            barcodePickView.superview?.sendSubview(toBack: barcodePickView)
+            #endif
         } else {
+            #if swift(>=5.0)
             barcodePickView.superview?.bringSubviewToFront(barcodePickView)
+            #else
+            barcodePickView.superview?.bringSubview(toFront: barcodePickView)
+            #endif
         }
     }
 }
