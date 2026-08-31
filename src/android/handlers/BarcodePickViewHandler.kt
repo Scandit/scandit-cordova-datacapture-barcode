@@ -111,8 +111,8 @@ class BarcodePickViewHandler(
             activity.addContentView(
                 barcodePickViewContainer,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    latestInfo.width.pxFromDp(activity).toInt(),
+                    latestInfo.height.pxFromDp(activity).toInt()
                 )
             )
             render()
@@ -145,12 +145,13 @@ class BarcodePickViewHandler(
 
     private fun renderNoAnimate(barcodePickViewContainer: FrameLayout) {
         barcodePickViewContainer.post {
+            val context = barcodePickViewContainer.context
             barcodePickViewContainer.visibility = if (isVisible) View.VISIBLE else View.GONE
-            barcodePickViewContainer.x = latestInfo.left.pxFromDp()
-            barcodePickViewContainer.y = latestInfo.top.pxFromDp()
+            barcodePickViewContainer.x = latestInfo.left.pxFromDp(context)
+            barcodePickViewContainer.y = latestInfo.top.pxFromDp(context)
             barcodePickViewContainer.layoutParams.apply {
-                width = latestInfo.width.pxFromDp().toInt()
-                height = latestInfo.height.pxFromDp().toInt()
+                width = latestInfo.width.pxFromDp(context).toInt()
+                height = latestInfo.height.pxFromDp(context).toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
                 webView?.bringToFront()

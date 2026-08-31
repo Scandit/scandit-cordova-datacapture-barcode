@@ -140,20 +140,21 @@ class BarcodeArViewHandler(
     @UiThread
     private fun renderNoAnimate(container: FrameLayout, isVisible: Boolean) {
         container.post {
+            val context = container.context
             container.visibility = if (isVisible) View.VISIBLE else View.GONE
-            container.x = resizeInfo.left.pxFromDp()
-            container.y = resizeInfo.top.pxFromDp()
+            container.x = resizeInfo.left.pxFromDp(context)
+            container.y = resizeInfo.top.pxFromDp(context)
             container.layoutParams.apply {
                 // If width/height are 0, use MATCH_PARENT for full screen
                 width = if (resizeInfo.width == 0f) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 } else {
-                    resizeInfo.width.pxFromDp().toInt()
+                    resizeInfo.width.pxFromDp(context).toInt()
                 }
                 height = if (resizeInfo.height == 0f) {
                     ViewGroup.LayoutParams.MATCH_PARENT
                 } else {
-                    resizeInfo.height.pxFromDp().toInt()
+                    resizeInfo.height.pxFromDp(context).toInt()
                 }
             }
 

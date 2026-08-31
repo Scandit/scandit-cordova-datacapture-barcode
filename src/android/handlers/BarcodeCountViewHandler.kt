@@ -92,8 +92,8 @@ class BarcodeCountViewHandler(
             activity.addContentView(
                 barcodeCountView,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    latestInfo.width.pxFromDp(activity).toInt(),
+                    latestInfo.height.pxFromDp(activity).toInt()
                 )
             )
             render()
@@ -123,12 +123,13 @@ class BarcodeCountViewHandler(
 
     private fun renderNoAnimate(barcodeCountView: BarcodeCountView) {
         barcodeCountView.post {
+            val context = barcodeCountView.context
             barcodeCountView.visibility = if (isVisible) View.VISIBLE else View.GONE
-            barcodeCountView.x = latestInfo.left.pxFromDp()
-            barcodeCountView.y = latestInfo.top.pxFromDp()
+            barcodeCountView.x = latestInfo.left.pxFromDp(context)
+            barcodeCountView.y = latestInfo.top.pxFromDp(context)
             barcodeCountView.layoutParams.apply {
-                width = latestInfo.width.pxFromDp().toInt()
-                height = latestInfo.height.pxFromDp().toInt()
+                width = latestInfo.width.pxFromDp(context).toInt()
+                height = latestInfo.height.pxFromDp(context).toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
                 webView?.let {
