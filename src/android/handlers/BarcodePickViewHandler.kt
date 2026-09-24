@@ -14,7 +14,6 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.scandit.datacapture.barcode.pick.ui.BarcodePickView
 import com.scandit.datacapture.cordova.core.data.ResizeAndMoveInfo
-import com.scandit.datacapture.cordova.core.utils.bringContainerToFront
 import com.scandit.datacapture.cordova.core.utils.pxFromDp
 import com.scandit.datacapture.cordova.core.utils.removeFromParent
 import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
@@ -24,7 +23,7 @@ import java.lang.ref.WeakReference
 class BarcodePickViewHandler(
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 ) {
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
+    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0, 0, 600, 600, false)
     private var isVisible: Boolean = true
     private var barcodePickViewContainerReference: WeakReference<FrameLayout>? = null
     private var webViewReference: WeakReference<View>? = null
@@ -61,10 +60,7 @@ class BarcodePickViewHandler(
             webViewReference = WeakReference(webView)
             activityRef = WeakReference(activity)
             mainThread.runOnMainThread {
-                // Bring the WebView's content-frame container to the front. On
-                // cordova-android 15+ webView.bringToFront() alone is ineffective because
-                // the WebView is wrapped in an intermediate rootLayout.
-                webView.bringContainerToFront()
+                webView.bringToFront()
                 webView.setBackgroundColor(Color.TRANSPARENT)
             }
         }
@@ -111,8 +107,8 @@ class BarcodePickViewHandler(
             activity.addContentView(
                 barcodePickViewContainer,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp(activity).toInt(),
-                    latestInfo.height.pxFromDp(activity).toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
             render()
@@ -145,13 +141,12 @@ class BarcodePickViewHandler(
 
     private fun renderNoAnimate(barcodePickViewContainer: FrameLayout) {
         barcodePickViewContainer.post {
-            val context = barcodePickViewContainer.context
             barcodePickViewContainer.visibility = if (isVisible) View.VISIBLE else View.GONE
-            barcodePickViewContainer.x = latestInfo.left.pxFromDp(context)
-            barcodePickViewContainer.y = latestInfo.top.pxFromDp(context)
+            barcodePickViewContainer.x = latestInfo.left.pxFromDp()
+            barcodePickViewContainer.y = latestInfo.top.pxFromDp()
             barcodePickViewContainer.layoutParams.apply {
-                width = latestInfo.width.pxFromDp(context).toInt()
-                height = latestInfo.height.pxFromDp(context).toInt()
+                width = ViewGroup.LayoutParams.MATCH_PARENT
+                height = ViewGroup.LayoutParams.MATCH_PARENT
             }
             if (latestInfo.shouldBeUnderWebView) {
                 webView?.bringToFront()
@@ -162,9 +157,5 @@ class BarcodePickViewHandler(
             }
             barcodePickViewContainer.requestLayout()
         }
-    }
-
-    fun disposeAll() {
-        disposeCurrent()
     }
 }

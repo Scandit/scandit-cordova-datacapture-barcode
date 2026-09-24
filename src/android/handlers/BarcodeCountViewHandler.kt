@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 class BarcodeCountViewHandler(
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 ) {
-    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0f, 0f, 600f, 600f, false)
+    private var latestInfo: ResizeAndMoveInfo = ResizeAndMoveInfo(0, 0, 600, 600, false)
     private var isVisible: Boolean = true
     private var barcodeCountViewReference: WeakReference<BarcodeCountView?> = WeakReference(null)
     private var webViewReference: WeakReference<View>? = null
@@ -46,6 +46,7 @@ class BarcodeCountViewHandler(
             webViewReference = WeakReference(webView)
             activityRef = WeakReference(activity)
             mainThread.runOnMainThread {
+                webView.bringToFront()
                 webView.setBackgroundColor(Color.TRANSPARENT)
             }
         }
@@ -92,8 +93,8 @@ class BarcodeCountViewHandler(
             activity.addContentView(
                 barcodeCountView,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp(activity).toInt(),
-                    latestInfo.height.pxFromDp(activity).toInt()
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
             )
             render()
@@ -123,30 +124,19 @@ class BarcodeCountViewHandler(
 
     private fun renderNoAnimate(barcodeCountView: BarcodeCountView) {
         barcodeCountView.post {
-            val context = barcodeCountView.context
             barcodeCountView.visibility = if (isVisible) View.VISIBLE else View.GONE
-            barcodeCountView.x = latestInfo.left.pxFromDp(context)
-            barcodeCountView.y = latestInfo.top.pxFromDp(context)
+            barcodeCountView.x = latestInfo.left.pxFromDp()
+            barcodeCountView.y = latestInfo.top.pxFromDp()
             barcodeCountView.layoutParams.apply {
-                width = latestInfo.width.pxFromDp(context).toInt()
-                height = latestInfo.height.pxFromDp(context).toInt()
+                width = latestInfo.width.pxFromDp().toInt()
+                height = latestInfo.height.pxFromDp().toInt()
             }
             if (latestInfo.shouldBeUnderWebView) {
-                webView?.let {
-                    it.bringToFront()
-                    (it.parent as? View)?.translationZ = 1F
-                }
+                webView?.bringToFront()
             } else {
                 barcodeCountView.bringToFront()
-                webView?.let {
-                    (it.parent as? View)?.translationZ = -1F
-                }
             }
             barcodeCountView.requestLayout()
         }
-    }
-
-    fun disposeAll() {
-        disposeCurrent()
     }
 }
