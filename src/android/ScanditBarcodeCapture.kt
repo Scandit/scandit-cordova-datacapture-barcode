@@ -306,6 +306,13 @@ class ScanditBarcodeCapture :
             )
             barcodeArViewHandler.addBarcodeArViewContainer(viewId, container)
         }
+
+        // Check camera permissions because BarcodeArView handles the camera
+        // internally (via view.start()) and does not go through the core
+        // switchCameraToDesiredState permission gate. Without this, on a cold
+        // start the camera fails with a SecurityException and the view stays
+        // black with no permission prompt (SDC-32054).
+        permissionRequest.checkOrRequestCameraPermission(this)
     }
 
     @PluginMethod
