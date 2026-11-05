@@ -148,8 +148,8 @@ class BarcodeFindViewHandler(
             activity.addContentView(
                 container,
                 ViewGroup.LayoutParams(
-                    latestInfo.width.pxFromDp().toInt(),
-                    latestInfo.height.pxFromDp().toInt()
+                    latestInfo.width.pxFromDp(activity).toInt(),
+                    latestInfo.height.pxFromDp(activity).toInt()
                 )
             )
             renderNoAnimate(container, containerVisibility[viewId] == true)
@@ -165,12 +165,13 @@ class BarcodeFindViewHandler(
     @UiThread
     private fun renderNoAnimate(container: FrameLayout, isVisible: Boolean) {
         container.post {
+            val context = container.context
             container.visibility = if (isVisible) View.VISIBLE else View.GONE
-            container.x = latestInfo.left.pxFromDp()
-            container.y = latestInfo.top.pxFromDp()
+            container.x = latestInfo.left.pxFromDp(context)
+            container.y = latestInfo.top.pxFromDp(context)
             container.layoutParams.apply {
-                width = latestInfo.width.pxFromDp().toInt()
-                height = latestInfo.height.pxFromDp().toInt()
+                width = latestInfo.width.pxFromDp(context).toInt()
+                height = latestInfo.height.pxFromDp(context).toInt()
             }
 
             if (latestInfo.shouldBeUnderWebView) {

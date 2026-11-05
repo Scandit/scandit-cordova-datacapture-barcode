@@ -6,6 +6,7 @@
 
 package com.scandit.datacapture.cordova.barcode
 
+import android.content.pm.PackageManager
 import com.scandit.datacapture.cordova.barcode.handlers.BarcodeArViewHandler
 import com.scandit.datacapture.cordova.barcode.handlers.BarcodeCountViewHandler
 import com.scandit.datacapture.cordova.barcode.handlers.BarcodeFindViewHandler
@@ -31,6 +32,7 @@ import com.scandit.datacapture.frameworks.barcode.selection.listeners.Frameworks
 import com.scandit.datacapture.frameworks.barcode.spark.SparkScanModule
 import com.scandit.datacapture.frameworks.core.CoreModule
 import com.scandit.datacapture.frameworks.core.errors.ParameterNullError
+import com.scandit.datacapture.frameworks.core.listeners.registry.RegistryEmitter
 import com.scandit.datacapture.frameworks.core.locator.DefaultServiceLocator
 import com.scandit.datacapture.frameworks.core.utils.DefaultMainThread
 import com.scandit.datacapture.frameworks.core.utils.MainThread
@@ -45,17 +47,29 @@ class ScanditBarcodeCapture :
 
     private val emitter = CordovaEventEmitter()
 
+    private val registryEmitter = RegistryEmitter(emitter)
+
     private val mainThread: MainThread = DefaultMainThread.getInstance()
 
     private val permissionRequest = PermissionRequest.getInstance()
 
+    // Cordova tracks concurrent permission requests from one plugin independently,
+    // so several views can be waiting on the same decision.
+    private val pendingBarcodeArViews = mutableListOf<PendingBarcodeArView>()
+
+    private class PendingBarcodeArView(
+        val viewId: Int,
+        val viewJson: String,
+        val callbackContext: CallbackContext
+    )
+
     private val barcodeModule = BarcodeModule()
-    private val barcodeCaptureModule = BarcodeCaptureModule.create(emitter)
-    private val barcodeBatchModule = BarcodeBatchModule.create(emitter)
+    private val barcodeCaptureModule = BarcodeCaptureModule.create(registryEmitter)
+    private val barcodeBatchModule = BarcodeBatchModule.create(registryEmitter)
     private val barcodeSelectionModule = BarcodeSelectionModule(
-        emitter,
-        FrameworksBarcodeSelectionAimedBrushProvider(emitter),
-        FrameworksBarcodeSelectionTrackedBrushProvider(emitter)
+        registryEmitter,
+        FrameworksBarcodeSelectionAimedBrushProvider(registryEmitter),
+        FrameworksBarcodeSelectionTrackedBrushProvider(registryEmitter)
     )
 
     private val barcodeArModule = BarcodeArModule.create(emitter)
@@ -68,7 +82,7 @@ class ScanditBarcodeCapture :
 
     private val sparkScanModule: SparkScanModule = SparkScanModule.create(emitter)
 
-    private val barcodeCountModule = BarcodeCountModule.create(emitter)
+    private val barcodeCountModule = BarcodeCountModule.create(registryEmitter)
 
     private val barcodeGeneratorModule = BarcodeGeneratorModule()
 
@@ -145,6 +159,10 @@ class ScanditBarcodeCapture :
         sparkScanModule.setTopMostViewModeEnabled(lastSparkScanEnabledState)
     }
 
+    override fun onResume(multitasking: Boolean) {
+        settlePendingBarcodeArViews()
+    }
+
     override fun onReset() {
         destroy()
         pluginInitialize()
@@ -156,6 +174,13 @@ class ScanditBarcodeCapture :
     }
 
     private fun destroy() {
+        // Nothing will attach these now, so fail them rather than hang the JS call.
+        drainPendingBarcodeArViews().forEach {
+            it.callbackContext.error(
+                "BarcodeArView creation was cancelled before the camera permission resolved."
+            )
+        }
+
         barcodeModule.onDestroy()
         barcodeCaptureModule.onDestroy()
         barcodeBatchModule.onDestroy()
@@ -177,7 +202,7 @@ class ScanditBarcodeCapture :
         args: JSONArray,
         callbackContext: CallbackContext
     ): Boolean = when (action) {
-        "getDefaults" -> getDefaults(args, callbackContext)
+        "getDynamicDefaults" -> getDynamicDefaults(args, callbackContext)
         "createFindView" -> createFindView(args, callbackContext)
         "removeFindView" -> removeFindView(args, callbackContext)
         "createPickView" -> createPickView(args, callbackContext)
@@ -202,13 +227,13 @@ class ScanditBarcodeCapture :
     }.let { true }
 
     @PluginMethod
-    fun getDefaults(
+    fun getDynamicDefaults(
         @Suppress("UNUSED_PARAMETER") args: JSONArray,
         callbackContext: CallbackContext
     ) {
-        val default = JSONObject(barcodeModule.getDefaults())
+        val dynamicDefaults = JSONObject(barcodeModule.getDynamicDefaults())
 
-        callbackContext.success(default)
+        callbackContext.success(dynamicDefaults)
     }
 
     @PluginMethod
@@ -296,6 +321,91 @@ class ScanditBarcodeCapture :
         val argsJson = args.getJSONObject(0)
         val viewJson = argsJson.getString("viewJson")
         val viewId = argsJson.getInt("viewId")
+
+        // BarcodeArView starts the camera itself and bypasses the core permission
+        // gate, so creating it before the grant leaves a black preview that nothing
+        // retries (SDC-32054 requested the permission without awaiting it).
+        if (permissionRequest.checkCameraPermission(this)) {
+            attachBarcodeArView(viewId, viewJson, callbackContext)
+            return
+        }
+
+        // Add and request under one lock: a resume landing in between would fail an
+        // entry whose request had not been issued yet.
+        val requestIssued = synchronized(pendingBarcodeArViews) {
+            pendingBarcodeArViews.add(PendingBarcodeArView(viewId, viewJson, callbackContext))
+            permissionRequest.checkOrRequestCameraPermission(this)
+        }
+
+        // Permission arrived between the check and the request, so no result will come.
+        if (requestIssued.not()) {
+            attachPendingBarcodeArViews()
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionResult(
+        requestCode: Int,
+        permissions: Array<out String>?,
+        grantResults: IntArray?
+    ) {
+        if (requestCode != PermissionRequest.CODE_CAMERA_PERMISSIONS) return
+
+        val grantResult = grantResults?.firstOrNull()
+        if (permissions.isNullOrEmpty() || grantResult == null) {
+            // An empty result is no decision, so leave the views parked unless the
+            // permission arrived meanwhile; onResume settles the rest.
+            if (permissionRequest.checkCameraPermission(this)) {
+                attachPendingBarcodeArViews()
+            }
+            return
+        }
+
+        if (grantResult == PackageManager.PERMISSION_GRANTED) {
+            attachPendingBarcodeArViews()
+        } else {
+            // A view attached without the permission could only show black.
+            drainPendingBarcodeArViews().forEach {
+                it.callbackContext.error(
+                    "BarcodeArView creation failed: the camera permission was denied."
+                )
+            }
+        }
+    }
+
+    // Cordova delivers at most one result per request, so a view parked on an empty
+    // result has nothing left to call it back. Resume is where permission is final.
+    private fun settlePendingBarcodeArViews() {
+        if (permissionRequest.checkCameraPermission(this)) {
+            attachPendingBarcodeArViews()
+            return
+        }
+
+        drainPendingBarcodeArViews().forEach {
+            it.callbackContext.error(
+                "BarcodeArView creation failed: the camera permission was not granted."
+            )
+        }
+    }
+
+    private fun attachPendingBarcodeArViews() {
+        drainPendingBarcodeArViews().forEach {
+            attachBarcodeArView(it.viewId, it.viewJson, it.callbackContext)
+        }
+    }
+
+    private fun drainPendingBarcodeArViews(): List<PendingBarcodeArView> =
+        synchronized(pendingBarcodeArViews) {
+            val drained = pendingBarcodeArViews.toList()
+            pendingBarcodeArViews.clear()
+            drained
+        }
+
+    private fun attachBarcodeArView(
+        viewId: Int,
+        viewJson: String,
+        callbackContext: CallbackContext
+    ) {
         val container = barcodeArViewHandler.prepareContainer()
 
         mainThread.runOnMainThread {
