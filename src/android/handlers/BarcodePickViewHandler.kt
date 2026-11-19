@@ -93,9 +93,6 @@ class BarcodePickViewHandler(
     }
 
     fun disposeCurrentView() {
-        mainThread.runOnMainThread {
-            (webView?.parent as? View)?.translationZ = 0F
-        }
         val view = barcodePickViewContainer ?: return
         removeBarcodePickViewContainer(view)
     }

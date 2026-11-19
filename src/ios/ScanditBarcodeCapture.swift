@@ -33,21 +33,20 @@ class ScanditBarcodeCapture: CDVPlugin {
         DefaultServiceLocator.shared.register(module: barcodeModule)
 
         emitter = CordovaEventEmitter(commandDelegate: commandDelegate)
-        let registryEmitter = RegistryEmitter(platformEmitter: emitter)
 
-        barcodeCaptureModule = BarcodeCaptureModule(emitter: registryEmitter)
+        barcodeCaptureModule = BarcodeCaptureModule(emitter: emitter)
         DefaultServiceLocator.shared.register(module: barcodeCaptureModule)
 
-        barcodeBatchModule = BarcodeBatchModule(emitter: registryEmitter, viewFromJsonResolver: nil)
+        barcodeBatchModule = BarcodeBatchModule(emitter: emitter, viewFromJsonResolver: nil)
         DefaultServiceLocator.shared.register(module: barcodeBatchModule)
 
         barcodeSelectionModule = BarcodeSelectionModule(
-            emitter: registryEmitter,
+            emitter: emitter,
             aimedBrushProvider: FrameworksBarcodeSelectionAimedBrushProvider(
-                emitter: registryEmitter
+                emitter: emitter
             ),
             trackedBrushProvider: FrameworksBarcodeSelectionTrackedBrushProvider(
-                emitter: registryEmitter
+                emitter: emitter
             )
         )
         DefaultServiceLocator.shared.register(module: barcodeSelectionModule)
@@ -64,7 +63,7 @@ class ScanditBarcodeCapture: CDVPlugin {
         sparkScanModule = SparkScanModule(emitter: emitter)
         DefaultServiceLocator.shared.register(module: sparkScanModule)
 
-        barcodeCountModule = BarcodeCountModule(emitter: registryEmitter)
+        barcodeCountModule = BarcodeCountModule(emitter: emitter)
         DefaultServiceLocator.shared.register(module: barcodeCountModule)
 
         barcodeGeneratorModule = BarcodeGeneratorModule()
@@ -104,11 +103,11 @@ class ScanditBarcodeCapture: CDVPlugin {
         super.dispose()
     }
 
-    @objc(getDynamicDefaults:)
-    func getDynamicDefaults(command: CDVInvokedUrlCommand) {
+    @objc(getDefaults:)
+    func getDefaults(command: CDVInvokedUrlCommand) {
         dispatchMain {
-            let dynamicDefaults = self.barcodeModule.getDynamicDefaults() as CDVPluginResult.JSONMessage
-            self.commandDelegate.send(.success(message: dynamicDefaults), callbackId: command.callbackId)
+            let defaults = self.barcodeModule.getDefaults() as CDVPluginResult.JSONMessage
+            self.commandDelegate.send(.success(message: defaults), callbackId: command.callbackId)
         }
     }
 
