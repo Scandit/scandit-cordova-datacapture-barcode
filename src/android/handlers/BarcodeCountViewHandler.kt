@@ -74,6 +74,9 @@ class BarcodeCountViewHandler(
     }
 
     fun disposeCurrentView() {
+        mainThread.runOnMainThread {
+            (webView?.parent as? View)?.translationZ = 0F
+        }
         val view = barcodeCountView ?: return
         removeBarcodeCountView(view)
     }
